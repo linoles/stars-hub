@@ -1,24 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { Telegraf } from "telegraf";
+import { Telegraf } from 'telegraf';
 
 const bot = new Telegraf("7665933078:AAEk1IIIAafXQGki6i9tejLv4BBQ8MqWLuc");
+const webhookUrl = 'https://stars-hub.vercel.app/api/bot';
 
-bot.on("message", (ctx) => {
-  ctx.sendInvoice({
-    title: "Test",
-    description: "Test",
-    start_parameter: "test",
-    currency: "XTR",
-    prices: [{ label: "Test", amount: 1 }],
-    payload: JSON.stringify({ data: "Test" }),
-    provider_token: "test",
-  })
+bot.telegram.setWebhook(webhookUrl).then(() => {
+  console.log('Webhook set successfully');
+  process.exit();
 });
-
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
 
 declare global {
   interface Window {
@@ -31,7 +22,6 @@ export default function Page() {
     const tg = window.Telegram
     console.info(tg);
   }, []);
-  bot.launch();
 
   return (
     <div>StarsHub</div>
