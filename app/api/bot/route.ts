@@ -1,6 +1,6 @@
 import { Telegraf } from 'telegraf';
 
-const bot = new Telegraf(process.env.BOT_TOKEN!);
+const bot = new Telegraf("7665933078:AAEk1IIIAafXQGki6i9tejLv4BBQ8MqWLuc");
 
 bot.on('message', (ctx) => {
   ctx.sendInvoice({
