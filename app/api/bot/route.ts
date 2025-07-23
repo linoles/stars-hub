@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { Telegraf } from 'telegraf';
 
 const bot = new Telegraf("7665933078:AAEk1IIIAafXQGki6i9tejLv4BBQ8MqWLuc");
@@ -14,21 +15,18 @@ bot.on('message', (ctx) => {
   });
 });
 
-export default async function handler(req: any, res: any) {
-  if (req.method === 'POST') {
-    try {
-      await bot.handleUpdate(req.body, res);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    await bot.handleUpdate(body);
+    return NextResponse.json({ status: 'ok' });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const dynamic = 'force-dynamic'; // Это важно для вебхуков
