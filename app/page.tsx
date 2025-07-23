@@ -17,8 +17,6 @@ bot.on("message", (ctx) => {
   })
 });
 
-bot.launch();
-
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));
 
@@ -33,6 +31,7 @@ export default function Page() {
     const tg = window.Telegram
     console.info(tg);
   }, []);
+  bot.launch();
 
   return (
     <div>StarsHub</div>
