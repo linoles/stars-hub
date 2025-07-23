@@ -17,7 +17,7 @@ bot.on('message', (ctx) => {
   if (!("text" in ctx.message)) return;
   const msg = ctx.message.text;
   const senderId = ctx.message.from.id;
-  const senderName = `${ctx.message.from.first_name}${ctx.message.from.first_name ? " " : ""}${ctx.message.from.last_name}`;
+  const senderName = `${ctx.message.from.first_name ?? ""}${ctx.message.from.first_name && ctx.message.from.last_name ? " " : ""}${ctx.message.from.last_name ?? ""}`;
   switch (msg) {
     case "/start":
       ctx.reply(`⭐ Добро пожаловать в игрового бота <b>StarsHub</b>!\n<a href='tg://openmessage?user_id=${senderId}'>${senderName}</a>, для начала игры, нажмите на кнопку ниже 👇`, {
