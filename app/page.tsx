@@ -10,7 +10,7 @@ declare global {
 
 export default function Home() {
   useEffect(() => {
-    const tg = window.Telegram?.WebApp
+    const tg = window.Telegram
     console.info(tg);
   })
 
