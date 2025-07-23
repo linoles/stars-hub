@@ -31,15 +31,15 @@ bot.on('message', (ctx) => {
   }
 });
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
+    const body = await req.json();
     await bot.handleUpdate(body);
-    return NextResponse.json({ status: 'ok' });
-  } catch (err) {
-    console.error(err);
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("Error handling Telegram update:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
