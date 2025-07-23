@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-export default function Home() {
+export default function Page() {
   useEffect(() => {
     const tg = window.Telegram
     console.info(tg);

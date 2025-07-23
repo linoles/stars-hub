@@ -1,4 +1,4 @@
-const { Telegraf } = require("telegraf");
+/*const { Telegraf } = require("telegraf");
 
 const bot = new Telegraf("7665933078:AAEk1IIIAafXQGki6i9tejLv4BBQ8MqWLuc");
 
@@ -16,4 +16,4 @@ bot.on("message", (ctx) => {
 bot.launch();
 
 process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));*/
