@@ -11,11 +11,30 @@ declare global {
 
 export default function Page() {
   useEffect(() => {
-    const tg = window.Telegram
-    console.info(tg);
-    if (tg) {
-      tg.requestFullscreen();
-    }
+    // Ждём полной загрузки Telegram WebApp SDK
+    const interval = setInterval(() => {
+      if (window.Telegram?.WebApp) {
+        clearInterval(interval);
+        const tg = window.Telegram.WebApp;
+        console.log("Telegram WebApp data:", tg);
+
+        // Получаем все данные
+        console.log("Init data:", tg.initData);
+        console.log("Init data unsafe:", tg.initDataUnsafe);
+        console.log("User:", tg.initDataUnsafe.user);
+
+        tg.expand(); // Разворачиваем на весь экран
+        tg.enableClosingConfirmation(); // Подтверждение закрытия
+
+        // Можно сразу отправить данные в бекенд
+        fetch('/api/save-data', {
+          method: 'POST',
+          body: JSON.stringify(tg.initDataUnsafe)
+        });
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
