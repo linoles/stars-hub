@@ -13,12 +13,10 @@ export default function Page() {
   useEffect(() => {
     if (window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
-      console.log("Telegram WebApp:", tg);
-      alert(`${tg}`);
-      tg.expand();
+      console.log(tg);
+      tg.requestFullscreen();
     } else {
       console.log("Telegram WebApp is not loaded yet.");
-      alert("No");
     }
   }, [window.Telegram?.WebApp]);
 
