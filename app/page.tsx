@@ -16,7 +16,7 @@ export default function Page() {
       const tg = window.Telegram.WebApp;
       console.log(tg);
       tg.requestFullscreen();
-      document.querySelector(".elemForChange")?.classList.add("pt-[var(--tg-viewport-height)px]");
+      document.querySelector(".elemForChange")?.classList.add("pt-[var(--tg-content-safe-area-inset-top)]");
     } else {
       console.log("Telegram WebApp is not loaded yet.");
     }
