@@ -13,6 +13,9 @@ export default function Page() {
   useEffect(() => {
     const tg = window.Telegram
     console.info(tg);
+    if (tg) {
+      tg.requestFullscreen();
+    }
   }, []);
 
   return (
@@ -73,18 +76,16 @@ export default function Page() {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center space-x-8 py-6">
-                <div className="text-center">
-                  <div className={"text-2xl font-bold text-casino-gold " + inter.className}>2.5K</div>
-                  <div className={"text-casino-lightGray text-sm " + inter.className}>Звёзды</div>
-                </div>
-                <div className="w-px h-12 bg-casino-gold/20"></div>
-                <div className="text-center">
+              <div className="flex justify-center py-6">
+                <div className="text-center pr-8 border-r border-casino-gold/20">
                   <div className={"text-2xl font-bold text-casino-gold " + inter.className}>15</div>
                   <div className={"text-casino-lightGray text-sm " + inter.className}>Уровень</div>
                 </div>
-                <div className="w-px h-12 bg-casino-gold/20"></div>
-                <div className="text-center">
+                <div className="text-center mx-8">
+                  <div className={"text-2xl font-bold text-casino-gold " + inter.className}>2.5K</div>
+                  <div className={"text-casino-lightGray text-sm " + inter.className}>Звёзды</div>
+                </div>
+                <div className="text-center pl-8 border-l border-casino-gold/20">
                   <div className={"text-2xl font-bold text-casino-gold " + inter.className}>7</div>
                   <div className={"text-casino-lightGray text-sm " + inter.className}>Друзья</div>
                 </div>
