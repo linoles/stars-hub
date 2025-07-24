@@ -11,7 +11,8 @@ declare global {
 
 export default function Page() {
   useEffect(() => {
-    const tg = window.Telegram.WebApp;
+    const tg = window.Telegram?.WebApp;
+    console.info(tg);
     if (tg) {
       tg.requestFullscreen();
     }
