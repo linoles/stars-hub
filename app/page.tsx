@@ -18,8 +18,8 @@ export default function Page() {
       console.log(tg);
       tg.requestFullscreen();
       // tg.contentSafeAreaInset.top
-      setHeaderInsetTop(tg.contentSafeAreaInset.top);
-      alert(JSON.stringify(tg.contentSafeAreaInset))
+      setHeaderInsetTop(tg.safeAreaInset.top);
+      alert(JSON.stringify(tg.safeAreaInset))
     } else {
       console.log("Telegram WebApp is not loaded yet.");
     }
