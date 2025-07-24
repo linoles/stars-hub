@@ -11,20 +11,13 @@ declare global {
 
 export default function Page() {
   useEffect(() => {
-    // Ждём загрузки SDK
-    const checkTelegram = () => {
       if (window.Telegram?.WebApp) {
         const tg = window.Telegram.WebApp;
         console.log("Telegram WebApp:", tg);
-
         tg.expand();
       } else {
         console.log("Telegram WebApp is not loaded yet.");
-        setTimeout(checkTelegram, 100);
       }
-    };
-
-    checkTelegram();
   }, []);
 
   return (
