@@ -5,15 +5,6 @@ import { Telegraf } from "telegraf";
 const bot = new Telegraf("7665933078:AAEk1IIIAafXQGki6i9tejLv4BBQ8MqWLuc");
 
 bot.on("message", (ctx) => {
-  /*ctx.sendInvoice({
-    title: "Пополнение баланса 🌟",
-    description: "Пополнение баланса в боте звёздами ⭐",
-    start_parameter: "top_up",
-    currency: "XTR",
-    prices: [{ label: "Пополнение", amount: 10 }],
-    payload: JSON.stringify({ data: "top_up" }),
-    provider_token: "7665933078:AAEk1IIIAafXQGki6i9tejLv4BBQ8MqWLuc",
-  });*/
   if (!("text" in ctx.message)) return;
   const msg = ctx.message.text;
   const senderId = ctx.message.from.id;
@@ -61,20 +52,13 @@ bot.on("message", (ctx) => {
 
 export async function POST(req: Request) {
   try {
-    console.log('Received update at:', new Date().toISOString());
     const body = await req.json();
-    console.log('Update body:', JSON.stringify(body, null, 2));
-    
     await bot.handleUpdate(body);
     return NextResponse.json({ ok: true });
-    
   } catch (error) {
-    console.error("Error handling update:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error("Error:", error);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }
 
-export const dynamic = 'force-dynamic'; // Это важно для вебхуков
+export const dynamic = "force-dynamic";

@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
     config.experiments = {
       layers: true, // Enable experiments.layers to fix the error
     };
+    config.cache = false;
     config.target = 'node'; // Add the target: 'node' here
     return config;
   },
