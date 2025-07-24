@@ -11,9 +11,10 @@ declare global {
 
 export default function Page() {
   useEffect(() => {
-    // Получаем данные из URL (Telegram передаёт их в hash)
-    const initData = new URLSearchParams(window.location.hash.slice(1));
-    console.log("Raw init data:", Object.fromEntries(initData.entries()));
+    const tg = window.Telegram.WebApp;
+    if (tg) {
+      tg.requestFullscreen();
+    }
   }, []);
 
   return (
