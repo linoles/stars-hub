@@ -16,6 +16,7 @@ export default function Page() {
       const tg = window.Telegram.WebApp;
       console.log(tg);
       tg.requestFullscreen();
+      document.querySelector(".elemForChange")?.classList.add("pb-[var(--tg-viewport-height)]");
     } else {
       console.log("Telegram WebApp is not loaded yet.");
     }
@@ -27,7 +28,7 @@ export default function Page() {
         <ol tabIndex={-1} className="fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]"></ol>
       </div>
       <section aria-label="Notifications alt+T" tabIndex={-1} aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section>
-      <div className={`min-h-screen bg-casino-black relative overflow-hidden pb-[var(--tg-viewport-height)]`}>
+      <div className={`min-h-screen bg-casino-black relative overflow-hidden elemForChange`}>
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-br from-casino-black via-casino-darkGray/20 to-casino-black"></div>
           <div className="absolute top-20 left-10 text-casino-gold/30 animate-pulse" style={{ fontSize: "12px" }}>✦</div>
