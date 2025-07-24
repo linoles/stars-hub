@@ -22,7 +22,7 @@ export default function Page() {
     }
   }, []);
 
-  alert(window.Telegram?.WebApp);
+  alert(`${window.Telegram?.WebApp}`);
 
   return (
     <div id="root">
