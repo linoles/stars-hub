@@ -11,14 +11,18 @@ declare global {
 
 export default function Page() {
   useEffect(() => {
-      if (window.Telegram?.WebApp) {
-        const tg = window.Telegram.WebApp;
-        console.log("Telegram WebApp:", tg);
-        tg.expand();
-      } else {
-        console.log("Telegram WebApp is not loaded yet.");
-      }
+    if (window.Telegram?.WebApp) {
+      const tg = window.Telegram.WebApp;
+      console.log("Telegram WebApp:", tg);
+      alert(`${tg}`);
+      tg.expand();
+    } else {
+      console.log("Telegram WebApp is not loaded yet.");
+      alert("No");
+    }
   }, []);
+
+  alert(window.Telegram?.WebApp);
 
   return (
     <div id="root">
