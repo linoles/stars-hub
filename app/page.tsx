@@ -20,7 +20,7 @@ export default function Page() {
       console.log("Telegram WebApp is not loaded yet.");
       alert("No");
     }
-  }, []);
+  }, [window.Telegram?.WebApp]);
 
   return (
     <div id="root">
