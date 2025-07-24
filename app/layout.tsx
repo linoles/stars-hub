@@ -1,4 +1,4 @@
-import "./globals.css";
+import "@/src/app/globals.css";
 
 export default function RootLayout({
   children,
@@ -8,9 +8,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script src="https://telegram.org/js/telegram-web-app.js" async />
+        <script src="https://telegram.org/js/telegram-web-app.js?58"></script>
       </head>
-      <body>
+      <body className="m-0">
         {children}
       </body>
     </html>
