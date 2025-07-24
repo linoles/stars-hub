@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     console.log("Update body:", JSON.stringify(body, null, 2));
 
     await bot.handleUpdate(body);
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
     console.error("Error handling update:", error);
     return NextResponse.json(
@@ -76,4 +76,4 @@ export async function POST(req: Request) {
   }
 }
 
-export const dynamic = "force-dynamic"; // Это важно для вебхуков
+export const dynamic = "force-dynamic";
