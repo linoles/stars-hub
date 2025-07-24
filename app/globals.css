@@ -567,6 +567,10 @@ body {
   border-width: 0;
 }
 
+.space-inset {
+  margin-top: var(--tg-safe-are-inset-top);
+}
+
 .mt-10 {
   margin-top: 2.5rem;
 }
