@@ -22,8 +22,6 @@ export default function Page() {
     }
   }, []);
 
-  alert(`${window.Telegram?.WebApp}`);
-
   return (
     <div id="root">
       <div role="region" aria-label="Notifications (F8)" tabIndex={-1} style={{ pointerEvents: "none" }}>
