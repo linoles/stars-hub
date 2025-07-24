@@ -54,7 +54,7 @@ bot.on("message", (ctx) => {
         provider_token: "7665933078:AAEk1IIIAafXQGki6i9tejLv4BBQ8MqWLuc",
       });
     } catch (error) {
-      ctx.reply("❌ Ошибка при пополнении баланса.");
+      ctx.reply("❌ Ошибка при попытки пополнения баланса.");
     }
   }
 });
