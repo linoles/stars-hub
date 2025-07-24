@@ -11,22 +11,9 @@ declare global {
 
 export default function Page() {
   useEffect(() => {
-    // Ждём полной загрузки Telegram WebApp SDK
-    const interval = setInterval(() => {
-      if (window.Telegram?.WebApp) {
-        clearInterval(interval);
-        const tg = window.Telegram.WebApp;
-        console.log("Telegram WebApp data:", tg);
-
-        console.log("Init data:", tg.initData);
-        console.log("Init data unsafe:", tg.initDataUnsafe);
-        console.log("User:", tg.initDataUnsafe.user);
-
-        tg.requestFullScreen();
-      }
-    }, 10000);
-
-    return () => clearInterval(interval);
+    // Получаем данные из URL (Telegram передаёт их в hash)
+    const initData = new URLSearchParams(window.location.hash.slice(1));
+    console.log("Raw init data:", Object.fromEntries(initData.entries()));
   }, []);
 
   return (
