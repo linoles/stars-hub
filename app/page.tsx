@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { inter } from "./fonts";
 
 declare global {
@@ -10,11 +10,15 @@ declare global {
 }
 
 export default function Page() {
+  const [headerInsetTop, setHeaderInsetTop] = useState<number>(0);
+
   useEffect(() => {
     if (window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
       console.log(tg);
       tg.requestFullscreen();
+      // tg.contentSafeAreaInset.top
+      setHeaderInsetTop(tg.contentSafeAreaInset.top);
     } else {
       console.log("Telegram WebApp is not loaded yet.");
     }
@@ -36,7 +40,7 @@ export default function Page() {
           <div className="absolute bottom-40 left-12 text-casino-gold/35 animate-pulse delay-300" style={{ fontSize: "16px" }}>✦</div>
           <div className="absolute bottom-60 right-8 text-casino-gold/20 animate-pulse delay-1200" style={{ fontSize: "12px" }}>✦</div>
         </div>
-        <div className="flex items-center justify-between p-4 relative z-10 space-inset">
+        <div className={`flex items-center justify-between p-4 relative z-10 mt-${headerInsetTop}`}>
           <div className="flex items-center space-x-2">
             <div className="text-casino-gold animate-spin-slow" style={{ fontSize: "20px" }}>✦</div>
             <span className={"text-sm text-casino-lightGray font-bold " + inter.className}>StarsHub</span>
