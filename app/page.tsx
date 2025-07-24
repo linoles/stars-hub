@@ -30,7 +30,7 @@ export default function Page() {
         <ol tabIndex={-1} className="fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]"></ol>
       </div>
       <section aria-label="Notifications alt+T" tabIndex={-1} aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section>
-      <div className="min-h-screen bg-casino-black relative overflow-hidden">
+      <div className={`min-h-screen bg-casino-black relative overflow-hidden mt-${headerInsetTop}`}>
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-br from-casino-black via-casino-darkGray/20 to-casino-black"></div>
           <div className="absolute top-20 left-10 text-casino-gold/30 animate-pulse" style={{ fontSize: "12px" }}>✦</div>
@@ -40,7 +40,7 @@ export default function Page() {
           <div className="absolute bottom-40 left-12 text-casino-gold/35 animate-pulse delay-300" style={{ fontSize: "16px" }}>✦</div>
           <div className="absolute bottom-60 right-8 text-casino-gold/20 animate-pulse delay-1200" style={{ fontSize: "12px" }}>✦</div>
         </div>
-        <div className={`flex items-center justify-between p-4 relative z-10 mt-${headerInsetTop}`}>
+        <div className={`flex items-center justify-between p-4 relative z-10`}>
           <div className="flex items-center space-x-2">
             <div className="text-casino-gold animate-spin-slow" style={{ fontSize: "20px" }}>✦</div>
             <span className={"text-sm text-casino-lightGray font-bold " + inter.className}>StarsHub</span>
