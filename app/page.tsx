@@ -17,7 +17,6 @@ export default function Page() {
       console.log(tg);
       tg.requestFullscreen();
       tg.SettingsButton.show();
-      document.querySelector(".elemForChange")?.classList.add("pt-[var(--tg-content-safe-area-inset-top)]");
     } else {
       console.log("Telegram WebApp is not loaded yet.");
     }
@@ -38,19 +37,6 @@ export default function Page() {
           <div className="absolute top-80 right-1/3 text-casino-gold/25 animate-pulse delay-700" style={{ fontSize: "14px" }}>✦</div>
           <div className="absolute bottom-40 left-12 text-casino-gold/35 animate-pulse delay-300" style={{ fontSize: "16px" }}>✦</div>
           <div className="absolute bottom-60 right-8 text-casino-gold/20 animate-pulse delay-1200" style={{ fontSize: "12px" }}>✦</div>
-        </div>
-        <div className={`flex items-center justify-between p-4 relative z-10`}>
-          <div className="flex items-center space-x-2">
-            <div className="text-casino-gold animate-spin-slow" style={{ fontSize: "20px" }}>✦</div>
-            <span className={"text-sm text-casino-lightGray font-bold " + inter.className}>StarsHub</span>
-          </div> {/* лого */}
-          <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:text-accent-foreground h-9 rounded-md" type="button" id="radix-:r0:" aria-haspopup="menu" aria-expanded="false" data-state="closed">
-            <span className="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8 border border-casino-gold">
-              <span className="flex h-full w-full items-center justify-center rounded-full bg-casino-gold text-casino-black text-sm font-bold">
-                <img src="/profile.png" alt="avatar" />
-              </span>
-            </span>
-          </button> {/* профиль */}
         </div>
         <div className="px-4 pb-20 mt-10 relative z-10">
           <div className="max-w-md mx-auto">
