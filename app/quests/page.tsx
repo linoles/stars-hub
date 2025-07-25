@@ -1,7 +1,3 @@
-export default function Page() {
-  return (
-    <div>
-      <h1>Quests</h1>
-    </div>
-  );
-}
+import UsersServer from './users-server'
+
+export default UsersServer
