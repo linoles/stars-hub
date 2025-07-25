@@ -32,7 +32,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
     } else {
       console.log("Telegram WebApp is not loaded yet.");
     }
-  }, []); // Убрана зависимость от window.Telegram?.WebApp
+  }, []);
 
   useEffect(() => {
     if (!tgData?.id || isAdding) return;
@@ -49,8 +49,8 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
             },
             body: JSON.stringify({
               tgId: tgData.id,
-              tgNick: tgData.first_name,
-              tgUsername: tgData.username,
+              tgNick: `${tgData.first_name || ""}${tgData.first_name && tgData.last_name ? " " : ""}${tgData.last_name || ""}` || "user",
+              tgUsername: tgData.username || null,
               stars: 0,
             })
           });
@@ -70,7 +70,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
     }
 
     checkAndAddUser();
-  }, [tgData]); // Убрана зависимость от users
+  }, [tgData]);
 
   return (
     <div id="root" className="overflow-hidden">
