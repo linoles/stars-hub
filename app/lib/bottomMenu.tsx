@@ -12,7 +12,7 @@ export default function BottomMenu({ activeItem }: { activeItem: number }) {
             </svg>
             <span className={"text-xs mt-1 " + inter.className}>Главная</span>
           </button>
-          <button className={`nav-item ${activeItem === 1 ? "active" : ""}`} onClick={() => activeItem !== 1 ? window.location.href = "/quests" : ""}>
+          <button className={`nav-item ${activeItem === 1 ? "active" : ""}`} onClick={() => activeItem !== 1 ? window.location.href = "/games" : ""}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-gamepad2">
               <line x1="6" x2="10" y1="11" y2="11"></line>
               <line x1="8" x2="8" y1="9" y2="13"></line>
@@ -33,7 +33,7 @@ export default function BottomMenu({ activeItem }: { activeItem: number }) {
             </svg>
             <span className={"text-xs mt-1 " + inter.className}>Задания</span>
           </button>
-          <button className={`nav-item ${activeItem === 3 ? "active" : ""}`} onClick={() => activeItem !== 3 ? window.location.href = "/quests" : ""}>
+          <button className={`nav-item ${activeItem === 3 ? "active" : ""}`} onClick={() => activeItem !== 3 ? window.location.href = "/profile" : ""}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user">
               <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
