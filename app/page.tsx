@@ -17,6 +17,7 @@ export default function Page() {
       console.log(tg);
       tg.requestFullscreen();
       tg.SettingsButton.show();
+      document.querySelector(".elemForChange")?.classList.add("mt-[var(--tg-content-safe-area-inset-top)]");
     } else {
       console.log("Telegram WebApp is not loaded yet.");
     }
@@ -38,7 +39,7 @@ export default function Page() {
           <div className="absolute bottom-40 left-12 text-casino-gold/35 animate-pulse delay-300" style={{ fontSize: "16px" }}>✦</div>
           <div className="absolute bottom-60 right-8 text-casino-gold/20 animate-pulse delay-1200" style={{ fontSize: "12px" }}>✦</div>
         </div>
-        <div className="px-4 pb-20 mt-10 relative z-10">
+        <div className="px-4 pb-20 mt-10 relative z-10 elemForChange">
           <div className="max-w-md mx-auto">
             <div className="space-y-8 py-8">
               <div className="text-center space-y-6 relative">
