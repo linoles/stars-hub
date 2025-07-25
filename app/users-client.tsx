@@ -26,15 +26,19 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 0, friends: 0 });
 
   useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp;
-      console.log(tg);
-      tg.requestFullscreen();
-      tg.SettingsButton.show();
-      setTgData(tg.initDataUnsafe?.user);
-      document.querySelector(".elemForChange")?.classList.add("mt-[calc(var(--tg-content-safe-area-inset-top)*2)]");
-    } else {
-      console.log("Telegram WebApp is not loaded yet.");
+    try {
+      if (window.Telegram?.WebApp) {
+        const tg = window.Telegram.WebApp;
+        console.log(tg);
+        tg.requestFullscreen();
+        tg.SettingsButton.show();
+        setTgData(tg.initDataUnsafe?.user);
+        document.querySelector(".elemForChange")?.classList.add("mt-[calc(var(--tg-content-safe-area-inset-top)*2)]");
+      } else {
+        console.log("Telegram WebApp is not loaded yet.");
+      }
+    } catch (error) {
+      console.error(error);
     }
   }, []);
 
@@ -109,9 +113,9 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
                 <div className="relative z-10">
                   <div className="w-24 h-24 mx-auto mb-6 relative">
                     <div className="w-full h-full bg-gradient-to-br from-casino-gold to-orange-500 rounded-full flex items-center justify-center relative overflow-hidden">
-                      <div className="text-2xl">
-                        <img src="/frog.png" alt="frog" width={60} height={60} />
-                      </div>
+                      <video autoPlay loop muted playsInline onClick={e => e.stopPropagation()} className="w-60 h-60">
+                        <source src="/frog.gif.mp4" type="video/mp4" />
+                      </video>
                       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-casino-gold/20 to-transparent animate-pulse"></div>
                     </div>
                     <div className="absolute -inset-2 border-2 border-casino-gold/30 rounded-full"></div>
