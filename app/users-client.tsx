@@ -19,6 +19,7 @@ export interface User {
 export default function ClientComponent({ initialUsers }: { initialUsers: User[] }) {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
@@ -31,31 +32,45 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
     } else {
       console.log("Telegram WebApp is not loaded yet.");
     }
-  }, [window.Telegram?.WebApp]);
+  }, []); // Убрана зависимость от window.Telegram?.WebApp
 
   useEffect(() => {
-    if (!tgData?.id) return
+    if (!tgData?.id || isAdding) return;
 
     const checkAndAddUser = async () => {
       const exists = users.some(u => u.tgId === tgData.id);
       if (!exists) {
-        const response = await fetch('/api/add-user', {
-          method: 'POST',
-          body: JSON.stringify({
-            tgId: tgData.id,
-            tgNick: tgData.first_name,
-            tgUsername: tgData.username,
-            stars: 0,
-          })
-        });
-        const newUser = await response.json();
-        setUsers(prev => [...prev, newUser]);
+        setIsAdding(true);
+        try {
+          const response = await fetch('/api/add-user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              tgId: tgData.id,
+              tgNick: tgData.first_name,
+              tgUsername: tgData.username,
+              stars: 0,
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to add user');
+          }
+
+          const newUser = await response.json();
+          setUsers(prev => [...prev, newUser]);
+        } catch (error) {
+          console.error('Error adding user:', error);
+        } finally {
+          setIsAdding(false);
+        }
       }
-      console.info(users)
     }
 
-    checkAndAddUser()
-  }, [tgData, users]);
+    checkAndAddUser();
+  }, [tgData]); // Убрана зависимость от users
 
   return (
     <div id="root" className="overflow-hidden">
