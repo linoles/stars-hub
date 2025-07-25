@@ -17,7 +17,7 @@ export default function Page() {
       console.log(tg);
       tg.requestFullscreen();
       tg.SettingsButton.show();
-      document.querySelector(".elemForChange")?.classList.add("mt-[var(--tg-content-safe-area-inset-top)]");
+      document.querySelector(".elemForChange")?.classList.add("mt-[calc(var(--tg-content-safe-area-inset-top)*2)]");
     } else {
       console.log("Telegram WebApp is not loaded yet.");
     }
