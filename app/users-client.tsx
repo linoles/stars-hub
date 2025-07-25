@@ -99,7 +99,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           <div className="absolute bottom-40 left-12 text-casino-gold/35 animate-pulse delay-300" style={{ fontSize: "16px" }}>✦</div>
           <div className="absolute bottom-60 right-8 text-casino-gold/20 animate-pulse delay-1200" style={{ fontSize: "12px" }}>✦</div>
         </div>
-        <div className="px-4 pb-20 mt-10 relative z-10 h-max flex flex-col items-center justify-center">
+        <div className="px-4 pb-20 mt-10 relative z-10 h-max">
           <div className="max-w-md mx-auto">
             <div className="space-y-8 py-8">
               <div className="text-center space-y-6 relative">
