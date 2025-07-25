@@ -27,7 +27,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
     } else {
       console.log("Telegram WebApp is not loaded yet.");
     }
-  }, []);
+  }, [window.Telegram?.WebApp]);
 
   useEffect(() => {
     if (!tgData?.id || isAdding) return;
