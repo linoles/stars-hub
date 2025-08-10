@@ -83,6 +83,7 @@ bot.on("message", async (ctx) => {
               currentWinners: row.ludka.currentWinners,
               requiredTimes: row.ludka.requiredTimes,
               requiredRow: row.ludka.requiredRow,
+              neededComb: row.ludka.neededComb,
             },
           })
           .eq("tgId", 1);
@@ -105,10 +106,51 @@ bot.on("message", async (ctx) => {
               currentWinners: row.ludka.currentWinners,
               requiredTimes: row.ludka.requiredTimes,
               requiredRow: row.ludka.requiredRow,
+              neededComb: row.ludka.neededComb,
             },
           })
           .eq("tgId", 1);
         return;
+    }
+  }
+
+  if (
+    row.ludka.isActive &&
+    ctx.message.reply_to_message?.from?.id === 777000 &&
+    "dice" in ctx.message &&
+    (ctx.message.dice as any)?.emoji === "🎰"
+  ) {
+    const neededValue =
+      row.ludka.neededComb === "7️⃣"
+        ? 64
+        : row.ludka.neededComb === "🍋"
+        ? 43
+        : row.ludka.neededComb === "🍇"
+        ? 22
+        : 1;
+    if ((ctx.message.dice as any).value === neededValue) {
+      ctx.reply("✅ У нас есть победитель!", {
+        reply_parameters: {
+          message_id: ctx.message.message_id,
+        },
+      });
+      const stickers = [
+        "CAACAgIAAxkBAAEPBh9ohVdxJcsomD-tLwwG_1YlSUIktgAC6RkAAhZeKEimg5LObeZqozYE",
+        "CAACAgIAAxkBAAEPBiBohVdxINYqfccrgJC_D8gtaQMCSAACqhgAAg9lCEoGzNzn0P2-0zYE",
+        "CAACAgIAAxkBAAEO3bZoakWLtC2BLxtCz-44rPorOiyLTgACSgIAAladvQrJasZoYBh68DYE",
+        "CAACAgIAAxkBAAEPBiJohVdxbYewkFW7Y_HBYinkcLV3FAAC_xoAAhaNgUkgU21P6dzWmzYE",
+        "CAACAgEAAxkBAAEPBiNohVdxM1x7ygJxSV3JpOMZieJAZAACtAIAAs2j-UTxghF_qaLQVjYE",
+        "CAACAgIAAxkBAAEPBbFohOwUueOz-QgyXd2t8EMHvvIR8AACyxsAAgPamEiwRqVGuLHqQzYE",
+        "CAACAgIAAxkBAAEPB11ohqNJG_kaJr4LJbSyI6wm_P8AATgAAnwdAALlAzlLyEU_5iJrorg2BA",
+      ];
+      await ctx.replyWithSticker(
+        stickers[Math.floor(Math.random() * stickers.length)],
+        {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        }
+      );
     }
   }
 
@@ -126,7 +168,7 @@ bot.on("message", async (ctx) => {
         }
       );
       return;
-  
+
     case "/ludka":
     case "/ludka@StarzHubBot":
     case "/stop_ludka":
