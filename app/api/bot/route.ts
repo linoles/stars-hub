@@ -127,10 +127,15 @@ bot.on("message", async (ctx) => {
       }
     }
 
-    const userProgress = row.ludka.doneUsers[senderId] || { lastWins: 0, times: 0 };
+    if (!row.ludka.doneUsers[senderId]) {
+      row.ludka.doneUsers[senderId] = { lastWins: 0, times: 0 };
+    }
+    const userProgress = row.ludka.doneUsers[senderId] || {
+      lastWins: 0,
+      times: 0,
+    };
     let extraCheck =
-      (await (userProgress.lastWins ?? 0)) + 1 ===
-      row.ludka.requiredRow;
+      (await (userProgress.lastWins ?? 0)) + 1 === row.ludka.requiredRow;
     const neededValue =
       row.ludka.neededComb === "7️⃣"
         ? 64
@@ -148,8 +153,7 @@ bot.on("message", async (ctx) => {
       row.ludka.winners === row.ludka.currentWinners.length + 1
     ) {
       if (
-        row.ludka.requiredTimes ==
-          (userProgress.times ?? 0) + 1 &&
+        row.ludka.requiredTimes == (userProgress.times ?? 0) + 1 &&
         extraCheck
       ) {
         ctx.reply("✅ У нас есть победитель!", {
@@ -158,7 +162,7 @@ bot.on("message", async (ctx) => {
           },
         });
         const currentWinners = [...row.ludka.currentWinners, senderId];
-        let finalText = `🏆 Лудка закончена! Победители:\n`
+        let finalText = `🏆 Лудка закончена! Победители:\n`;
         await Promise.all(
           currentWinners.map(async (id) => {
             finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
@@ -177,15 +181,10 @@ bot.on("message", async (ctx) => {
             })
             .eq("tgId", 1);
         }
-      } else if (
-        row.ludka.requiredTimes !=
-        (userProgress.times ?? 0) + 1
-      ) {
+      } else if (row.ludka.requiredTimes != (userProgress.times ?? 0) + 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
-            row.ludka.requiredTimes -
-            (userProgress.times ?? 0) -
-            1
+            row.ludka.requiredTimes - (userProgress.times ?? 0) - 1
           } раз!`,
           {
             reply_parameters: {
@@ -203,13 +202,10 @@ bot.on("message", async (ctx) => {
           })
           .eq("tgId", 1)
           .match({ "ludka.doneUsers.user": senderId });
-      } else if (
-        !extraCheck
-      ) {
+      } else if (!extraCheck) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
-            row.ludka.requiredRow -
-            (userProgress.lastWins ?? 0)
+            row.ludka.requiredRow - (userProgress.lastWins ?? 0)
           } раз следующей попыткой!`,
           {
             reply_parameters: {
@@ -245,15 +241,20 @@ bot.on("message", async (ctx) => {
       row.ludka.winners !== row.ludka.currentWinners.length + 1
     ) {
       if (
-        row.ludka.requiredTimes ==
-          (userProgress.times ?? 0) + 1 &&
+        row.ludka.requiredTimes == (userProgress.times ?? 0) + 1 &&
         extraCheck
       ) {
-        ctx.reply("✅ У нас есть победитель!\n🏆 Ещё победителей может быть: " + (row.ludka.winners === 1000 ? "∞" : row.ludka.winners - row.ludka.currentWinners.length - 1), {
-          reply_parameters: {
-            message_id: ctx.message.message_id,
-          },
-        });
+        ctx.reply(
+          "✅ У нас есть победитель!\n🏆 Ещё победителей может быть: " +
+            (row.ludka.winners === 1000
+              ? "∞"
+              : row.ludka.winners - row.ludka.currentWinners.length - 1),
+          {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          }
+        );
         if (row.ludka.currentWinners.length + 1 >= row.ludka.winners) {
           await supabase
             .from("users")
@@ -262,15 +263,10 @@ bot.on("message", async (ctx) => {
             })
             .eq("tgId", 1);
         }
-      } else if (
-        row.ludka.requiredTimes !=
-        (userProgress.times ?? 0) + 1
-      ) {
+      } else if (row.ludka.requiredTimes != (userProgress.times ?? 0) + 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
-            row.ludka.requiredTimes -
-            (userProgress.times ?? 0) +
-            1
+            row.ludka.requiredTimes - (userProgress.times ?? 0) + 1
           } раз!`,
           {
             reply_parameters: {
@@ -288,13 +284,10 @@ bot.on("message", async (ctx) => {
           })
           .eq("tgId", 1)
           .match({ "ludka.doneUsers.user": senderId });
-      } else if (
-        !extraCheck
-      ) {
+      } else if (!extraCheck) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
-            row.ludka.requiredRow -
-            (userProgress.lastWins ?? 0)
+            row.ludka.requiredRow - (userProgress.lastWins ?? 0)
           } раз следующей попыткой!`,
           {
             reply_parameters: {
@@ -329,18 +322,18 @@ bot.on("message", async (ctx) => {
       (ctx.message.dice as any).value !== neededValue &&
       userProgress.lastWins > 0
     ) {
-      ctx.reply(
-        "❌ Ваш стрик приостановился!", {
-          reply_parameters: {
-            message_id: ctx.message.message_id,
-          },
-        }
-      )
-      await supabase.from("users").update({
-        "ludka.doneUsers.$[user]": {
-          lastWins: 0,
+      ctx.reply("❌ Ваш стрик приостановился!", {
+        reply_parameters: {
+          message_id: ctx.message.message_id,
         },
-      })
+      });
+      await supabase
+        .from("users")
+        .update({
+          "ludka.doneUsers.$[user]": {
+            lastWins: 0,
+          },
+        })
         .eq("tgId", 1)
         .match({ "ludka.doneUsers.user": senderId });
     }
