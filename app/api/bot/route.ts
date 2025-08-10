@@ -159,9 +159,11 @@ bot.on("message", async (ctx) => {
         });
         const currentWinners = [...row.ludka.currentWinners, senderId];
         let finalText = `🏆 Лудка закончена! Победители:\n`
-        currentWinners.forEach(async (id) => {
-          finalText.concat(`<a href="tg://openmessage?user_id=${id}">${id}</a>\n`);
-        });
+        await Promise.all(
+          currentWinners.map(async (id) => {
+            finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
+          })
+        );
         bot.telegram.sendMessage(7441988500, finalText, {
           parse_mode: "HTML",
         }); /* !! */
