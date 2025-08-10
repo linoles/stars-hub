@@ -221,7 +221,9 @@ bot.on("message", async (ctx) => {
       }
     }
   } catch (error) {
-    bot.telegram.sendMessage(7441988500, JSON.stringify(error));
+    if (error) {
+      bot.telegram.sendMessage(7441988500, JSON.stringify(error));
+    }
   }
 });
 
