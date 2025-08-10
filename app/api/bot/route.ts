@@ -134,6 +134,7 @@ bot.on("message", async (ctx) => {
           message_id: ctx.message.message_id,
         },
       });
+      ctx.react("🎉", true);
       const stickers = [
         "CAACAgIAAxkBAAEPBh9ohVdxJcsomD-tLwwG_1YlSUIktgAC6RkAAhZeKEimg5LObeZqozYE",
         "CAACAgIAAxkBAAEPBiBohVdxINYqfccrgJC_D8gtaQMCSAACqhgAAg9lCEoGzNzn0P2-0zYE",
@@ -181,10 +182,6 @@ bot.on("message", async (ctx) => {
           },
         }
       );
-      return;
-
-    default:
-      ctx.reply(`${msg}`);
       return;
   }
 
