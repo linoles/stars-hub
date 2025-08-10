@@ -130,6 +130,7 @@ bot.on("message", async (ctx) => {
     if (!row.ludka.doneUsers[senderId]) {
       row.ludka.doneUsers[senderId] = { lastWins: 0, times: 0 };
     }
+    await supabase.from("users").update(row).eq("tgId", 1);
     const userProgress = row.ludka.doneUsers[senderId] || {
       lastWins: 0,
       times: 0,
@@ -260,6 +261,10 @@ bot.on("message", async (ctx) => {
             .from("users")
             .update({
               "ludka.currentWinners": [...row.ludka.currentWinners, senderId],
+              "ludka.usersDone.$[user]": {
+                lastWins: (userProgress.lastWins ?? 0) + 1,
+                times: (userProgress.times ?? 0) + 1,
+              }
             })
             .eq("tgId", 1);
         }
