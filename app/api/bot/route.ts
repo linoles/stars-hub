@@ -1,16 +1,83 @@
 import { config } from "@/app/config";
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import { Telegraf } from "telegraf";
+import { Markup, Telegraf } from "telegraf";
 
 const bot = new Telegraf("8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE");
 
-bot.on("message", (ctx) => {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+const getLudkaButtons = async () => {
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback("7️⃣", "/ludka 7️⃣"),
+      Markup.button.callback("🍋", "/ludka 🍋"),
+      Markup.button.callback("🍇", "/ludka 🍇"),
+      Markup.button.callback("BAR", "/ludka BAR"),
+    ],
+    [
+      Markup.button.callback("➖", "minusWinner"),
+      Markup.button.callback(`${row.ludka.winners} 🏆`, "showWinners"),
+      Markup.button.callback("➕", "plusWinner"),
+    ],
+    [
+      Markup.button.callback("➖", "minusRequiredTime"),
+      Markup.button.callback(
+        `${row.ludka.requiredTimes} 🔢`,
+        "showRequiredTimes"
+      ),
+      Markup.button.callback("➕", "plusRequiredTime"),
+    ],
+    [
+      Markup.button.callback("➖", "minusRequiredRow"),
+      Markup.button.callback(`${row.ludka.requiredRow} 💯`, "showRequiredRow"),
+      Markup.button.callback("➕", "plusRequiredRow"),
+    ],
+  ]);
+};
+
+bot.on("message", async (ctx) => {
   if (!("text" in ctx.message)) return;
   const msg = ctx.message.text;
   const senderId = ctx.message.from.id;
   const senderName = `${ctx.message.from.first_name ?? ""}${
     ctx.message.from.first_name && ctx.message.from.last_name ? " " : ""
   }${ctx.message.from.last_name ?? ""}`;
+  const admins = [7441988500, 6233759034, 7177688298];
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+
+  if (admins.includes(senderId)) {
+    switch (msg) {
+      case "/ludka":
+      case "/ludka@StarzHubBot":
+        ctx.reply(
+          "✅ Лудка успешно запущена!\nВыберите настройки лудки кнопками ниже! ⚙",
+          {
+            reply_markup: (await getLudkaButtons()).reply_markup,
+          }
+        );
+        await supabase.from("users").update({
+          ludka: {
+            isActive: true,
+          },
+        }).eq("tgId", 1);
+        return;
+    }
+  }
+
   switch (msg) {
     case "/start":
       ctx.reply(
