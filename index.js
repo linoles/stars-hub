@@ -1,6 +1,6 @@
 /*const { Telegraf } = require("telegraf");
 
-const bot = new Telegraf("7665933078:AAEk1IIIAafXQGki6i9tejLv4BBQ8MqWLuc");
+const bot = new Telegraf("8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE");
 
 bot.on("message", (ctx) => {
   ctx.sendInvoice({

@@ -2,7 +2,7 @@ import { config } from "@/app/config";
 import { NextResponse } from "next/server";
 import { Telegraf } from "telegraf";
 
-const bot = new Telegraf("7665933078:AAEk1IIIAafXQGki6i9tejLv4BBQ8MqWLuc");
+const bot = new Telegraf("8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE");
 
 bot.on("message", (ctx) => {
   if (!("text" in ctx.message)) return;
@@ -42,7 +42,7 @@ bot.on("message", (ctx) => {
         currency: "XTR",
         prices: [{ label: "Пополнение", amount: amount }],
         payload: JSON.stringify({ data: "top_up" }),
-        provider_token: "7665933078:AAEk1IIIAafXQGki6i9tejLv4BBQ8MqWLuc",
+        provider_token: "8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE",
       });
     } catch (error) {
       ctx.reply("❌ Ошибка при попытки пополнения баланса.");

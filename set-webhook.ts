@@ -5,7 +5,7 @@ const webhookUrl = 'https://stars-hub.vercel.app/api/bot';
 async function setWebhook() {
   try {
     // Удаляем старый вебхук перед установкой нового
-    const bot = new Telegraf("7665933078:AAEk1IIIAafXQGki6i9tejLv4BBQ8MqWLuc");
+    const bot = new Telegraf("8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE");
     await bot.telegram.deleteWebhook({ drop_pending_updates: true });
     
     // Устанавливаем новый вебхук
