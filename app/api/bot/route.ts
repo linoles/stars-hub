@@ -115,6 +115,7 @@ bot.on("message", async (ctx) => {
   }
 
   ctx.reply(JSON.stringify(ctx.message.reply_to_message));
+  ctx.reply("a");
   if (
     row.ludka.isActive &&
     ctx.message.reply_to_message?.from?.id === 777000 &&
