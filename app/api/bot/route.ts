@@ -10,6 +10,19 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+declare global {
+  interface Context {
+    message: {
+      text: string;
+      reply_to_message: {
+        from: {
+          id: number;
+        };
+      };
+    };
+  }
+}
+
 const getLudkaButtons = async () => {
   const { data: row, error } = await supabase
     .from("users")
@@ -47,8 +60,7 @@ const getLudkaButtons = async () => {
 
 bot.on("message", async (ctx) => {
   try {
-    if (!("text" in ctx.message)) return;
-    const msg = ctx.message.text;
+    const msg = (ctx as Context).message.text;
     const senderId = ctx.message.from.id;
     const senderName = `${ctx.message.from.first_name ?? ""}${
       ctx.message.from.first_name && ctx.message.from.last_name ? " " : ""
@@ -115,10 +127,9 @@ bot.on("message", async (ctx) => {
       }
     }
 
-    ctx.reply(JSON.stringify(ctx.message.reply_to_message));
-    ctx.reply("a");
     if (
       row.ludka.isActive &&
+      "reply_to_message" in ctx.message &&
       ctx.message.reply_to_message?.from?.id === 777000 &&
       "dice" in ctx.message
     ) {
@@ -130,7 +141,6 @@ bot.on("message", async (ctx) => {
           : row.ludka.neededComb === "🍇"
           ? 22
           : 1;
-      ctx.reply(`${neededValue}, ${(ctx.message.dice as any).value}`);
       if ((ctx.message.dice as any).value === neededValue) {
         ctx.reply("✅ У нас есть победитель!", {
           reply_parameters: {
