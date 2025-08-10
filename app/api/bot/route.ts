@@ -184,7 +184,7 @@ bot.on("message", async (ctx) => {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
             row.ludka.requiredTimes -
-            (userProgress.times ?? 0) +
+            (userProgress.times ?? 0) -
             1
           } раз!`,
           {
