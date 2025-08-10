@@ -87,6 +87,7 @@ bot.on("message", async (ctx) => {
           })
           .eq("tgId", 1);
         return;
+
       case "/stop_ludka":
       case "/stop_ludka@StarzHubBot":
         ctx.reply("❌ Лудка успешно остановлена!", {
@@ -124,6 +125,25 @@ bot.on("message", async (ctx) => {
           parse_mode: "HTML",
         }
       );
+      return;
+  
+    case "/ludka":
+    case "/ludka@StarzHubBot":
+    case "/stop_ludka":
+    case "/stop_ludka@StarzHubBot":
+      ctx.reply(
+        "❌ Вы не можете использовать эту команду, так как не являетесь администратором бота!",
+        {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        }
+      );
+      return;
+
+    default:
+      ctx.reply(`${msg}`);
+      return;
   }
 
   if (msg.startsWith("/top_up ")) {
