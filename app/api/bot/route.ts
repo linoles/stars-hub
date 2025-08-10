@@ -373,7 +373,7 @@ bot.on("message", async (ctx) => {
         return;
     }
 
-    if (msg.startsWith("/top_up ")) {
+    if (msg && msg.startsWith("/top_up ")) {
       try {
         const amount = parseInt(msg.slice("/top_up ".length));
         if (isNaN(amount)) {
