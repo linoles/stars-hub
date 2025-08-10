@@ -127,8 +127,9 @@ bot.on("message", async (ctx) => {
       }
     }
 
+    const userProgress = row.ludka.doneUsers[senderId] || { lastWins: 0, times: 0 };
     let extraCheck =
-      (await (row.ludka.doneUsers[senderId].lastWins ?? 0)) + 1 ===
+      (await (userProgress.lastWins ?? 0)) + 1 ===
       row.ludka.requiredRow;
     const neededValue =
       row.ludka.neededComb === "7️⃣"
@@ -148,7 +149,7 @@ bot.on("message", async (ctx) => {
     ) {
       if (
         row.ludka.requiredTimes ==
-          (row.ludka.doneUsers[senderId].times ?? 0) + 1 &&
+          (userProgress.times ?? 0) + 1 &&
         extraCheck
       ) {
         ctx.reply("✅ У нас есть победитель!", {
@@ -176,12 +177,12 @@ bot.on("message", async (ctx) => {
         }
       } else if (
         row.ludka.requiredTimes !=
-        (row.ludka.doneUsers[senderId].times ?? 0) + 1
+        (userProgress.times ?? 0) + 1
       ) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
             row.ludka.requiredTimes -
-            (row.ludka.doneUsers[senderId].times ?? 0) +
+            (userProgress.times ?? 0) +
             1
           } раз!`,
           {
@@ -194,8 +195,8 @@ bot.on("message", async (ctx) => {
           .from("users")
           .update({
             "ludka.doneUsers.$[user]": {
-              lastWins: (row.ludka.doneUsers[senderId].lastWins ?? 0) + 1,
-              times: (row.ludka.doneUsers[senderId].times ?? 0) + 1,
+              lastWins: (userProgress.lastWins ?? 0) + 1,
+              times: (userProgress.times ?? 0) + 1,
             },
           })
           .eq("tgId", 1)
@@ -206,7 +207,7 @@ bot.on("message", async (ctx) => {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
             row.ludka.requiredRow -
-            (row.ludka.doneUsers[senderId].lastWins ?? 0)
+            (userProgress.lastWins ?? 0)
           } раз следующей попыткой!`,
           {
             reply_parameters: {
@@ -243,7 +244,7 @@ bot.on("message", async (ctx) => {
     ) {
       if (
         row.ludka.requiredTimes ==
-          (row.ludka.doneUsers[senderId].times ?? 0) + 1 &&
+          (userProgress.times ?? 0) + 1 &&
         extraCheck
       ) {
         ctx.reply("✅ У нас есть победитель!\n🏆 Ещё победителей может быть: " + (row.ludka.winners === 1000 ? "∞" : row.ludka.winners - row.ludka.currentWinners.length - 1), {
@@ -261,12 +262,12 @@ bot.on("message", async (ctx) => {
         }
       } else if (
         row.ludka.requiredTimes !=
-        (row.ludka.doneUsers[senderId].times ?? 0) + 1
+        (userProgress.times ?? 0) + 1
       ) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
             row.ludka.requiredTimes -
-            (row.ludka.doneUsers[senderId].times ?? 0) +
+            (userProgress.times ?? 0) +
             1
           } раз!`,
           {
@@ -279,8 +280,8 @@ bot.on("message", async (ctx) => {
           .from("users")
           .update({
             "ludka.doneUsers.$[user]": {
-              lastWins: (row.ludka.doneUsers[senderId].lastWins ?? 0) + 1,
-              times: (row.ludka.doneUsers[senderId].times ?? 0) + 1,
+              lastWins: (userProgress.lastWins ?? 0) + 1,
+              times: (userProgress.times ?? 0) + 1,
             },
           })
           .eq("tgId", 1)
@@ -291,7 +292,7 @@ bot.on("message", async (ctx) => {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
             row.ludka.requiredRow -
-            (row.ludka.doneUsers[senderId].lastWins ?? 0)
+            (userProgress.lastWins ?? 0)
           } раз следующей попыткой!`,
           {
             reply_parameters: {
@@ -324,7 +325,7 @@ bot.on("message", async (ctx) => {
       ctx.message.reply_to_message?.from?.id === 777000 &&
       "dice" in ctx.message &&
       (ctx.message.dice as any).value !== neededValue &&
-      row.ludka.doneUsers[senderId].lastWins > 0
+      userProgress.lastWins > 0
     ) {
       ctx.reply(
         "❌ Ваш стрик приостановился!", {
