@@ -19,6 +19,7 @@ export interface User {
   friends: number;
 }
 
+
 export default function ClientComponent({ initialUsers }: { initialUsers: User[] }) {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
