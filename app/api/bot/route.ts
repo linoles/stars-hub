@@ -64,7 +64,7 @@ bot.on("message", async (ctx) => {
       case "/ludka":
       case "/ludka@StarzHubBot":
         ctx.reply(
-          "✅ Лудка успешно запущена!\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\т<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>",
+          "✅ Лудка успешно запущена!\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>",
           {
             reply_markup: (await getLudkaButtons()).reply_markup,
             parse_mode: "HTML",
@@ -78,6 +78,32 @@ bot.on("message", async (ctx) => {
           .update({
             ludka: {
               isActive: true,
+              winners: row.ludka.winners,
+              doneUsers: row.ludka.doneUsers,
+              currentWinners: row.ludka.currentWinners,
+              requiredTimes: row.ludka.requiredTimes,
+              requiredRow: row.ludka.requiredRow,
+            },
+          })
+          .eq("tgId", 1);
+        return;
+      case "/stop_ludka":
+      case "/stop_ludka@StarzHubBot":
+        ctx.reply("❌ Лудка успешно остановлена!", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        await supabase
+          .from("users")
+          .update({
+            ludka: {
+              isActive: false,
+              winners: row.ludka.winners,
+              doneUsers: row.ludka.doneUsers,
+              currentWinners: row.ludka.currentWinners,
+              requiredTimes: row.ludka.requiredTimes,
+              requiredRow: row.ludka.requiredRow,
             },
           })
           .eq("tgId", 1);
