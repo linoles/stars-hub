@@ -114,7 +114,7 @@ bot.on("message", async (ctx) => {
     }
   }
 
-  console.info(JSON.stringify(ctx.message.reply_to_message));
+  ctx.reply(JSON.stringify(ctx.message.reply_to_message));
   if (
     row.ludka.isActive &&
     ctx.message.reply_to_message?.from?.id === 777000 &&
@@ -128,7 +128,7 @@ bot.on("message", async (ctx) => {
         : row.ludka.neededComb === "🍇"
         ? 22
         : 1;
-    console.info(`${neededValue}, ${(ctx.message.dice as any).value}`);
+    ctx.reply(`${neededValue}, ${(ctx.message.dice as any).value}`);
     if ((ctx.message.dice as any).value === neededValue) {
       ctx.reply("✅ У нас есть победитель!", {
         reply_parameters: {
