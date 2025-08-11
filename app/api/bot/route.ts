@@ -127,11 +127,11 @@ bot.on("message", async (ctx) => {
       }
     }
 
-    if (!row.ludka.doneUsers[senderId]) {
-      row.ludka.doneUsers[senderId] = { lastWins: 0, times: 0 };
+    if (!row.ludka.doneUsers[`${senderId}`]) {
+      row.ludka.doneUsers[`${senderId}`] = { lastWins: 0, times: 0 };
     }
     await supabase.from("users").update(row).eq("tgId", 1);
-    const userProgress = row.ludka.doneUsers[senderId] || {
+    const userProgress = row.ludka.doneUsers[`${senderId}`] || {
       lastWins: 0,
       times: 0,
     };
@@ -256,19 +256,19 @@ bot.on("message", async (ctx) => {
             },
           }
         );
-        if (row.ludka.currentWinners.length + 1 < row.ludka.winners) {
-          await supabase
-            .from("users")
-            .update({
-              "ludka.currentWinners": [...row.ludka.currentWinners, senderId],
-              "ludka.usersDone.$[user]": {
+        await supabase
+          .from("users")
+          .update({
+            "ludka.currentWinners": [...row.ludka.currentWinners, senderId],
+            "ludka.doneUsers": {
+              ...row.ludka.doneUsers,
+              [`${senderId}`]: {
                 lastWins: (userProgress.lastWins ?? 0) + 1,
                 times: (userProgress.times ?? 0) + 1,
-              }
-            })
-            .eq("tgId", 1)
-            .match({ "ludka.usersDone.user": `${senderId}` });
-        }
+              },
+            },
+          })
+          .eq("tgId", 1);
       } else if (row.ludka.requiredTimes != (userProgress.times ?? 0) + 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
@@ -283,13 +283,15 @@ bot.on("message", async (ctx) => {
         await supabase
           .from("users")
           .update({
-            "ludka.doneUsers.$[user]": {
-              lastWins: (userProgress.lastWins ?? 0) + 1,
-              times: (userProgress.times ?? 0) + 1,
+            "ludka.doneUsers": {
+              ...row.ludka.doneUsers,
+              [`${senderId}`]: {
+                lastWins: (userProgress.lastWins ?? 0) + 1,
+                times: (userProgress.times ?? 0) + 1,
+              },
             },
           })
-          .eq("tgId", 1)
-          .match({ "ludka.doneUsers.user": senderId });
+          .eq("tgId", 1);
       } else if (!extraCheck) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
