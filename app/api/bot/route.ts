@@ -73,10 +73,13 @@ bot.action(/^\/ludka\s+(7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
   }
   row.ludka.neededComb = ctx.match[1];
   await supabase.from("users").update(row).eq("tgId", 1);
-  ctx.answerCbQuery(`✅ Цель лудки успешно обновлена! Теперь она будет: ${ctx.match[1]}${ctx.match[1]}${ctx.match[1]}`, {
-    show_alert: true,
-    cache_time: 0,
-  });
+  ctx.answerCbQuery(
+    `✅ Цель лудки успешно обновлена! Теперь она будет: ${ctx.match[1]}${ctx.match[1]}${ctx.match[1]}`,
+    {
+      show_alert: true,
+      cache_time: 0,
+    }
+  );
   return;
 });
 
@@ -108,10 +111,11 @@ bot.on("message", async (ctx) => {
               },
             }
           );
-          ctx.replyWithSticker("CAACAgIAAxkBAAEPBiBohVdxINYqfccrgJC_D8gtaQMCSAACqhgAAg9lCEoGzNzn0P2-0zYE", {
+          ctx.replyWithDice({
+            emoji: "🎰",
             reply_parameters: {
-              message_id: ctx.message.message_id,
-            },
+              message_id: ctx.message?.message_id,
+            }
           });
           await supabase
             .from("users")
@@ -169,7 +173,8 @@ bot.on("message", async (ctx) => {
     }
     await supabase.from("users").update(row).eq("tgId", 1);
     let extraCheck =
-      (await row.ludka.doneUsers[`${senderId}`].lastWins) + 1 >= row.ludka.requiredRow;
+      (await row.ludka.doneUsers[`${senderId}`].lastWins) + 1 >=
+      row.ludka.requiredRow;
     const neededValue =
       row.ludka.neededComb === "7️⃣"
         ? 64
@@ -187,7 +192,8 @@ bot.on("message", async (ctx) => {
       row.ludka.winners === row.ludka.currentWinners.length + 1
     ) {
       if (
-        row.ludka.requiredTimes == row.ludka.doneUsers[`${senderId}`].times + 1 &&
+        row.ludka.requiredTimes ==
+          row.ludka.doneUsers[`${senderId}`].times + 1 &&
         extraCheck
       ) {
         ctx.reply("✅ У нас есть победитель!", {
@@ -214,10 +220,15 @@ bot.on("message", async (ctx) => {
             ludka: await row.ludka,
           })
           .eq("tgId", 1);
-      } else if (row.ludka.requiredTimes != row.ludka.doneUsers[`${senderId}`].times + 1) {
+      } else if (
+        row.ludka.requiredTimes !=
+        row.ludka.doneUsers[`${senderId}`].times + 1
+      ) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
-            row.ludka.requiredTimes - row.ludka.doneUsers[`${senderId}`].times - 1
+            row.ludka.requiredTimes -
+            row.ludka.doneUsers[`${senderId}`].times -
+            1
           } раз!`,
           {
             reply_parameters: {
@@ -232,7 +243,7 @@ bot.on("message", async (ctx) => {
         await supabase
           .from("users")
           .update({
-            "ludka": await row.ludka,
+            ludka: await row.ludka,
           })
           .eq("tgId", 1);
       } else if (!extraCheck && row.ludka.requiredRow > 1) {
@@ -284,7 +295,8 @@ bot.on("message", async (ctx) => {
       row.ludka.winners !== row.ludka.currentWinners.length + 1
     ) {
       if (
-        row.ludka.requiredTimes == row.ludka.doneUsers[`${senderId}`].times + 1 &&
+        row.ludka.requiredTimes ==
+          row.ludka.doneUsers[`${senderId}`].times + 1 &&
         extraCheck
       ) {
         ctx.reply(
@@ -314,10 +326,15 @@ bot.on("message", async (ctx) => {
             },
           })
           .eq("tgId", 1);
-      } else if (row.ludka.requiredTimes != row.ludka.doneUsers[`${senderId}`].times + 1) {
+      } else if (
+        row.ludka.requiredTimes !=
+        row.ludka.doneUsers[`${senderId}`].times + 1
+      ) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
-            row.ludka.requiredTimes - row.ludka.doneUsers[`${senderId}`].times + 1
+            row.ludka.requiredTimes -
+            row.ludka.doneUsers[`${senderId}`].times +
+            1
           } раз!`,
           {
             reply_parameters: {
@@ -328,11 +345,11 @@ bot.on("message", async (ctx) => {
         row.ludka.doneUsers[`${senderId}`] = {
           lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
           times: row.ludka.doneUsers[`${senderId}`].times + 1,
-        }
+        };
         await supabase
           .from("users")
           .update({
-            "ludka": await row.ludka
+            ludka: await row.ludka,
           })
           .eq("tgId", 1);
       } else if (!extraCheck && row.ludka.requiredRow > 1) {
@@ -349,11 +366,11 @@ bot.on("message", async (ctx) => {
         row.ludka.doneUsers[`${senderId}`] = {
           lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
           times: row.ludka.doneUsers[`${senderId}`].times + 1,
-        }
+        };
         await supabase
           .from("users")
           .update({
-            "ludka": await row.ludka
+            ludka: await row.ludka,
           })
           .eq("tgId", 1);
       }
@@ -393,11 +410,11 @@ bot.on("message", async (ctx) => {
       row.ludka.doneUsers[`${senderId}`] = {
         times: row.ludka.doneUsers[`${senderId}`],
         lastWins: 0,
-      }
+      };
       await supabase
         .from("users")
         .update({
-          "ludka": row.ludka
+          ludka: row.ludka,
         })
         .eq("tgId", 1);
     }
