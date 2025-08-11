@@ -257,7 +257,7 @@ bot.on("message", async (ctx) => {
           }
         );
         if (row.ludka.currentWinners.length + 1 >= row.ludka.winners) {
-          await supabase
+          const { data, error } = await supabase
             .from("users")
             .update({
               "ludka.currentWinners": [...row.ludka.currentWinners, senderId],
@@ -266,7 +266,13 @@ bot.on("message", async (ctx) => {
                 times: (userProgress.times ?? 0) + 1,
               }
             })
-            .eq("tgId", 1);
+            .eq("tgId", 1)
+            .select();
+          if (error) {
+            ctx.reply("ERROR " + error);
+          } else {
+            ctx.reply("DATA " + data);
+          }
         }
       } else if (row.ludka.requiredTimes != (userProgress.times ?? 0) + 1) {
         ctx.reply(
