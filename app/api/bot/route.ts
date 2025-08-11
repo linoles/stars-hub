@@ -85,7 +85,7 @@ bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
   return;
 });
 
-bot.action(/^show(?:Winners|RequiredTimes|RequiredRow)$/, async (ctx) => {
+bot.action(/^show(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
   const { data: row, error } = await supabase
     .from("users")
     .select("*")
@@ -98,7 +98,7 @@ bot.action(/^show(?:Winners|RequiredTimes|RequiredRow)$/, async (ctx) => {
     });
     return;
   }
-  ctx.answerCbQuery(`⚙ Текущая настройка: ${row.ludka[ctx.match[0].slice(4)]} ${ctx.match[0].slice(4)}`, {
+  ctx.answerCbQuery(`⚙ Текущая настройка: ${row.ludka[ctx.match[0].slice(4)]}`, {
     show_alert: true,
     cache_time: 0,
   });
