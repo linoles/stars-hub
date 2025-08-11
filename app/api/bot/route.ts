@@ -32,10 +32,10 @@ const getLudkaButtons = async () => {
 
   return Markup.inlineKeyboard([
     [
-      Markup.button.callback("7️⃣", "/ludka 7️⃣"),
-      Markup.button.callback("🍋", "/ludka 🍋"),
-      Markup.button.callback("🍇", "/ludka 🍇"),
-      Markup.button.callback("BAR", "/ludka BAR"),
+      Markup.button.callback("7️⃣", "ludka 7️⃣"),
+      Markup.button.callback("🍋", "ludka 🍋"),
+      Markup.button.callback("🍇", "ludka 🍇"),
+      Markup.button.callback("BAR", "ludka BAR"),
     ],
     [
       Markup.button.callback("➖", "minusWinner"),
@@ -57,6 +57,17 @@ const getLudkaButtons = async () => {
     ],
   ]);
 };
+
+bot.action(/^\/ludka (7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  row.ludka.neededComb = ctx.match[1];
+  await supabase.from("users").update(row).eq("tgId", 1);
+  ctx.answerCbQuery(`✅ Цель лудки успешно обновлена! Теперь она будет: ${ctx.match[1]}${ctx.match[1]}${ctx.match[1]}`);
+});
 
 bot.on("message", async (ctx) => {
   try {
@@ -86,6 +97,14 @@ bot.on("message", async (ctx) => {
               },
             }
           );
+          ctx.reply(
+            "🎰",
+            {
+              reply_parameters: {
+                message_id: ctx.message.message_id,
+              },
+            }
+          )
           await supabase
             .from("users")
             .update({
