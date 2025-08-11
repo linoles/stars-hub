@@ -183,26 +183,8 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     } else {
       row.ludka["winners"] -= 1;
     }
-    ctx.answerCbQuery(
-      `✅ Настройка успешно обновлена! Теперь она будет: ${await row.ludka[
-        ctx.match[0].slice(4)
-      ]}`,
-      {
-        show_alert: true,
-        cache_time: 0,
-      }
-    );
   } else {
     row.ludka[ctx.match[0].slice(4)] -= 1;
-    ctx.answerCbQuery(
-      `✅ Настройка успешно обновлена! Теперь она будет: ${await row.ludka[
-        ctx.match[0].slice(4)
-      ]}`,
-      {
-        show_alert: true,
-        cache_time: 0,
-      }
-    );
   }
   await supabase
     .from("users")
@@ -210,6 +192,13 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
       ludka: row.ludka,
     })
     .eq("tgId", 1);
+  ctx.answerCbQuery(
+    `✅ Настройка успешно обновлена! Теперь она будет: ${row.ludka[ctx.match[0].slice(4)]}`,
+    {
+      show_alert: true,
+      cache_time: 0,
+    }
+  );
   await ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
   return;
 });
