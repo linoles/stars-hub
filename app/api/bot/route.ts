@@ -146,7 +146,7 @@ bot.on("message", async (ctx) => {
       times: 0,
     };
     let extraCheck =
-      (await userProgress.lastWins) + 1 === row.ludka.requiredRow && row.ludka.requiredRow > 1;
+      (await userProgress.lastWins) + 1 >= row.ludka.requiredRow;
     ctx.reply(`${extraCheck} ${userProgress.lastWins + 1} ${row.ludka.requiredRow}`);
     const neededValue =
       row.ludka.neededComb === "7️⃣"
@@ -210,10 +210,10 @@ bot.on("message", async (ctx) => {
         await supabase
           .from("users")
           .update({
-            ludka: await row.ludka,
+            "ludka": await row.ludka,
           })
           .eq("tgId", 1);
-      } else if (!extraCheck && row.ludka.requiredRow != userProgress.lastWins + 1) {
+      } else if (!extraCheck && row.ludka.requiredRow > 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
             row.ludka.requiredRow - (userProgress.lastWins ?? 0)
@@ -313,7 +313,7 @@ bot.on("message", async (ctx) => {
             "ludka": await row.ludka
           })
           .eq("tgId", 1);
-      } else if (!extraCheck && row.ludka.requiredRow != userProgress.lastWins + 1) {
+      } else if (!extraCheck && row.ludka.requiredRow > 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
             row.ludka.requiredRow - (userProgress.lastWins ?? 0)
@@ -375,12 +375,9 @@ bot.on("message", async (ctx) => {
       await supabase
         .from("users")
         .update({
-          "ludka.doneUsers.$[user]": {
-            lastWins: 0,
-          },
+          "ludka": row.ludka
         })
-        .eq("tgId", 1)
-        .match({ "ludka.doneUsers.user": senderId });
+        .eq("tgId", 1);
     }
 
     switch (msg) {
