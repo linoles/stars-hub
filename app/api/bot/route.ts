@@ -209,7 +209,7 @@ bot.on("message", async (ctx) => {
         await supabase
           .from("users")
           .update({
-            ludka: row.ludka,
+            ludka: await row.ludka,
           })
           .eq("tgId", 1);
       } else if (!extraCheck) {
@@ -230,7 +230,7 @@ bot.on("message", async (ctx) => {
         await supabase
           .from("users")
           .update({
-            ludka: row.ludka,
+            ludka: await row.ludka,
           })
           .eq("tgId", 1);
       }
@@ -309,7 +309,7 @@ bot.on("message", async (ctx) => {
         await supabase
           .from("users")
           .update({
-            "ludka": row.ludka
+            "ludka": await row.ludka
           })
           .eq("tgId", 1);
       } else if (!extraCheck) {
@@ -323,6 +323,16 @@ bot.on("message", async (ctx) => {
             },
           }
         );
+        row.ludka.doneUsers[`${senderId}`] = {
+          lastWins: (userProgress.lastWins ?? 0) + 1,
+          times: (userProgress.times ?? 0) + 1,
+        }
+        await supabase
+          .from("users")
+          .update({
+            "ludka": await row.ludka
+          })
+          .eq("tgId", 1);
       }
       ctx.react("🎉", true);
       const stickers = [
