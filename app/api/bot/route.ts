@@ -38,17 +38,17 @@ const getLudkaButtons = async () => {
       Markup.button.callback("BAR", "ludka BAR"),
     ],
     [
-      Markup.button.callback("➖", "minuswinner"),
+      Markup.button.callback("➖", "minuswinners"),
       Markup.button.callback(`${row.ludka.winners} 🏆`, "showwinners"),
-      Markup.button.callback("➕", "pluswinner"),
+      Markup.button.callback("➕", "pluswinners"),
     ],
     [
-      Markup.button.callback("➖", "minusrequiredTime"),
+      Markup.button.callback("➖", "minusrequiredTimes"),
       Markup.button.callback(
         `${row.ludka.requiredTimes} 🔢`,
         "showrequiredTimes"
       ),
-      Markup.button.callback("➕", "plusrequiredTime"),
+      Markup.button.callback("➕", "plusrequiredTimes"),
     ],
     [
       Markup.button.callback("➖", "minusrequiredRow"),
@@ -125,6 +125,7 @@ bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     show_alert: true,
     cache_time: 0,
   });
+  await ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
   return;
 })
 
