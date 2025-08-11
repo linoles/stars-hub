@@ -140,7 +140,6 @@ bot.on("message", async (ctx) => {
     if (!row.ludka.doneUsers[`${senderId}`]) {
       row.ludka.doneUsers[`${senderId}`] = { lastWins: 0, times: 0 };
     }
-    ctx.reply(JSON.stringify(row.ludka.doneUsers[`${senderId}`]))
     await supabase.from("users").update(row).eq("tgId", 1);
     let extraCheck =
       (await row.ludka.doneUsers[`${senderId}`].lastWins) + 1 >= row.ludka.requiredRow;
