@@ -266,7 +266,8 @@ bot.on("message", async (ctx) => {
                 times: (userProgress.times ?? 0) + 1,
               }
             })
-            .eq("tgId", 1);
+            .eq("tgId", 1)
+            .match({ "ludka.usersDone.user": `${senderId}` });
         }
       } else if (row.ludka.requiredTimes != (userProgress.times ?? 0) + 1) {
         ctx.reply(
