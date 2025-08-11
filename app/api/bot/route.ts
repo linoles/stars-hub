@@ -109,6 +109,16 @@ bot.on("message", async (ctx) => {
               message_id: ctx.message.message_id,
             },
           });
+          const currentWinners = row.ludka.currentWinners;
+          let finalText = `🏆 Лудка закончена! Победители:\n`;
+          await Promise.all(
+            currentWinners.map(async (id: any) => {
+              finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
+            })
+          );
+          bot.telegram.sendMessage(7441988500, finalText, {
+            parse_mode: "HTML",
+          }); /* !! */
           await supabase
             .from("users")
             .update({
@@ -172,16 +182,15 @@ bot.on("message", async (ctx) => {
         bot.telegram.sendMessage(7441988500, finalText, {
           parse_mode: "HTML",
         }); /* !! */
-        if (row.ludka.currentWinners.length + 1 >= row.ludka.winners) {
-          await supabase
-            .from("users")
-            .update({
-              "ludka.isActive": false,
-              "ludka.doneUsers": {},
-              "ludka.currentWinners": [],
-            })
-            .eq("tgId", 1);
-        }
+        row.ludka.isActive = false;
+        row.ludka.doneUsers = {};
+        row.ludka.currentWinners = [];
+        await supabase
+          .from("users")
+          .update({
+            ludka: row.ludka,
+          })
+          .eq("tgId", 1);
       } else if (row.ludka.requiredTimes != (userProgress.times ?? 0) + 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
@@ -193,16 +202,16 @@ bot.on("message", async (ctx) => {
             },
           }
         );
+        row.ludka.doneUsers[`${senderId}`] = {
+          lastWins: (userProgress.lastWins ?? 0) + 1,
+          times: (userProgress.times ?? 0) + 1,
+        };
         await supabase
           .from("users")
           .update({
-            "ludka.doneUsers.$[user]": {
-              lastWins: (userProgress.lastWins ?? 0) + 1,
-              times: (userProgress.times ?? 0) + 1,
-            },
+            ludka: row.ludka,
           })
-          .eq("tgId", 1)
-          .match({ "ludka.doneUsers.user": senderId });
+          .eq("tgId", 1);
       } else if (!extraCheck) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
@@ -214,6 +223,16 @@ bot.on("message", async (ctx) => {
             },
           }
         );
+        row.ludka.doneUsers[`${senderId}`] = {
+          lastWins: (userProgress.lastWins ?? 0) + 1,
+          times: (userProgress.times ?? 0) + 1,
+        };
+        await supabase
+          .from("users")
+          .update({
+            ludka: row.ludka,
+          })
+          .eq("tgId", 1);
       }
       ctx.react("🎉", true);
       const stickers = [
@@ -283,16 +302,14 @@ bot.on("message", async (ctx) => {
             },
           }
         );
+        row.ludka.doneUsers[`${senderId}`] = {
+          lastWins: (userProgress.lastWins ?? 0) + 1,
+          times: (userProgress.times ?? 0) + 1,
+        }
         await supabase
           .from("users")
           .update({
-            "ludka.doneUsers": {
-              ...row.ludka.doneUsers,
-              [`${senderId}`]: {
-                lastWins: (userProgress.lastWins ?? 0) + 1,
-                times: (userProgress.times ?? 0) + 1,
-              },
-            },
+            "ludka": row.ludka
           })
           .eq("tgId", 1);
       } else if (!extraCheck) {
@@ -331,13 +348,18 @@ bot.on("message", async (ctx) => {
       ctx.message.reply_to_message?.from?.id === 777000 &&
       "dice" in ctx.message &&
       (ctx.message.dice as any).value !== neededValue &&
-      userProgress.lastWins > 0
+      userProgress.lastWins > 0 &&
+      row.ludka.requiredRow > 1
     ) {
       ctx.reply("❌ Ваш стрик приостановился!", {
         reply_parameters: {
           message_id: ctx.message.message_id,
         },
       });
+      row.ludka.doneUsers[`${senderId}`] = {
+        times: (row.ludka.doneUsers[`${senderId}`] ?? 0),
+        lastWins: 0,
+      }
       await supabase
         .from("users")
         .update({
