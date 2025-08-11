@@ -71,10 +71,12 @@ bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
     });
     return;
   }
-  row.ludka.neededComb = ctx.match[0];
-  await supabase.from("users").update(row).eq("tgId", 1);
+  row.ludka.neededComb = ctx.match[1];
+  await supabase.from("users").update({
+    "ludka": row.ludka
+  }).eq("tgId", 1);
   ctx.answerCbQuery(
-    `✅ Цель лудки успешно обновлена! Теперь она будет: ${ctx.match[0]}${ctx.match[0]}${ctx.match[0]}`,
+    `✅ Цель лудки успешно обновлена! Теперь она будет: ${ctx.match[1]}${ctx.match[1]}${ctx.match[1]}`,
     {
       show_alert: true,
       cache_time: 0,
