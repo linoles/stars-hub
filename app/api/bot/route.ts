@@ -188,7 +188,7 @@ bot.on("message", async (ctx) => {
         await supabase
           .from("users")
           .update({
-            ludka: row.ludka,
+            ludka: await row.ludka,
           })
           .eq("tgId", 1);
       } else if (row.ludka.requiredTimes != (userProgress.times ?? 0) + 1) {
