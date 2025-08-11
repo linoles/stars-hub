@@ -85,6 +85,25 @@ bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
   return;
 });
 
+bot.action(/^show(?:Winners|RequiredTimes|RequiredRow)$/, async (ctx) => {
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  if (error) {
+    ctx.answerCbQuery("❌ Ошибка показа настройки", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  ctx.answerCbQuery(`⚙ Текущая настройка: ${row.ludka[ctx.match[0].split(" ")[1]]}`, {
+    show_alert: true,
+    cache_time: 0,
+  });
+})
+
 bot.on("message", async (ctx) => {
   try {
     const msg = (ctx as Context).message.text;
