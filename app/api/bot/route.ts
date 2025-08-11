@@ -104,6 +104,30 @@ bot.action(/^show(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
   });
 })
 
+bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  if (error) {
+    ctx.answerCbQuery("❌ Ошибка обновления настройки", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  row.ludka[ctx.match[0].slice(4)] += 1;
+  await supabase.from("users").update({
+    "ludka": row.ludka
+  }).eq("tgId", 1);
+  ctx.answerCbQuery(`✅ Настройка успешно обновлена! Теперь она будет: ${row.ludka[ctx.match[0].slice(4)]}`, {
+    show_alert: true,
+    cache_time: 0,
+  });
+  return;
+})
+
 bot.on("message", async (ctx) => {
   try {
     const msg = (ctx as Context).message.text;
