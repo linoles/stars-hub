@@ -38,22 +38,22 @@ const getLudkaButtons = async () => {
       Markup.button.callback("BAR", "ludka BAR"),
     ],
     [
-      Markup.button.callback("➖", "minusWinner"),
-      Markup.button.callback(`${row.ludka.winners} 🏆`, "showWinners"),
-      Markup.button.callback("➕", "plusWinner"),
+      Markup.button.callback("➖", "minuswinner"),
+      Markup.button.callback(`${row.ludka.winners} 🏆`, "showwinners"),
+      Markup.button.callback("➕", "pluswinner"),
     ],
     [
-      Markup.button.callback("➖", "minusRequiredTime"),
+      Markup.button.callback("➖", "minusrequiredTime"),
       Markup.button.callback(
         `${row.ludka.requiredTimes} 🔢`,
-        "showRequiredTimes"
+        "showrequiredTimes"
       ),
-      Markup.button.callback("➕", "plusRequiredTime"),
+      Markup.button.callback("➕", "plusrequiredTime"),
     ],
     [
-      Markup.button.callback("➖", "minusRequiredRow"),
-      Markup.button.callback(`${row.ludka.requiredRow} 💯`, "showRequiredRow"),
-      Markup.button.callback("➕", "plusRequiredRow"),
+      Markup.button.callback("➖", "minusrequiredRow"),
+      Markup.button.callback(`${row.ludka.requiredRow} 💯`, "showrequiredRow"),
+      Markup.button.callback("➕", "plusrequiredRow"),
     ],
   ]);
 };
