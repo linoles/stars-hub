@@ -146,7 +146,7 @@ bot.on("message", async (ctx) => {
       times: 0,
     };
     let extraCheck =
-      (await (userProgress.lastWins ?? 0)) + 1 === row.ludka.requiredRow;
+      (await userProgress.lastWins) + 1 === row.ludka.requiredRow;
     const neededValue =
       row.ludka.neededComb === "7️⃣"
         ? 64
@@ -191,7 +191,7 @@ bot.on("message", async (ctx) => {
             ludka: await row.ludka,
           })
           .eq("tgId", 1);
-      } else if (row.ludka.requiredTimes != (userProgress.times ?? 0) + 1) {
+      } else if (row.ludka.requiredTimes != userProgress.times + 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
             row.ludka.requiredTimes - (userProgress.times ?? 0) - 1
@@ -212,7 +212,7 @@ bot.on("message", async (ctx) => {
             ludka: await row.ludka,
           })
           .eq("tgId", 1);
-      } else if (!extraCheck) {
+      } else if (!extraCheck && row.ludka.requiredRow != userProgress.lastWins + 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
             row.ludka.requiredRow - (userProgress.lastWins ?? 0)
@@ -291,7 +291,7 @@ bot.on("message", async (ctx) => {
             },
           })
           .eq("tgId", 1);
-      } else if (row.ludka.requiredTimes != (userProgress.times ?? 0) + 1) {
+      } else if (row.ludka.requiredTimes != userProgress.times + 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
             row.ludka.requiredTimes - (userProgress.times ?? 0) + 1
@@ -312,7 +312,7 @@ bot.on("message", async (ctx) => {
             "ludka": await row.ludka
           })
           .eq("tgId", 1);
-      } else if (!extraCheck) {
+      } else if (!extraCheck && row.ludka.requiredRow != userProgress.lastWins + 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
             row.ludka.requiredRow - (userProgress.lastWins ?? 0)
@@ -358,14 +358,15 @@ bot.on("message", async (ctx) => {
       ctx.message.reply_to_message?.from?.id === 777000 &&
       "dice" in ctx.message &&
       (ctx.message.dice as any).value !== neededValue &&
-      userProgress.lastWins > 0 &&
-      row.ludka.requiredRow > 1
+      userProgress.lastWins > 0
     ) {
-      ctx.reply("❌ Ваш стрик приостановился!", {
-        reply_parameters: {
-          message_id: ctx.message.message_id,
-        },
-      });
+      if (row.ludka.requiredRow > 1) {
+        ctx.reply("❌ Ваш стрик приостановился!", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+      }
       row.ludka.doneUsers[`${senderId}`] = {
         times: (row.ludka.doneUsers[`${senderId}`] ?? 0),
         lastWins: 0,
