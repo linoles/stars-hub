@@ -259,12 +259,15 @@ bot.on("message", async (ctx) => {
         await supabase
           .from("users")
           .update({
-            "ludka.currentWinners": [...row.ludka.currentWinners, senderId],
-            "ludka.doneUsers": {
-              ...row.ludka.doneUsers,
-              [`${senderId}`]: {
-                lastWins: (userProgress.lastWins ?? 0) + 1,
-                times: (userProgress.times ?? 0) + 1,
+            ludka: {
+              ...row.ludka,
+              currentWinners: [...row.ludka.currentWinners, senderId],
+              doneUsers: {
+                ...row.ludka.doneUsers,
+                [`${senderId}`]: {
+                  lastWins: (userProgress.lastWins ?? 0) + 1,
+                  times: (userProgress.times ?? 0) + 1,
+                },
               },
             },
           })
