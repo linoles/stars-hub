@@ -108,14 +108,11 @@ bot.on("message", async (ctx) => {
               },
             }
           );
-          ctx.replyWithSticker(
-            "🎰",
-            {
-              reply_parameters: {
-                message_id: ctx.message.message_id,
-              },
-            }
-          )
+          ctx.replyWithSticker("CAACAgIAAxkBAAEPBiBohVdxINYqfccrgJC_D8gtaQMCSAACqhgAAg9lCEoGzNzn0P2-0zYE", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
           await supabase
             .from("users")
             .update({
