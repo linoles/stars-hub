@@ -62,6 +62,14 @@ const getLudkaButtons = async () => {
 };
 
 bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
   const { data: row, error } = await supabase
     .from("users")
     .select("*")
@@ -92,6 +100,14 @@ bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
 });
 
 bot.action(/^show(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
   const { data: row, error } = await supabase
     .from("users")
     .select("*")
@@ -114,6 +130,14 @@ bot.action(/^show(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
 });
 
 bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
   const { data: row, error } = await supabase
     .from("users")
     .select("*")
@@ -154,6 +178,14 @@ bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
 });
 
 bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
   const { data: row, error } = await supabase
     .from("users")
     .select("*")
