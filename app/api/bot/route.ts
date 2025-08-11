@@ -153,10 +153,12 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     });
     return;
   } else if (ctx.match[0].slice(4) == "winners") {
-    if (row.ludka[ctx.match[0].slice(4)] !== 1000) {
-      row.ludka[ctx.match[0].slice(4)] = 1000;
+    if (row.ludka["winners"] !== 1000 && row.ludka["winners"] == 1) {
+      row.ludka["winners"] = 1000;
+    } else if (row.ludka["winners"] == 1000) {
+      row.ludka["winners"] = 1;
     } else {
-      row.ludka[ctx.match[0].slice(4)] = 1;
+      row.ludka["winners"] -= 1;
     }
   } else {
     row.ludka[ctx.match[0].slice(4)] -= 1;
@@ -164,7 +166,7 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
   await supabase.from("users").update({
     "ludka": row.ludka
   }).eq("tgId", 1);
-  ctx.answerCbQuery(`✅ Настройка успешно обновлена! Теперь она будет: ${row.ludka[ctx.match[0].slice(4)] !== 1000 ? row.ludka[ctx.match[0].slice(4)] : "∞"}`, {
+  ctx.answerCbQuery(`✅ Настройка успешно обновлена! Теперь она будет: ${row.ludka[ctx.match[0].slice(4)]}`, {
     show_alert: true,
     cache_time: 0,
   });
