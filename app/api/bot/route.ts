@@ -98,7 +98,7 @@ bot.action(/^show(?:Winners|RequiredTimes|RequiredRow)$/, async (ctx) => {
     });
     return;
   }
-  ctx.answerCbQuery(`⚙ Текущая настройка: ${row.ludka[ctx.match[0].split("show")[0]]}`, {
+  ctx.answerCbQuery(`⚙ Текущая настройка: ${row.ludka[ctx.match[0].slice(4)]}`, {
     show_alert: true,
     cache_time: 0,
   });
