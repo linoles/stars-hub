@@ -237,6 +237,11 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
 
 bot.on("message", async (ctx) => {
   try {
+    const chats = [-1002608961312, -1002560347854, -1002674341448];
+    if (!chats.includes(ctx.message.chat.id) && ctx.message.chat.id !== ctx.message.from.id) {
+      await bot.telegram.leaveChat(ctx.message.chat.id);
+      return;
+    };
     const msg = (ctx as Context).message.text;
     const senderId = ctx.message.from.id;
     const senderName = `${ctx.message.from.first_name ?? ""}${
