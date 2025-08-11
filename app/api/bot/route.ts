@@ -147,7 +147,6 @@ bot.on("message", async (ctx) => {
     };
     let extraCheck =
       (await userProgress.lastWins) + 1 >= row.ludka.requiredRow;
-    ctx.reply(`${extraCheck} ${userProgress.lastWins + 1} ${row.ludka.requiredRow}`);
     const neededValue =
       row.ludka.neededComb === "7️⃣"
         ? 64
