@@ -186,11 +186,14 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     });
     return;
   }
+
+  // Получаем данные из Supabase
   const { data: row, error } = await supabase
     .from("users")
     .select("*")
     .eq("tgId", 1)
     .single();
+
   if (error) {
     ctx.answerCbQuery("❌ Ошибка обновления настройки", {
       show_alert: true,
@@ -198,41 +201,162 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     });
     return;
   }
-  if (
-    row.ludka[ctx.match[0].slice(4)] <= 1 &&
-    ctx.match[0].slice(4) !== "winners"
-  ) {
+
+  // Извлекаем название настройки (удаляем 'minus' из callback_data)
+  const settingName = ctx.match[0].slice(5); // Было 4, исправлено на 5
+  const currentValue = row.ludka[settingName];
+
+  // Проверяем, что значение - число
+  if (typeof currentValue !== 'number') {
+    ctx.answerCbQuery("❌ Некорректное значение настройки", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+
+  // Обработка разных типов настроек
+  if (settingName !== "winners" && currentValue <= 1) {
     await ctx.answerCbQuery("❌ Данная настройка не может быть меньше 1!", {
       show_alert: true,
       cache_time: 0,
     });
     return;
-  } else if (ctx.match[0].slice(4) == "winners") {
-    if (row.ludka["winners"] !== 1000 && row.ludka["winners"] == 1) {
-      row.ludka["winners"] = 1000;
-    } else if (row.ludka["winners"] == 1000) {
-      row.ludka["winners"] = 1;
-    } else {
-      row.ludka["winners"] -= 1;
-    }
-  } else {
-    row.ludka[ctx.match[0].slice(4)] -= 1;
   }
-  await supabase
+
+  // Создаем копию объекта для обновления
+  const updatedLudka = { ...row.ludka };
+
+  // Логика для winners
+  if (settingName === "winners") {
+    if (currentValue === 1000) {
+      updatedLudka.winners = 1;
+    } else if (currentValue === 1) {
+      updatedLudka.winners = 1000;
+    } else {
+      updatedLudka.winners -= 1;
+    }
+  } 
+  // Логика для других настроек
+  else {
+    updatedLudka[settingName] -= 1;
+  }
+
+  // Обновляем данные в Supabase
+  const { error: updateError } = await supabase
     .from("users")
-    .update({
-      ludka: row.ludka,
-    })
+    .update({ ludka: updatedLudka })
     .eq("tgId", 1);
+
+  if (updateError) {
+    ctx.answerCbQuery("❌ Ошибка при сохранении изменений", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+
+  // Отправляем подтверждение с корректным значением
   ctx.answerCbQuery(
-    `✅ Настройка успешно обновлена! Теперь она будет: ${row.ludka[ctx.match[0].slice(4)]}`,
+    `✅ Настройка успешно обновлена!\nТеперь она будет: ${updatedLudka[settingName]}`,
     {
       show_alert: true,
       cache_time: 0,
     }
   );
+
+  // Обновляем кнопки
   await ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
-  return;
+});bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+
+  // Получаем данные из Supabase
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+
+  if (error) {
+    ctx.answerCbQuery("❌ Ошибка обновления настройки", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+
+  // Извлекаем название настройки (удаляем 'minus' из callback_data)
+  const settingName = ctx.match[0].slice(5); // Было 4, исправлено на 5
+  const currentValue = row.ludka[settingName];
+
+  // Проверяем, что значение - число
+  if (typeof currentValue !== 'number') {
+    ctx.answerCbQuery("❌ Некорректное значение настройки", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+
+  // Обработка разных типов настроек
+  if (settingName !== "winners" && currentValue <= 1) {
+    await ctx.answerCbQuery("❌ Данная настройка не может быть меньше 1!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+
+  // Создаем копию объекта для обновления
+  const updatedLudka = { ...row.ludka };
+
+  // Логика для winners
+  if (settingName === "winners") {
+    if (currentValue === 1000) {
+      updatedLudka.winners = 1;
+    } else if (currentValue === 1) {
+      updatedLudka.winners = 1000;
+    } else {
+      updatedLudka.winners -= 1;
+    }
+  } 
+  // Логика для других настроек
+  else {
+    updatedLudka[settingName] -= 1;
+  }
+
+  // Обновляем данные в Supabase
+  const { error: updateError } = await supabase
+    .from("users")
+    .update({ ludka: updatedLudka })
+    .eq("tgId", 1);
+
+  if (updateError) {
+    ctx.answerCbQuery("❌ Ошибка при сохранении изменений", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+
+  // Отправляем подтверждение с корректным значением
+  ctx.answerCbQuery(
+    `✅ Настройка успешно обновлена!\nТеперь она будет: ${updatedLudka[settingName]}`,
+    {
+      show_alert: true,
+      cache_time: 0,
+    }
+  );
+
+  // Обновляем кнопки
+  await ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
 });
 
 bot.on("message", async (ctx) => {
