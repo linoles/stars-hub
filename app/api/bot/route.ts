@@ -140,6 +140,7 @@ bot.on("message", async (ctx) => {
     if (!row.ludka.doneUsers[`${senderId}`]) {
       row.ludka.doneUsers[`${senderId}`] = { lastWins: 0, times: 0 };
     }
+    ctx.reply(JSON.stringify(row.ludka.doneUsers[`${senderId}`]))
     await supabase.from("users").update(row).eq("tgId", 1);
     let extraCheck =
       (await row.ludka.doneUsers[`${senderId}`].lastWins) + 1 >= row.ludka.requiredRow;
@@ -160,7 +161,7 @@ bot.on("message", async (ctx) => {
       row.ludka.winners === row.ludka.currentWinners.length + 1
     ) {
       if (
-        row.ludka.requiredTimes == (row.ludka.doneUsers[`${senderId}`].times ?? 0) + 1 &&
+        row.ludka.requiredTimes == row.ludka.doneUsers[`${senderId}`].times + 1 &&
         extraCheck
       ) {
         ctx.reply("✅ У нас есть победитель!", {
@@ -199,8 +200,8 @@ bot.on("message", async (ctx) => {
           }
         );
         row.ludka.doneUsers[`${senderId}`] = {
-          lastWins: (row.ludka.doneUsers[`${senderId}`].lastWins ?? 0) + 1,
-          times: (row.ludka.doneUsers[`${senderId}`].times ?? 0) + 1,
+          lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+          times: row.ludka.doneUsers[`${senderId}`].times + 1,
         };
         await supabase
           .from("users")
@@ -211,7 +212,7 @@ bot.on("message", async (ctx) => {
       } else if (!extraCheck && row.ludka.requiredRow > 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
-            row.ludka.requiredRow - (row.ludka.doneUsers[`${senderId}`].lastWins ?? 0)
+            row.ludka.requiredRow - row.ludka.doneUsers[`${senderId}`].lastWins
           } раз следующей попыткой!`,
           {
             reply_parameters: {
@@ -220,8 +221,8 @@ bot.on("message", async (ctx) => {
           }
         );
         row.ludka.doneUsers[`${senderId}`] = {
-          lastWins: (row.ludka.doneUsers[`${senderId}`].lastWins ?? 0) + 1,
-          times: (row.ludka.doneUsers[`${senderId}`].times ?? 0) + 1,
+          lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+          times: row.ludka.doneUsers[`${senderId}`].times + 1,
         };
         await supabase
           .from("users")
@@ -257,7 +258,7 @@ bot.on("message", async (ctx) => {
       row.ludka.winners !== row.ludka.currentWinners.length + 1
     ) {
       if (
-        row.ludka.requiredTimes == (row.ludka.doneUsers[`${senderId}`].times ?? 0) + 1 &&
+        row.ludka.requiredTimes == row.ludka.doneUsers[`${senderId}`].times + 1 &&
         extraCheck
       ) {
         ctx.reply(
@@ -280,8 +281,8 @@ bot.on("message", async (ctx) => {
               doneUsers: {
                 ...row.ludka.doneUsers,
                 [`${senderId}`]: {
-                  lastWins: (row.ludka.doneUsers[`${senderId}`].lastWins ?? 0) + 1,
-                  times: (row.ludka.doneUsers[`${senderId}`].times ?? 0) + 1,
+                  lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+                  times: row.ludka.doneUsers[`${senderId}`].times + 1,
                 },
               },
             },
@@ -299,8 +300,8 @@ bot.on("message", async (ctx) => {
           }
         );
         row.ludka.doneUsers[`${senderId}`] = {
-          lastWins: (row.ludka.doneUsers[`${senderId}`].lastWins ?? 0) + 1,
-          times: (row.ludka.doneUsers[`${senderId}`].times ?? 0) + 1,
+          lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+          times: row.ludka.doneUsers[`${senderId}`].times + 1,
         }
         await supabase
           .from("users")
@@ -311,7 +312,7 @@ bot.on("message", async (ctx) => {
       } else if (!extraCheck && row.ludka.requiredRow > 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
-            row.ludka.requiredRow - (row.ludka.doneUsers[`${senderId}`].lastWins ?? 0)
+            row.ludka.requiredRow - row.ludka.doneUsers[`${senderId}`].lastWins
           } раз следующей попыткой!`,
           {
             reply_parameters: {
@@ -320,8 +321,8 @@ bot.on("message", async (ctx) => {
           }
         );
         row.ludka.doneUsers[`${senderId}`] = {
-          lastWins: (row.ludka.doneUsers[`${senderId}`].lastWins ?? 0) + 1,
-          times: (row.ludka.doneUsers[`${senderId}`].times ?? 0) + 1,
+          lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+          times: row.ludka.doneUsers[`${senderId}`].times + 1,
         }
         await supabase
           .from("users")
@@ -364,7 +365,7 @@ bot.on("message", async (ctx) => {
         });
       }
       row.ludka.doneUsers[`${senderId}`] = {
-        times: (row.ludka.doneUsers[`${senderId}`] ?? 0),
+        times: row.ludka.doneUsers[`${senderId}`],
         lastWins: 0,
       }
       await supabase
