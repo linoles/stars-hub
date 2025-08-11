@@ -39,7 +39,7 @@ const getLudkaButtons = async () => {
     ],
     [
       Markup.button.callback("➖", "minuswinners"),
-      Markup.button.callback(`${row.ludka.winners} 🏆`, "showwinners"),
+      Markup.button.callback(`${row.ludka.winners !== 1000 ? row.ludka.winners : "∞"} 🏆`, "showwinners"),
       Markup.button.callback("➕", "pluswinners"),
     ],
     [
@@ -117,7 +117,11 @@ bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     });
     return;
   }
-  row.ludka[ctx.match[0].slice(4)] += 1;
+  if (ctx.match[0].slice(4) == "winners" && row.ludka[ctx.match[0].slice(4)] == 1000) {
+    row.ludka[ctx.match[0].slice(4)] = 1;
+  } else {
+    row.ludka[ctx.match[0].slice(4)] += 1;
+  }
   await supabase.from("users").update({
     "ludka": row.ludka
   }).eq("tgId", 1);
@@ -127,7 +131,46 @@ bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
   });
   await ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
   return;
-})
+});
+
+bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  if (error) {
+    ctx.answerCbQuery("❌ Ошибка обновления настройки", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  if (row.ludka[ctx.match[0].slice(4)] <= 1 && ctx.match[0].slice(4) !== "winners") {
+    ctx.answerCbQuery("❌ Данная настройка не может быть меньше 1!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  } else if (ctx.match[0].slice(4) == "winners") {
+    if (row.ludka[ctx.match[0].slice(4)] !== 1000) {
+      row.ludka[ctx.match[0].slice(4)] = 1000;
+    } else {
+      row.ludka[ctx.match[0].slice(4)] = 1;
+    }
+  } else {
+    row.ludka[ctx.match[0].slice(4)] -= 1;
+  }
+  await supabase.from("users").update({
+    "ludka": row.ludka
+  }).eq("tgId", 1);
+  ctx.answerCbQuery(`✅ Настройка успешно обновлена! Теперь она будет: ${row.ludka[ctx.match[0].slice(4)] !== 1000 ? row.ludka[ctx.match[0].slice(4)] : "∞"}`, {
+    show_alert: true,
+    cache_time: 0,
+  });
+  await ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
+  return;
+});
 
 bot.on("message", async (ctx) => {
   try {
