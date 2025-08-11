@@ -59,28 +59,34 @@ const getLudkaButtons = async () => {
 };
 
 bot.action(/^\/ludka\s+(7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
-  const { data: row, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("tgId", 1)
-    .single();
-  if (error) {
-    ctx.answerCbQuery("❌ Ошибка обновления цели лудки", {
+  try {
+    const { data: row, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("tgId", 1)
+      .single();
+      
+    if (error || !row) {
+      throw new Error("Error fetching data");
+    }
+    
+    row.ludka.neededComb = ctx.match[1];
+    const { error: updateError } = await supabase.from("users").update(row).eq("tgId", 1);
+    
+    if (updateError) {
+      throw new Error("Error updating data");
+    }
+    
+    await ctx.answerCbQuery(
+      `✅ Цель лудки успешно обновлена! Теперь она будет: ${ctx.match[1]}${ctx.match[1]}${ctx.match[1]}`,
+      { show_alert: true, cache_time: 0 }
+    );
+  } catch (error: any) {
+    await ctx.answerCbQuery(`❌ Ошибка обновления цели лудки ${error.message || JSON.stringify(error)}`, {
       show_alert: true,
       cache_time: 0,
     });
-    return;
   }
-  row.ludka.neededComb = ctx.match[1];
-  await supabase.from("users").update(row).eq("tgId", 1);
-  ctx.answerCbQuery(
-    `✅ Цель лудки успешно обновлена! Теперь она будет: ${ctx.match[1]}${ctx.match[1]}${ctx.match[1]}`,
-    {
-      show_alert: true,
-      cache_time: 0,
-    }
-  );
-  return;
 });
 
 bot.on("message", async (ctx) => {
