@@ -599,7 +599,7 @@ bot.on("message", async (ctx) => {
             })
             .eq("tgId", 1);
         } else if (
-          row.ludka.requiredTimes != (await userData).times + 1 &&
+          row.ludka.requiredTimes < (await userData).times + 1 &&
           row.ludka.requiredRow === 1
         ) {
           const remainingAttempts =
@@ -707,7 +707,7 @@ bot.on("message", async (ctx) => {
 
         const userData = await row.ludka.doneUsers[`${senderId}`];
 
-        if (row.ludka.requiredTimes == (await userData).times + 1 && extraCheck) {
+        if (row.ludka.requiredTimes >= (await userData).times + 1 && extraCheck) {
           const remainingWinners =
             row.ludka.winners === 1000
               ? "∞"
@@ -734,7 +734,7 @@ bot.on("message", async (ctx) => {
             })
             .eq("tgId", 1);
         } else if (
-          row.ludka.requiredTimes != (await userData).times + 1 &&
+          row.ludka.requiredTimes < (await userData).times + 1 &&
           row.ludka.requiredRow === 1
         ) {
           const remainingAttempts =
