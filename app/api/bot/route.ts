@@ -722,20 +722,15 @@ bot.on("message", async (ctx) => {
             }
           );
 
+          row.ludka.currentWinners.push(senderId);
+          row.ludka.doneUsers[`${senderId}`] = {
+            lastWins: (await userData).lastWins + 1,
+            times: (await userData).times + 1,
+          }
           await supabase
             .from("users")
             .update({
-              ludka: {
-                ...row.ludka,
-                currentWinners: [...row.ludka.currentWinners, senderId],
-                doneUsers: {
-                  ...row.ludka.doneUsers,
-                  [`${senderId}`]: {
-                    lastWins: (await userData).lastWins + 1,
-                    times: (await userData).times + 1,
-                  },
-                },
-              },
+              ludka: row.ludka,
             })
             .eq("tgId", 1);
         } else if (
