@@ -705,7 +705,7 @@ bot.on("message", async (ctx) => {
           row.ludka.doneUsers[`${senderId}`] = { lastWins: 0, times: 0 };
         }
 
-        const userData = row.ludka.doneUsers[`${senderId}`];
+        const userData = await row.ludka.doneUsers[`${senderId}`];
 
         if (row.ludka.requiredTimes == (await userData).times + 1 && extraCheck) {
           const remainingWinners =
@@ -724,8 +724,8 @@ bot.on("message", async (ctx) => {
 
           row.ludka.currentWinners.push(senderId);
           row.ludka.doneUsers[`${senderId}`] = {
-            lastWins: (await userData).lastWins + 1,
-            times: (await userData).times + 1,
+            lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+            times: row.ludka.doneUsers[`${senderId}`].times + 1,
           }
           await supabase
             .from("users")
