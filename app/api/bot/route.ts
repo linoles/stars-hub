@@ -485,18 +485,15 @@ bot.on("message", async (ctx) => {
       row.ludka.winners === row.ludka.currentWinners.length + 1
     ) {
       try {
-        // Инициализация doneUsers если не существует
         row.ludka.doneUsers = row.ludka.doneUsers || {};
 
-        // Инициализация данных пользователя если не существует
         if (!row.ludka.doneUsers[`${senderId}`]) {
           row.ludka.doneUsers[`${senderId}`] = { lastWins: 0, times: 0 };
         }
 
         const userData = row.ludka.doneUsers[`${senderId}`];
 
-        if (row.ludka.requiredTimes == userData.times + 1 && extraCheck) {
-          // Условие победы
+        if ((row.ludka.requiredTimes == userData.times + 1 && row.ludka.requiredRow == 1) || (extraCheck && row.ludka.requiredRow > 1)) {
           await ctx.reply("✅ У нас есть победитель!", {
             reply_parameters: {
               message_id: ctx.message.message_id,
@@ -527,7 +524,6 @@ bot.on("message", async (ctx) => {
           row.ludka.requiredTimes != userData.times + 1 &&
           row.ludka.requiredRow === 1
         ) {
-          // Условие частичной победы (requiredRow = 1)
           const remainingAttempts =
             row.ludka.requiredTimes - userData.times - 1;
 
@@ -551,8 +547,10 @@ bot.on("message", async (ctx) => {
               ludka: row.ludka,
             })
             .eq("tgId", 1);
-        } else if (!extraCheck && row.ludka.requiredRow > 1) {
-          // Условие частичной победы (requiredRow > 1)
+        } else if (
+          !extraCheck &&
+          row.ludka.requiredRow > 1
+        ) {
           const remainingAttempts =
             row.ludka.requiredRow - userData.lastWins - 1;
 
@@ -577,15 +575,13 @@ bot.on("message", async (ctx) => {
             })
             .eq("tgId", 1);
         } else {
-          // Если ни одно условие не сработало
-          await ctx.reply("Продолжайте попытки!", {
+          await ctx.reply("Произошла ошибка!", {
             reply_parameters: {
               message_id: ctx.message.message_id,
             },
           });
         }
 
-        // Всегда отправляем реакцию и стикер
         await ctx.react("🎉", true);
 
         const stickers = [
