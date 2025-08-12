@@ -568,7 +568,7 @@ bot.on("message", async (ctx) => {
         const userData = row.ludka.doneUsers[`${senderId}`];
 
         if (
-          (row.ludka.requiredTimes == userData.times + 1 &&
+          (row.ludka.requiredTimes == (await userData).times + 1 &&
             row.ludka.requiredRow == 1) ||
           (extraCheck && row.ludka.requiredRow > 1)
         ) {
@@ -599,11 +599,11 @@ bot.on("message", async (ctx) => {
             })
             .eq("tgId", 1);
         } else if (
-          row.ludka.requiredTimes != userData.times + 1 &&
+          row.ludka.requiredTimes != (await userData).times + 1 &&
           row.ludka.requiredRow === 1
         ) {
           const remainingAttempts =
-            row.ludka.requiredTimes - userData.times - 1;
+            row.ludka.requiredTimes - (await userData).times - 1;
 
           await ctx.reply(
             `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${remainingAttempts} раз!`,
@@ -615,8 +615,8 @@ bot.on("message", async (ctx) => {
           );
 
           row.ludka.doneUsers[`${senderId}`] = {
-            lastWins: userData.lastWins + 1,
-            times: userData.times + 1,
+            lastWins: (await userData).lastWins + 1,
+            times: (await userData).times + 1,
           };
 
           await supabase
@@ -627,7 +627,7 @@ bot.on("message", async (ctx) => {
             .eq("tgId", 1);
         } else if (!extraCheck && row.ludka.requiredRow > 1) {
           const remainingAttempts =
-            row.ludka.requiredRow - userData.lastWins - 1;
+            row.ludka.requiredRow - (await userData).lastWins - 1;
 
           await ctx.reply(
             `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${remainingAttempts} раз следующей попыткой!`,
@@ -639,8 +639,8 @@ bot.on("message", async (ctx) => {
           );
 
           row.ludka.doneUsers[`${senderId}`] = {
-            lastWins: userData.lastWins + 1,
-            times: userData.times + 1,
+            lastWins: (await userData).lastWins + 1,
+            times: (await userData).times + 1,
           };
 
           await supabase
@@ -707,7 +707,7 @@ bot.on("message", async (ctx) => {
 
         const userData = row.ludka.doneUsers[`${senderId}`];
 
-        if (row.ludka.requiredTimes == userData.times + 1 && extraCheck) {
+        if (row.ludka.requiredTimes == (await userData).times + 1 && extraCheck) {
           const remainingWinners =
             row.ludka.winners === 1000
               ? "∞"
@@ -731,19 +731,19 @@ bot.on("message", async (ctx) => {
                 doneUsers: {
                   ...row.ludka.doneUsers,
                   [`${senderId}`]: {
-                    lastWins: userData.lastWins + 1,
-                    times: userData.times + 1,
+                    lastWins: (await userData).lastWins + 1,
+                    times: (await userData).times + 1,
                   },
                 },
               },
             })
             .eq("tgId", 1);
         } else if (
-          row.ludka.requiredTimes != userData.times + 1 &&
+          row.ludka.requiredTimes != (await userData).times + 1 &&
           row.ludka.requiredRow === 1
         ) {
           const remainingAttempts =
-            row.ludka.requiredTimes - userData.times + 1;
+            row.ludka.requiredTimes - (await userData).times + 1;
 
           await ctx.reply(
             `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${remainingAttempts} раз!`,
@@ -755,8 +755,8 @@ bot.on("message", async (ctx) => {
           );
 
           row.ludka.doneUsers[`${senderId}`] = {
-            lastWins: userData.lastWins + 1,
-            times: userData.times + 1,
+            lastWins: (await userData).lastWins + 1,
+            times: (await userData).times + 1,
           };
 
           await supabase
@@ -767,7 +767,7 @@ bot.on("message", async (ctx) => {
             .eq("tgId", 1);
         } else if (!extraCheck && row.ludka.requiredRow > 1) {
           const remainingAttempts =
-            row.ludka.requiredRow - userData.lastWins - 1;
+            row.ludka.requiredRow - (await userData).lastWins - 1;
 
           await ctx.reply(
             `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${remainingAttempts} раз следующей попыткой!`,
@@ -779,8 +779,8 @@ bot.on("message", async (ctx) => {
           );
 
           row.ludka.doneUsers[`${senderId}`] = {
-            lastWins: userData.lastWins + 1,
-            times: userData.times + 1,
+            lastWins: (await userData).lastWins + 1,
+            times: (await userData).times + 1,
           };
 
           await supabase
