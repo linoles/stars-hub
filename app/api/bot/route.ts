@@ -297,7 +297,7 @@ bot.on("message", async (ctx) => {
         case "/ludka":
         case "/ludka@StarzHubBot":
           ctx.reply(
-            `✅ Лудка успешно запущена!\n<blockquote><b>🔗 Текущие настройки:</b>\n<i>Цель:</i> ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb} 🎰\n<i>🎊 Победители:</i> ${row.ludka.winners}\n<i>Надо выбить (раз):</i> ${row.ludka.requiredTimes} 🗝\n<i>Надо выбить (подряд):</i> ${row.ludka.requiredRow}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>`,
+            `✅ Лудка успешно запущена!\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>Цель:</i> ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb} 🎰\n<i>🎊 Победители:</i> ${row.ludka.winners}\n<i>Надо выбить (раз):</i> ${row.ludka.requiredTimes} 🗝\n<i>💪 Надо выбить (подряд):</i> ${row.ludka.requiredRow}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>`,
             {
               reply_markup: (await getLudkaButtons()).reply_markup,
               parse_mode: "HTML",
@@ -345,6 +345,9 @@ bot.on("message", async (ctx) => {
           bot.telegram.sendMessage(7441988500, finalText, {
             parse_mode: "HTML",
           }); /* !! */
+          bot.telegram.sendMessage(6233759034, finalText, {
+            parse_mode: "HTML",
+          });
           await supabase
             .from("users")
             .update({
@@ -406,6 +409,9 @@ bot.on("message", async (ctx) => {
         bot.telegram.sendMessage(7441988500, finalText, {
           parse_mode: "HTML",
         }); /* !! */
+        bot.telegram.sendMessage(6233759034, finalText, {
+          parse_mode: "HTML",
+        });
         row.ludka.isActive = false;
         row.ludka.doneUsers = {};
         row.ludka.currentWinners = [];
