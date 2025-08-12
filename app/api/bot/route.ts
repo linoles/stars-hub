@@ -59,6 +59,7 @@ const getLudkaButtons = async () => {
       Markup.button.callback(`${row.ludka.requiredRow} 💯`, "showrequiredRow"),
       Markup.button.callback("➕", "plusrequiredRow"),
     ],
+    [Markup.button.callback("Остановить лудку 🛑", "stopLudka")],
   ]);
 };
 
@@ -71,7 +72,7 @@ const getLudkaMessage = async () => {
   return `✅ Лудка успешно запущена!\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>Цель:</i> ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb} 🎰\n<i>🎊 Победители:</i> ${row.ludka.winners}\n<i>Надо выбить (раз):</i> ${row.ludka.requiredTimes} 🗝\n<i>💪 Надо выбить (подряд):</i> ${row.ludka.requiredRow}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>`;
 };
 
-const sendResults = async (ctx: any, finalText: string) => {
+const sendResults = async (finalText: string) => {
   bot.telegram.sendMessage(7441988500, finalText, {
     parse_mode: "HTML",
   }); /* !! */
@@ -86,6 +87,45 @@ bot.action("showSettings", async (ctx) => {
     reply_markup: (await getLudkaButtons()).reply_markup,
   });
   ctx.answerCbQuery("✅ Текущие настройки успешно отображены!");
+});
+
+bot.action("stopLudka", async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  row.ludka.isActive = false;
+  row.ludka.doneUsers = {};
+  row.ludka.currentWinners = [];
+  const currentWinners = row.ludka.currentWinners;
+  let finalText = `🏆 Лудка закончена! Победители:\n`;
+  await Promise.all(
+    currentWinners.map(async (id: any) => {
+      finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
+    })
+  );
+  sendResults(finalText);
+  ctx.editMessageText("📛 Лудка закончена!", {
+    parse_mode: "HTML",
+    reply_markup: {
+      inline_keyboard: [
+        [Markup.button.callback("✅ Включить лудку", "startLudka")],
+      ]
+    },
+  });
+  ctx.answerCbQuery("✅ Лудка успешно остановлена!", {
+    show_alert: false,
+    cache_time: 0,
+  });
 });
 
 bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
@@ -364,7 +404,7 @@ bot.on("message", async (ctx) => {
               finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
             })
           );
-          await sendResults(ctx, finalText);
+          await sendResults(finalText);
           await supabase
             .from("users")
             .update({
@@ -423,7 +463,7 @@ bot.on("message", async (ctx) => {
             finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
           })
         );
-        await sendResults(ctx, finalText);
+        await sendResults(finalText);
         row.ludka.isActive = false;
         row.ludka.doneUsers = {};
         row.ludka.currentWinners = [];
