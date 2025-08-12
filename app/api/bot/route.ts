@@ -421,7 +421,9 @@ bot.on("message", async (ctx) => {
       });
       return;
     }
-    ctx.reply(String(ctx.message))
+    if (ctx.message.chat.id !== -1002674341448) {
+      ctx.reply(JSON.stringify(ctx.message));
+    }
     const msg = (ctx as Context).message.text;
     const senderId = ctx.message.from.id;
     const senderName = `${ctx.message.from.first_name ?? ""}${
