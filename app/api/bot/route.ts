@@ -32,6 +32,9 @@ const getLudkaButtons = async () => {
 
   return Markup.inlineKeyboard([
     [
+      Markup.button.callback("Текущие настройки ⚡", "showSettings")
+    ],
+    [
       Markup.button.callback("7️⃣", "ludka 7️⃣"),
       Markup.button.callback("🍋", "ludka 🍋"),
       Markup.button.callback("🍇", "ludka 🍇"),
@@ -70,6 +73,14 @@ const getLudkaMessage = async () => {
   return `✅ Лудка успешно запущена!\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>Цель:</i> ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb} 🎰\n<i>🎊 Победители:</i> ${row.ludka.winners}\n<i>Надо выбить (раз):</i> ${row.ludka.requiredTimes} 🗝\n<i>💪 Надо выбить (подряд):</i> ${row.ludka.requiredRow}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>`
 }
 
+
+bot.action("showSettings", async (ctx) => {
+  ctx.editMessageText(await getLudkaMessage(), {
+    parse_mode: "HTML",
+    reply_markup: (await getLudkaButtons()).reply_markup,
+  });
+  ctx.answerCbQuery("✅ Текущие настройки успешно отображены!");
+})
 
 bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
   const admins = [7441988500, 6233759034, 7177688298];
