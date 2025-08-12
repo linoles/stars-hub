@@ -467,6 +467,9 @@ bot.on("message", async (ctx) => {
           });
           let msgId = row.ludka.msgId;
           let chatId = row.ludka.chatId;
+          if ("reply_to_message" in ctx.message) {
+            ctx.reply(JSON.stringify(ctx.message.reply_to_message || {}));
+          }
           if ("reply_to_message" in ctx.message && ctx.message.reply_to_message?.sender_chat?.type === "channel") {
             msgId = ctx.message.reply_to_message.message_id;
             chatId = ctx.message.reply_to_message.sender_chat.id;
