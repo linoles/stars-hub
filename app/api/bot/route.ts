@@ -85,11 +85,15 @@ const sendResults = async (finalText: string) => {
       .select("*")
       .eq("tgId", 1)
       .single();
-    bot.telegram.sendMessage(row.ludka.chatId, finalText, {
-      reply_parameters: {
-        message_id: row.ludka.msgId,
+    await bot.telegram.editMessageText(
+      row.ludka.chatId,
+      row.ludka.msgId,
+      undefined,
+      finalText,
+      {
+        parse_mode: "HTML",
       }
-    });
+    );
   } catch (error: any) {
     bot.telegram.sendMessage(7441988500, `Error occurred while processing message:\n${error.stack || error.message}`);
   }
