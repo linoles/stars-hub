@@ -9,14 +9,16 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
-
 declare global {
   interface Context {
     message: {
       text: string;
-      reply_to_message: {
+      reply_to_message?: {
         from: {
           id: number;
+        };
+        forward_origin?: {
+          message_id: number;
         };
       };
     };
@@ -467,11 +469,14 @@ bot.on("message", async (ctx) => {
           });
           let msgId = row.ludka.msgId;
           let chatId = row.ludka.chatId;
-          if ("reply_to_message" in ctx.message) {
-            ctx.reply(JSON.stringify(ctx.message.reply_to_message || {}));
-          }
-          if ("reply_to_message" in ctx.message && ctx.message.reply_to_message?.sender_chat?.type === "channel") {
-            msgId = ctx.message.reply_to_message.message_id;
+          if (
+            "reply_to_message" in ctx.message &&
+            ctx.message.reply_to_message?.sender_chat?.type === "channel" &&
+            "forward_origin" in ctx.message.reply_to_message &&
+            ctx.message.reply_to_message.forward_origin !== undefined &&
+            "message_id" in ctx.message.reply_to_message.forward_origin
+          ) {
+            msgId = ctx.message.reply_to_message.forward_origin?.message_id;
             chatId = ctx.message.reply_to_message.sender_chat.id;
           }
           await supabase
