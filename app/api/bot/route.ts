@@ -537,10 +537,10 @@ bot.on("message", async (ctx) => {
             ludka: await row.ludka,
           })
           .eq("tgId", 1);
-      } else if (!extraCheck && row.ludka.requiredRow > 1) {
+      } else if (extraCheck && row.ludka.requiredRow > 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
-            row.ludka.requiredRow - row.ludka.doneUsers[`${senderId}`].lastWins
+            row.ludka.requiredRow - row.ludka.doneUsers[`${senderId}`].lastWins - 1
           } раз следующей попыткой!`,
           {
             reply_parameters: {
@@ -646,7 +646,7 @@ bot.on("message", async (ctx) => {
       } else if (!extraCheck && row.ludka.requiredRow > 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
-            row.ludka.requiredRow - row.ludka.doneUsers[`${senderId}`].lastWins
+            row.ludka.requiredRow - row.ludka.doneUsers[`${senderId}`].lastWins - 1
           } раз следующей попыткой!`,
           {
             reply_parameters: {
