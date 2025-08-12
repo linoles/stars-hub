@@ -391,7 +391,7 @@ bot.on("message", async (ctx) => {
     if (
       "dice" in ctx.message &&
       !("forward_origin" in ctx.message) &&
-      row?.isActive === 1 &&
+      row.ludka.isActive === 1 &&
       ctx.message.reply_to_message?.from?.id !== 777000
     ) {
       const phrases = [
