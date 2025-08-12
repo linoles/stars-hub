@@ -615,8 +615,8 @@ bot.on("message", async (ctx) => {
           );
 
           row.ludka.doneUsers[`${senderId}`] = {
-            lastWins: (await userData).lastWins + 1,
-            times: (await userData).times + 1,
+            lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+            times: row.ludka.doneUsers[`${senderId}`].times + 1,
           };
 
           await supabase
@@ -639,8 +639,8 @@ bot.on("message", async (ctx) => {
           );
 
           row.ludka.doneUsers[`${senderId}`] = {
-            lastWins: (await userData).lastWins + 1,
-            times: (await userData).times + 1,
+            lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+            times: row.ludka.doneUsers[`${senderId}`].times + 1,
           };
 
           await supabase
@@ -750,8 +750,8 @@ bot.on("message", async (ctx) => {
           );
 
           row.ludka.doneUsers[`${senderId}`] = {
-            lastWins: (await userData).lastWins + 1,
-            times: (await userData).times + 1,
+            lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+            times: row.ludka.doneUsers[`${senderId}`].times + 1,
           };
 
           await supabase
@@ -774,8 +774,8 @@ bot.on("message", async (ctx) => {
           );
 
           row.ludka.doneUsers[`${senderId}`] = {
-            lastWins: (await userData).lastWins + 1,
-            times: (await userData).times + 1,
+            lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+            times: row.ludka.doneUsers[`${senderId}`].times + 1,
           };
 
           await supabase
@@ -835,7 +835,7 @@ bot.on("message", async (ctx) => {
         });
       }
       row.ludka.doneUsers[`${senderId}`] = {
-        times: row.ludka.doneUsers[`${senderId}`],
+        times: row.ludka.doneUsers[`${senderId}`].times,
         lastWins: 0,
       };
       await supabase
