@@ -683,7 +683,7 @@ bot.on("message", async (ctx) => {
           },
         }
       );
-    } else if (
+    } /*else if (
       row.ludka.isActive &&
       "reply_to_message" in ctx.message &&
       ctx.message.reply_to_message?.from?.id === 777000 &&
@@ -708,7 +708,7 @@ bot.on("message", async (ctx) => {
           ludka: row.ludka,
         })
         .eq("tgId", 1);
-    }
+    }*/
 
     switch (msg) {
       case "/start":
