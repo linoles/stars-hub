@@ -31,9 +31,7 @@ const getLudkaButtons = async () => {
     .single();
 
   return Markup.inlineKeyboard([
-    [
-      Markup.button.callback("Текущие настройки ⚡", "showSettings")
-    ],
+    [Markup.button.callback("Текущие настройки ⚡", "showSettings")],
     [
       Markup.button.callback("7️⃣", "ludka 7️⃣"),
       Markup.button.callback("🍋", "ludka 🍋"),
@@ -70,9 +68,17 @@ const getLudkaMessage = async () => {
     .select("*")
     .eq("tgId", 1)
     .single();
-  return `✅ Лудка успешно запущена!\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>Цель:</i> ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb} 🎰\n<i>🎊 Победители:</i> ${row.ludka.winners}\n<i>Надо выбить (раз):</i> ${row.ludka.requiredTimes} 🗝\n<i>💪 Надо выбить (подряд):</i> ${row.ludka.requiredRow}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>`
-}
+  return `✅ Лудка успешно запущена!\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>Цель:</i> ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb} 🎰\n<i>🎊 Победители:</i> ${row.ludka.winners}\n<i>Надо выбить (раз):</i> ${row.ludka.requiredTimes} 🗝\n<i>💪 Надо выбить (подряд):</i> ${row.ludka.requiredRow}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>`;
+};
 
+const sendResults = async (ctx: any, finalText: string) => {
+  bot.telegram.sendMessage(7441988500, finalText, {
+    parse_mode: "HTML",
+  }); /* !! */
+  bot.telegram.sendMessage(6233759034, finalText, {
+    parse_mode: "HTML",
+  });
+};
 
 bot.action("showSettings", async (ctx) => {
   ctx.editMessageText(await getLudkaMessage(), {
@@ -80,7 +86,7 @@ bot.action("showSettings", async (ctx) => {
     reply_markup: (await getLudkaButtons()).reply_markup,
   });
   ctx.answerCbQuery("✅ Текущие настройки успешно отображены!");
-})
+});
 
 bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
   const admins = [7441988500, 6233759034, 7177688298];
@@ -310,21 +316,22 @@ bot.on("message", async (ctx) => {
       .select("*")
       .eq("tgId", 1)
       .single();
+    
+    if ("reply_to_message" in ctx.message) {
+      bot.telegram.sendMessage(7441988500, JSON.stringify(ctx.message.reply_to_message || {}))
+    }
 
     if (admins.includes(senderId)) {
       switch (msg) {
         case "/ludka":
         case "/ludka@StarzHubBot":
-          ctx.reply(
-            (await getLudkaMessage()),
-            {
-              reply_markup: (await getLudkaButtons()).reply_markup,
-              parse_mode: "HTML",
-              reply_parameters: {
-                message_id: ctx.message.message_id,
-              },
-            }
-          );
+          ctx.reply(await getLudkaMessage(), {
+            reply_markup: (await getLudkaButtons()).reply_markup,
+            parse_mode: "HTML",
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
           ctx.replyWithDice({
             emoji: "🎰",
             reply_parameters: {
@@ -361,12 +368,7 @@ bot.on("message", async (ctx) => {
               finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
             })
           );
-          bot.telegram.sendMessage(7441988500, finalText, {
-            parse_mode: "HTML",
-          }); /* !! */
-          bot.telegram.sendMessage(6233759034, finalText, {
-            parse_mode: "HTML",
-          });
+          await sendResults(ctx, finalText);
           await supabase
             .from("users")
             .update({
@@ -425,12 +427,7 @@ bot.on("message", async (ctx) => {
             finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
           })
         );
-        bot.telegram.sendMessage(7441988500, finalText, {
-          parse_mode: "HTML",
-        }); /* !! */
-        bot.telegram.sendMessage(6233759034, finalText, {
-          parse_mode: "HTML",
-        });
+        await sendResults(ctx, finalText);
         row.ludka.isActive = false;
         row.ludka.doneUsers = {};
         row.ludka.currentWinners = [];
