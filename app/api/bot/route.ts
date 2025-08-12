@@ -421,6 +421,7 @@ bot.on("message", async (ctx) => {
       });
       return;
     }
+    ctx.reply(String(ctx.message.sender_chat?.id))
     const msg = (ctx as Context).message.text;
     const senderId = ctx.message.from.id;
     const senderName = `${ctx.message.from.first_name ?? ""}${
