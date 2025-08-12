@@ -431,6 +431,8 @@ bot.on("message", async (ctx) => {
     if (admins.includes(senderId)) {
       switch (msg) {
         case "/ludka":
+        case "/лудка":
+        case ".лудка":
         case "/ludka@StarzHubBot":
           ctx.reply(await getLudkaMessage(), {
             reply_markup: (await getLudkaButtons()).reply_markup,
@@ -462,6 +464,7 @@ bot.on("message", async (ctx) => {
           return;
 
         case "/stop_ludka":
+        case "-лудка":
         case "/stop_ludka@StarzHubBot":
           ctx.reply("❌ Лудка успешно остановлена!", {
             reply_parameters: {
@@ -827,6 +830,9 @@ bot.on("message", async (ctx) => {
         return;
 
       case "/ludka":
+      case "-лудка":
+      case ".лудка":
+      case "/лудка":
       case "/ludka@StarzHubBot":
       case "/stop_ludka":
       case "/stop_ludka@StarzHubBot":
