@@ -61,6 +61,16 @@ const getLudkaButtons = async () => {
   ]);
 };
 
+const getLudkaMessage = async () => {
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  return `✅ Лудка успешно запущена!\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>Цель:</i> ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb} 🎰\n<i>🎊 Победители:</i> ${row.ludka.winners}\n<i>Надо выбить (раз):</i> ${row.ludka.requiredTimes} 🗝\n<i>💪 Надо выбить (подряд):</i> ${row.ludka.requiredRow}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>`
+}
+
+
 bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
   const admins = [7441988500, 6233759034, 7177688298];
   if (!admins.includes(ctx.callbackQuery.from.id)) {
@@ -96,6 +106,7 @@ bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
       cache_time: 0,
     }
   );
+  await ctx.editMessageText(await getLudkaMessage());
   return;
 });
 
@@ -180,7 +191,7 @@ bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     }
   );
   await ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
-  return;
+  await ctx.editMessageText(await getLudkaMessage());
 });
 
 bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
@@ -266,8 +277,8 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     }
   );
 
-  // Обновляем кнопки
   await ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
+  await ctx.editMessageText(await getLudkaMessage());
 });
 
 bot.on("message", async (ctx) => {
@@ -297,7 +308,7 @@ bot.on("message", async (ctx) => {
         case "/ludka":
         case "/ludka@StarzHubBot":
           ctx.reply(
-            `✅ Лудка успешно запущена!\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>Цель:</i> ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb} 🎰\n<i>🎊 Победители:</i> ${row.ludka.winners}\n<i>Надо выбить (раз):</i> ${row.ludka.requiredTimes} 🗝\n<i>💪 Надо выбить (подряд):</i> ${row.ludka.requiredRow}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>`,
+            (await getLudkaMessage()),
             {
               reply_markup: (await getLudkaButtons()).reply_markup,
               parse_mode: "HTML",
