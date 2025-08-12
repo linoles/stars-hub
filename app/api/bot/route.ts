@@ -106,10 +106,6 @@ bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
       cache_time: 0,
     }
   );
-  ctx.editMessageText(await getLudkaMessage(), {
-    parse_mode: "HTML",
-    reply_markup: (await getLudkaButtons()).reply_markup
-  });
   ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
   return;
 });
@@ -194,10 +190,6 @@ bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
       cache_time: 0,
     }
   );
-  ctx.editMessageText(await getLudkaMessage(), {
-    parse_mode: "HTML",
-    reply_markup: (await getLudkaButtons()).reply_markup
-  });
   ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
 });
 
@@ -283,10 +275,6 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
       cache_time: 0,
     }
   );
-  ctx.editMessageText(await getLudkaMessage(), {
-    parse_mode: "HTML",
-    reply_markup: (await getLudkaButtons()).reply_markup
-  });
   ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
 });
 
