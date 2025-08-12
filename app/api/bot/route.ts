@@ -79,6 +79,16 @@ const sendResults = async (finalText: string) => {
   bot.telegram.sendMessage(6233759034, finalText, {
     parse_mode: "HTML",
   });
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  bot.telegram.sendMessage(row.ludka.chatId, finalText, {
+    reply_parameters: {
+      message_id: row.ludka.msgId,
+    }
+  })
 };
 
 bot.action("showSettings", async (ctx) => {
