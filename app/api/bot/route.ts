@@ -448,8 +448,10 @@ bot.on("message", async (ctx) => {
             },
           });
           let msgId = row.ludka.msgId;
+          let chatId = row.ludka.chatId;
           if ("reply_to_message" in ctx.message && ctx.message.reply_to_message?.sender_chat?.type === "channel") {
-            msgId = ctx.message.reply_to_message.message_id
+            msgId = ctx.message.reply_to_message.message_id;
+            chatId = ctx.message.reply_to_message.sender_chat.id;
           }
           await supabase
             .from("users")
@@ -462,7 +464,8 @@ bot.on("message", async (ctx) => {
                 requiredTimes: row.ludka.requiredTimes,
                 requiredRow: row.ludka.requiredRow,
                 neededComb: row.ludka.neededComb,
-                msgId: await msgId
+                msgId: await msgId,
+                chatId: await chatId,
               },
             })
             .eq("tgId", 1);
@@ -495,7 +498,8 @@ bot.on("message", async (ctx) => {
                 requiredTimes: row.ludka.requiredTimes,
                 requiredRow: row.ludka.requiredRow,
                 neededComb: row.ludka.neededComb,
-                msgId: row.ludka.msgId
+                msgId: row.ludka.msgId,
+                chatId: row.ludka.chatId,
               },
             })
             .eq("tgId", 1);
