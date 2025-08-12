@@ -421,9 +421,6 @@ bot.on("message", async (ctx) => {
       });
       return;
     }
-    if (ctx.message.chat.id !== -1002674341448) {
-      ctx.reply(JSON.stringify(ctx.message));
-    }
     const msg = (ctx as Context).message.text;
     const senderId = ctx.message.from.id;
     const senderName = `${ctx.message.from.first_name ?? ""}${
@@ -450,6 +447,10 @@ bot.on("message", async (ctx) => {
               message_id: ctx.message?.message_id,
             },
           });
+          let msgId = row.ludka.msgId;
+          if ("reply_to_message" in ctx.message && ctx.message.reply_to_message?.sender_chat?.type === "channel") {
+            msgId = ctx.message.reply_to_message.message_id
+          }
           await supabase
             .from("users")
             .update({
@@ -461,6 +462,7 @@ bot.on("message", async (ctx) => {
                 requiredTimes: row.ludka.requiredTimes,
                 requiredRow: row.ludka.requiredRow,
                 neededComb: row.ludka.neededComb,
+                msgId: await msgId
               },
             })
             .eq("tgId", 1);
@@ -493,6 +495,7 @@ bot.on("message", async (ctx) => {
                 requiredTimes: row.ludka.requiredTimes,
                 requiredRow: row.ludka.requiredRow,
                 neededComb: row.ludka.neededComb,
+                msgId: row.ludka.msgId
               },
             })
             .eq("tgId", 1);
