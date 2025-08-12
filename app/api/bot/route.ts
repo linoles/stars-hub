@@ -484,100 +484,104 @@ bot.on("message", async (ctx) => {
       (ctx.message.dice as any).value === neededValue &&
       row.ludka.winners === row.ludka.currentWinners.length + 1
     ) {
-      if (
-        row.ludka.requiredTimes ==
+      try {
+        if (
+          row.ludka.requiredTimes ==
+            row.ludka.doneUsers[`${senderId}`].times + 1 &&
+          extraCheck
+        ) {
+          ctx.reply("✅ У нас есть победитель!", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          const currentWinners = [...row.ludka.currentWinners, senderId];
+          let finalText = `🏆 Лудка закончена! Победители:\n`;
+          await Promise.all(
+            currentWinners.map(async (id) => {
+              finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
+            })
+          );
+          await sendResults(finalText);
+          row.ludka.isActive = false;
+          row.ludka.doneUsers = {};
+          row.ludka.currentWinners = [];
+          await supabase
+            .from("users")
+            .update({
+              ludka: await row.ludka,
+            })
+            .eq("tgId", 1);
+        } else if (
+          row.ludka.requiredTimes !=
           row.ludka.doneUsers[`${senderId}`].times + 1 &&
-        extraCheck
-      ) {
-        ctx.reply("✅ У нас есть победитель!", {
-          reply_parameters: {
-            message_id: ctx.message.message_id,
-          },
-        });
-        const currentWinners = [...row.ludka.currentWinners, senderId];
-        let finalText = `🏆 Лудка закончена! Победители:\n`;
-        await Promise.all(
-          currentWinners.map(async (id) => {
-            finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
-          })
-        );
-        await sendResults(finalText);
-        row.ludka.isActive = false;
-        row.ludka.doneUsers = {};
-        row.ludka.currentWinners = [];
-        await supabase
-          .from("users")
-          .update({
-            ludka: await row.ludka,
-          })
-          .eq("tgId", 1);
-      } else if (
-        row.ludka.requiredTimes !=
-        row.ludka.doneUsers[`${senderId}`].times + 1 &&
-        row.ludka.requiredRow === 1
-      ) {
-        ctx.reply(
-          `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
-            row.ludka.requiredTimes -
-            row.ludka.doneUsers[`${senderId}`].times -
-            1
-          } раз!`,
-          {
-            reply_parameters: {
-              message_id: ctx.message.message_id,
-            },
-          }
-        );
-        row.ludka.doneUsers[`${senderId}`] = {
-          lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
-          times: row.ludka.doneUsers[`${senderId}`].times + 1,
-        };
-        await supabase
-          .from("users")
-          .update({
-            ludka: await row.ludka,
-          })
-          .eq("tgId", 1);
-      } else if (!extraCheck && row.ludka.requiredRow > 1) {
-        ctx.reply(
-          `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
-            row.ludka.requiredRow - row.ludka.doneUsers[`${senderId}`].lastWins - 1
-          } раз следующей попыткой!`,
-          {
-            reply_parameters: {
-              message_id: ctx.message.message_id,
-            },
-          }
-        );
-        row.ludka.doneUsers[`${senderId}`] = {
-          lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
-          times: row.ludka.doneUsers[`${senderId}`].times + 1,
-        };
-        await supabase
-          .from("users")
-          .update({
-            ludka: await row.ludka,
-          })
-          .eq("tgId", 1);
-      }
-      ctx.react("🎉", true);
-      const stickers = [
-        "CAACAgIAAxkBAAEPBh9ohVdxJcsomD-tLwwG_1YlSUIktgAC6RkAAhZeKEimg5LObeZqozYE",
-        "CAACAgIAAxkBAAEPBiBohVdxINYqfccrgJC_D8gtaQMCSAACqhgAAg9lCEoGzNzn0P2-0zYE",
-        "CAACAgIAAxkBAAEO3bZoakWLtC2BLxtCz-44rPorOiyLTgACSgIAAladvQrJasZoYBh68DYE",
-        "CAACAgIAAxkBAAEPBiJohVdxbYewkFW7Y_HBYinkcLV3FAAC_xoAAhaNgUkgU21P6dzWmzYE",
-        "CAACAgEAAxkBAAEPBiNohVdxM1x7ygJxSV3JpOMZieJAZAACtAIAAs2j-UTxghF_qaLQVjYE",
-        "CAACAgIAAxkBAAEPBbFohOwUueOz-QgyXd2t8EMHvvIR8AACyxsAAgPamEiwRqVGuLHqQzYE",
-        "CAACAgIAAxkBAAEPB11ohqNJG_kaJr4LJbSyI6wm_P8AATgAAnwdAALlAzlLyEU_5iJrorg2BA",
-      ];
-      await ctx.replyWithSticker(
-        stickers[Math.floor(Math.random() * stickers.length)],
-        {
-          reply_parameters: {
-            message_id: ctx.message.message_id,
-          },
+          row.ludka.requiredRow === 1
+        ) {
+          ctx.reply(
+            `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
+              row.ludka.requiredTimes -
+              row.ludka.doneUsers[`${senderId}`].times -
+              1
+            } раз!`,
+            {
+              reply_parameters: {
+                message_id: ctx.message.message_id,
+              },
+            }
+          );
+          row.ludka.doneUsers[`${senderId}`] = {
+            lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+            times: row.ludka.doneUsers[`${senderId}`].times + 1,
+          };
+          await supabase
+            .from("users")
+            .update({
+              ludka: await row.ludka,
+            })
+            .eq("tgId", 1);
+        } else if (!extraCheck && row.ludka.requiredRow > 1) {
+          ctx.reply(
+            `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
+              row.ludka.requiredRow - row.ludka.doneUsers[`${senderId}`].lastWins - 1
+            } раз следующей попыткой!`,
+            {
+              reply_parameters: {
+                message_id: ctx.message.message_id,
+              },
+            }
+          );
+          row.ludka.doneUsers[`${senderId}`] = {
+            lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
+            times: row.ludka.doneUsers[`${senderId}`].times + 1,
+          };
+          await supabase
+            .from("users")
+            .update({
+              ludka: await row.ludka,
+            })
+            .eq("tgId", 1);
         }
-      );
+        ctx.react("🎉", true);
+        const stickers = [
+          "CAACAgIAAxkBAAEPBh9ohVdxJcsomD-tLwwG_1YlSUIktgAC6RkAAhZeKEimg5LObeZqozYE",
+          "CAACAgIAAxkBAAEPBiBohVdxINYqfccrgJC_D8gtaQMCSAACqhgAAg9lCEoGzNzn0P2-0zYE",
+          "CAACAgIAAxkBAAEO3bZoakWLtC2BLxtCz-44rPorOiyLTgACSgIAAladvQrJasZoYBh68DYE",
+          "CAACAgIAAxkBAAEPBiJohVdxbYewkFW7Y_HBYinkcLV3FAAC_xoAAhaNgUkgU21P6dzWmzYE",
+          "CAACAgEAAxkBAAEPBiNohVdxM1x7ygJxSV3JpOMZieJAZAACtAIAAs2j-UTxghF_qaLQVjYE",
+          "CAACAgIAAxkBAAEPBbFohOwUueOz-QgyXd2t8EMHvvIR8AACyxsAAgPamEiwRqVGuLHqQzYE",
+          "CAACAgIAAxkBAAEPB11ohqNJG_kaJr4LJbSyI6wm_P8AATgAAnwdAALlAzlLyEU_5iJrorg2BA",
+        ];
+        await ctx.replyWithSticker(
+          stickers[Math.floor(Math.random() * stickers.length)],
+          {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          }
+        );
+      } catch (error) {
+        ctx.reply(String(error));
+      }
     } else if (
       row.ludka.isActive &&
       "reply_to_message" in ctx.message &&
