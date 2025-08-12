@@ -87,13 +87,14 @@ const sendResults = async (finalText: string) => {
       .select("*")
       .eq("tgId", 1)
       .single();
-    await bot.telegram.editMessageText(
+    await bot.telegram.sendMessage(
       row.ludka.chatId,
-      row.ludka.msgId,
-      undefined,
       finalText,
       {
         parse_mode: "HTML",
+        reply_parameters: {
+          message_id: row.ludka.msgId,
+        }
       }
     );
   } catch (error: any) {
