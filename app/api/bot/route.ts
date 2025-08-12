@@ -513,7 +513,8 @@ bot.on("message", async (ctx) => {
           .eq("tgId", 1);
       } else if (
         row.ludka.requiredTimes !=
-        row.ludka.doneUsers[`${senderId}`].times + 1
+        row.ludka.doneUsers[`${senderId}`].times + 1 &&
+        row.ludka.requiredRow === 1
       ) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
@@ -537,7 +538,7 @@ bot.on("message", async (ctx) => {
             ludka: await row.ludka,
           })
           .eq("tgId", 1);
-      } else if (extraCheck && row.ludka.requiredRow > 1) {
+      } else if (!extraCheck && row.ludka.requiredRow > 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
             row.ludka.requiredRow - row.ludka.doneUsers[`${senderId}`].lastWins - 1
@@ -619,7 +620,8 @@ bot.on("message", async (ctx) => {
           .eq("tgId", 1);
       } else if (
         row.ludka.requiredTimes !=
-        row.ludka.doneUsers[`${senderId}`].times + 1
+        row.ludka.doneUsers[`${senderId}`].times + 1 &&
+        row.ludka.requiredRow === 1
       ) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
