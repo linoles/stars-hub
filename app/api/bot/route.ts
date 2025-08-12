@@ -316,10 +316,6 @@ bot.on("message", async (ctx) => {
       .select("*")
       .eq("tgId", 1)
       .single();
-    
-    if ("reply_to_message" in ctx.message) {
-      bot.telegram.sendMessage(7441988500, JSON.stringify(ctx.message.reply_to_message || {}))
-    }
 
     if (admins.includes(senderId)) {
       switch (msg) {
