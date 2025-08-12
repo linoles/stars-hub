@@ -106,6 +106,12 @@ bot.action("stopLudka", async (ctx) => {
   row.ludka.isActive = false;
   row.ludka.doneUsers = {};
   row.ludka.currentWinners = [];
+  await supabase
+    .from("users")
+    .update({
+      "ludka": row.ludka
+    })
+    .eq("tgId", 1);
   const currentWinners = row.ludka.currentWinners;
   let finalText = `🏆 Лудка закончена! Победители:\n`;
   await Promise.all(
@@ -123,6 +129,38 @@ bot.action("stopLudka", async (ctx) => {
     },
   });
   ctx.answerCbQuery("✅ Лудка успешно остановлена!", {
+    show_alert: false,
+    cache_time: 0,
+  });
+});
+
+bot.action("startLudka", async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  row.ludka.isActive = true;
+  await supabase
+    .from("users")
+    .update({
+      "ludka": row.ludka
+    })
+    .eq("tgId", 1);
+  ctx.editMessageText(await getLudkaMessage(), {
+    parse_mode: "HTML",
+    reply_markup: (await getLudkaButtons()).reply_markup,
+  });
+  ctx.answerCbQuery("✅ Лудка успешно запущена!", {
     show_alert: false,
     cache_time: 0,
   });
