@@ -111,9 +111,9 @@ bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
     })
     .eq("tgId", 1);
   ctx.answerCbQuery(
-    `✅ Цель лудки успешно обновлена! Теперь она будет: ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb}`,
+    `✅ Цель лудки успешно обновлена на: ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb}`,
     {
-      show_alert: true,
+      show_alert: false,
       cache_time: 0,
     }
   );
@@ -197,7 +197,7 @@ bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
         : "∞"
     }`,
     {
-      show_alert: true,
+      show_alert: false,
       cache_time: 0,
     }
   );
