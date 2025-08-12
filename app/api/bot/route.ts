@@ -76,9 +76,6 @@ const sendResults = async (finalText: string) => {
   bot.telegram.sendMessage(7441988500, finalText, {
     parse_mode: "HTML",
   }); /* !! */
-  bot.telegram.sendMessage(6233759034, finalText, {
-    parse_mode: "HTML",
-  });
   const { data: row, error } = await supabase
     .from("users")
     .select("*")
