@@ -73,22 +73,26 @@ const getLudkaMessage = async () => {
 };
 
 const sendResults = async (finalText: string) => {
-  bot.telegram.sendMessage(7441988500, finalText, {
-    parse_mode: "HTML",
-  }); /* !! */
-  bot.telegram.sendMessage(6233759034, finalText, {
-    parse_mode: "HTML",
-  });
-  const { data: row, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("tgId", 1)
-    .single();
-  bot.telegram.sendMessage(row.ludka.chatId, finalText, {
-    reply_parameters: {
-      message_id: row.ludka.msgId,
-    }
-  });
+  try {
+    bot.telegram.sendMessage(7441988500, finalText, {
+      parse_mode: "HTML",
+    }); /* !! */
+    /*bot.telegram.sendMessage(6233759034, finalText, {
+      parse_mode: "HTML",
+    });*/
+    const { data: row, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("tgId", 1)
+      .single();
+    bot.telegram.sendMessage(row.ludka.chatId, finalText, {
+      reply_parameters: {
+        message_id: row.ludka.msgId,
+      }
+    });
+  } catch (error: any) {
+    bot.telegram.sendMessage(7441988500, `Error occurred while processing message:\n${error.stack || error.message}`);
+  }
 };
 
 bot.action("showSettings", async (ctx) => {
