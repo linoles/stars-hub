@@ -109,7 +109,7 @@ bot.action("stopLudka", async (ctx) => {
   await supabase
     .from("users")
     .update({
-      "ludka": row.ludka
+      ludka: row.ludka,
     })
     .eq("tgId", 1);
   const currentWinners = row.ludka.currentWinners;
@@ -125,7 +125,7 @@ bot.action("stopLudka", async (ctx) => {
     reply_markup: {
       inline_keyboard: [
         [Markup.button.callback("✅ Включить лудку", "startLudka")],
-      ]
+      ],
     },
   });
   ctx.answerCbQuery("✅ Лудка успешно остановлена!", {
@@ -153,7 +153,7 @@ bot.action("startLudka", async (ctx) => {
   await supabase
     .from("users")
     .update({
-      "ludka": row.ludka
+      ludka: row.ludka,
     })
     .eq("tgId", 1);
   ctx.editMessageText(await getLudkaMessage(), {
@@ -485,83 +485,109 @@ bot.on("message", async (ctx) => {
       row.ludka.winners === row.ludka.currentWinners.length + 1
     ) {
       try {
-        if (
-          row.ludka.requiredTimes ==
-            row.ludka.doneUsers[`${senderId}`].times + 1 &&
-          extraCheck
-        ) {
-          ctx.reply("✅ У нас есть победитель!", {
+        // Инициализация doneUsers если не существует
+        row.ludka.doneUsers = row.ludka.doneUsers || {};
+
+        // Инициализация данных пользователя если не существует
+        if (!row.ludka.doneUsers[`${senderId}`]) {
+          row.ludka.doneUsers[`${senderId}`] = { lastWins: 0, times: 0 };
+        }
+
+        const userData = row.ludka.doneUsers[`${senderId}`];
+
+        if (row.ludka.requiredTimes == userData.times + 1 && extraCheck) {
+          // Условие победы
+          await ctx.reply("✅ У нас есть победитель!", {
             reply_parameters: {
               message_id: ctx.message.message_id,
             },
           });
+
           const currentWinners = [...row.ludka.currentWinners, senderId];
           let finalText = `🏆 Лудка закончена! Победители:\n`;
+
           await Promise.all(
             currentWinners.map(async (id) => {
               finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
             })
           );
+
           await sendResults(finalText);
           row.ludka.isActive = false;
           row.ludka.doneUsers = {};
           row.ludka.currentWinners = [];
+
           await supabase
             .from("users")
             .update({
-              ludka: await row.ludka,
+              ludka: row.ludka,
             })
             .eq("tgId", 1);
         } else if (
-          row.ludka.requiredTimes !=
-          row.ludka.doneUsers[`${senderId}`].times + 1 &&
+          row.ludka.requiredTimes != userData.times + 1 &&
           row.ludka.requiredRow === 1
         ) {
-          ctx.reply(
-            `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${
-              row.ludka.requiredTimes -
-              row.ludka.doneUsers[`${senderId}`].times -
-              1
-            } раз!`,
+          // Условие частичной победы (requiredRow = 1)
+          const remainingAttempts =
+            row.ludka.requiredTimes - userData.times - 1;
+
+          await ctx.reply(
+            `🎊 Поздравляем! Вы выбили нужную комбинацию, Но вам придётся выбить это же ещё ${remainingAttempts} раз!`,
             {
               reply_parameters: {
                 message_id: ctx.message.message_id,
               },
             }
           );
+
           row.ludka.doneUsers[`${senderId}`] = {
-            lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
-            times: row.ludka.doneUsers[`${senderId}`].times + 1,
+            lastWins: userData.lastWins + 1,
+            times: userData.times + 1,
           };
+
           await supabase
             .from("users")
             .update({
-              ludka: await row.ludka,
+              ludka: row.ludka,
             })
             .eq("tgId", 1);
         } else if (!extraCheck && row.ludka.requiredRow > 1) {
-          ctx.reply(
-            `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
-              row.ludka.requiredRow - row.ludka.doneUsers[`${senderId}`].lastWins - 1
-            } раз следующей попыткой!`,
+          // Условие частичной победы (requiredRow > 1)
+          const remainingAttempts =
+            row.ludka.requiredRow - userData.lastWins - 1;
+
+          await ctx.reply(
+            `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${remainingAttempts} раз следующей попыткой!`,
             {
               reply_parameters: {
                 message_id: ctx.message.message_id,
               },
             }
           );
+
           row.ludka.doneUsers[`${senderId}`] = {
-            lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
-            times: row.ludka.doneUsers[`${senderId}`].times + 1,
+            lastWins: userData.lastWins + 1,
+            times: userData.times + 1,
           };
+
           await supabase
             .from("users")
             .update({
-              ludka: await row.ludka,
+              ludka: row.ludka,
             })
             .eq("tgId", 1);
+        } else {
+          // Если ни одно условие не сработало
+          await ctx.reply("Продолжайте попытки!", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
         }
-        ctx.react("🎉", true);
+
+        // Всегда отправляем реакцию и стикер
+        await ctx.react("🎉", true);
+
         const stickers = [
           "CAACAgIAAxkBAAEPBh9ohVdxJcsomD-tLwwG_1YlSUIktgAC6RkAAhZeKEimg5LObeZqozYE",
           "CAACAgIAAxkBAAEPBiBohVdxINYqfccrgJC_D8gtaQMCSAACqhgAAg9lCEoGzNzn0P2-0zYE",
@@ -571,6 +597,7 @@ bot.on("message", async (ctx) => {
           "CAACAgIAAxkBAAEPBbFohOwUueOz-QgyXd2t8EMHvvIR8AACyxsAAgPamEiwRqVGuLHqQzYE",
           "CAACAgIAAxkBAAEPB11ohqNJG_kaJr4LJbSyI6wm_P8AATgAAnwdAALlAzlLyEU_5iJrorg2BA",
         ];
+
         await ctx.replyWithSticker(
           stickers[Math.floor(Math.random() * stickers.length)],
           {
@@ -579,8 +606,17 @@ bot.on("message", async (ctx) => {
             },
           }
         );
-      } catch (error) {
-        ctx.reply(String(error));
+      } catch (error: any) {
+        console.error("Error in ludka handler:", error);
+        try {
+          await ctx.reply(`Произошла ошибка: ${error.message}`, {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+        } catch (e) {
+          console.error("Failed to send error message:", e);
+        }
       }
     } else if (
       row.ludka.isActive &&
@@ -624,7 +660,7 @@ bot.on("message", async (ctx) => {
           .eq("tgId", 1);
       } else if (
         row.ludka.requiredTimes !=
-        row.ludka.doneUsers[`${senderId}`].times + 1 &&
+          row.ludka.doneUsers[`${senderId}`].times + 1 &&
         row.ludka.requiredRow === 1
       ) {
         ctx.reply(
@@ -652,7 +688,9 @@ bot.on("message", async (ctx) => {
       } else if (!extraCheck && row.ludka.requiredRow > 1) {
         ctx.reply(
           `🎊 Поздравляем! Вы выбили нужную комбинацию, но вам придётся выбить это же ещё ${
-            row.ludka.requiredRow - row.ludka.doneUsers[`${senderId}`].lastWins - 1
+            row.ludka.requiredRow -
+            row.ludka.doneUsers[`${senderId}`].lastWins -
+            1
           } раз следующей попыткой!`,
           {
             reply_parameters: {
