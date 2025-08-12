@@ -121,7 +121,11 @@ bot.action(/^show(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     return;
   }
   ctx.answerCbQuery(
-    `⚙ Текущая настройка: ${row.ludka[ctx.match[0].slice(4)]}`,
+    `⚙ Текущая настройка: ${
+      row.ludka[ctx.match[0].slice(4)] !== 1000
+        ? row.ludka[ctx.match[0].slice(4)]
+        : "∞"
+    }`,
     {
       show_alert: true,
       cache_time: 0,
@@ -165,8 +169,10 @@ bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     })
     .eq("tgId", 1);
   ctx.answerCbQuery(
-    `✅ Настройка успешно обновлена! Теперь она будет: ${
-      row.ludka[ctx.match[0].slice(4)]
+    `✅ Настройка успешно обновлена на: ${
+      row.ludka[ctx.match[0].slice(4)] !== 1000
+        ? row.ludka[ctx.match[0].slice(4)]
+        : "∞"
     }`,
     {
       show_alert: true,
@@ -202,12 +208,10 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     return;
   }
 
-  // Извлекаем название настройки (удаляем 'minus' из callback_data)
-  const settingName = ctx.match[0].slice(5); // Было 4, исправлено на 5
+  const settingName = ctx.match[0].slice(5);
   const currentValue = row.ludka[settingName];
 
-  // Проверяем, что значение - число
-  if (typeof currentValue !== 'number') {
+  if (typeof currentValue !== "number") {
     ctx.answerCbQuery("❌ Некорректное значение настройки", {
       show_alert: true,
       cache_time: 0,
@@ -224,10 +228,8 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     return;
   }
 
-  // Создаем копию объекта для обновления
   const updatedLudka = { ...row.ludka };
 
-  // Логика для winners
   if (settingName === "winners") {
     if (currentValue === 1000) {
       updatedLudka.winners = 1;
@@ -236,13 +238,10 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     } else {
       updatedLudka.winners -= 1;
     }
-  } 
-  // Логика для других настроек
-  else {
+  } else {
     updatedLudka[settingName] -= 1;
   }
 
-  // Обновляем данные в Supabase
   const { error: updateError } = await supabase
     .from("users")
     .update({ ludka: updatedLudka })
@@ -258,99 +257,11 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
 
   // Отправляем подтверждение с корректным значением
   ctx.answerCbQuery(
-    `✅ Настройка успешно обновлена!\nТеперь она будет: ${updatedLudka[settingName]}`,
+    `✅ Настройка успешно обновлена на: ${
+      updatedLudka[settingName] !== 1000 ? updatedLudka[settingName] : "∞"
+    }`,
     {
-      show_alert: true,
-      cache_time: 0,
-    }
-  );
-
-  // Обновляем кнопки
-  await ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
-});bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
-  const admins = [7441988500, 6233759034, 7177688298];
-  if (!admins.includes(ctx.callbackQuery.from.id)) {
-    ctx.answerCbQuery("❌ У вас нет прав!", {
-      show_alert: true,
-      cache_time: 0,
-    });
-    return;
-  }
-
-  // Получаем данные из Supabase
-  const { data: row, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("tgId", 1)
-    .single();
-
-  if (error) {
-    ctx.answerCbQuery("❌ Ошибка обновления настройки", {
-      show_alert: true,
-      cache_time: 0,
-    });
-    return;
-  }
-
-  // Извлекаем название настройки (удаляем 'minus' из callback_data)
-  const settingName = ctx.match[0].slice(5); // Было 4, исправлено на 5
-  const currentValue = row.ludka[settingName];
-
-  // Проверяем, что значение - число
-  if (typeof currentValue !== 'number') {
-    ctx.answerCbQuery("❌ Некорректное значение настройки", {
-      show_alert: true,
-      cache_time: 0,
-    });
-    return;
-  }
-
-  // Обработка разных типов настроек
-  if (settingName !== "winners" && currentValue <= 1) {
-    await ctx.answerCbQuery("❌ Данная настройка не может быть меньше 1!", {
-      show_alert: true,
-      cache_time: 0,
-    });
-    return;
-  }
-
-  // Создаем копию объекта для обновления
-  const updatedLudka = { ...row.ludka };
-
-  // Логика для winners
-  if (settingName === "winners") {
-    if (currentValue === 1000) {
-      updatedLudka.winners = 1;
-    } else if (currentValue === 1) {
-      updatedLudka.winners = 1000;
-    } else {
-      updatedLudka.winners -= 1;
-    }
-  } 
-  // Логика для других настроек
-  else {
-    updatedLudka[settingName] -= 1;
-  }
-
-  // Обновляем данные в Supabase
-  const { error: updateError } = await supabase
-    .from("users")
-    .update({ ludka: updatedLudka })
-    .eq("tgId", 1);
-
-  if (updateError) {
-    ctx.answerCbQuery("❌ Ошибка при сохранении изменений", {
-      show_alert: true,
-      cache_time: 0,
-    });
-    return;
-  }
-
-  // Отправляем подтверждение с корректным значением
-  ctx.answerCbQuery(
-    `✅ Настройка успешно обновлена!\nТеперь она будет: ${updatedLudka[settingName]}`,
-    {
-      show_alert: true,
+      show_alert: false,
       cache_time: 0,
     }
   );
@@ -362,10 +273,13 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
 bot.on("message", async (ctx) => {
   try {
     const chats = [-1002608961312, -1002560347854, -1002674341448];
-    if (!chats.includes(ctx.message.chat.id) && ctx.message.chat.id !== ctx.message.from.id) {
+    if (
+      !chats.includes(ctx.message.chat.id) &&
+      ctx.message.chat.id !== ctx.message.from.id
+    ) {
       await bot.telegram.leaveChat(ctx.message.chat.id);
       return;
-    };
+    }
     const msg = (ctx as Context).message.text;
     const senderId = ctx.message.from.id;
     const senderName = `${ctx.message.from.first_name ?? ""}${
@@ -383,7 +297,7 @@ bot.on("message", async (ctx) => {
         case "/ludka":
         case "/ludka@StarzHubBot":
           ctx.reply(
-            "✅ Лудка успешно запущена!\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>",
+            `✅ Лудка успешно запущена!\n<blockquote>🔗 Текущие настройки:\n<i>Цель:</i> ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb} 🎰\n<i>🎊 Победители:</i> ${row.ludka.winners}\n<i>Надо выбить (раз):</i> ${row.ludka.requiredTimes} 🗝\n<i>Надо выбить (подряд):</i> ${row.ludka.requiredRow}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>`,
             {
               reply_markup: (await getLudkaButtons()).reply_markup,
               parse_mode: "HTML",
