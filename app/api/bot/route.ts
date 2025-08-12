@@ -568,7 +568,7 @@ bot.on("message", async (ctx) => {
         const userData = row.ludka.doneUsers[`${senderId}`];
 
         if (
-          (row.ludka.requiredTimes == (await userData).times + 1 &&
+          (row.ludka.requiredTimes >= (await userData).times + 1 &&
             row.ludka.requiredRow == 1) ||
           (extraCheck && row.ludka.requiredRow > 1)
         ) {
