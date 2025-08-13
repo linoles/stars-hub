@@ -293,6 +293,14 @@ const getStartGameButtons = async (row: any, from: number) => {
   }
 };
 
+let currentGameState: {
+  row: any;
+  from: number;
+  emoji: string;
+  points: number;
+  currentMove: number;
+} | null = null;
+
 const startBotGaming = async (row: any, from: number) => {
   const emoji = 
     row.game.type === "cubic" ? "🎲" :
@@ -300,46 +308,93 @@ const startBotGaming = async (row: any, from: number) => {
     row.game.type === "bowling" ? "🎳" :
     row.game.type === "basketball" ? "🏀" : "⚽️";
 
-  let points = 0;
-  const retryDelay = 4000; // 4 сек между бросками
-  const maxRetries = 3;    // Макс. попыток для одного броска
-
-  // Отправка одного эмодзи с повторами
-  const sendDice = async (attempt = 1): Promise<number> => {
-    try {
-      const dice = await bot.telegram.sendDice(from, { emoji });
-      return dice.dice.value;
-    } catch (error) {
-      if (attempt >= maxRetries) throw error;
-      await new Promise(resolve => setTimeout(resolve, retryDelay));
-      return sendDice(attempt + 1);
-    }
+  // Сохраняем состояние игры
+  currentGameState = {
+    row,
+    from,
+    emoji,
+    points: 0,
+    currentMove: 0
   };
 
-  // Основной цикл
-  for (let i = 0; i < row.game.moves; i++) {
-    points += await sendDice();
-    row.game.doneUsers[`${from}`].progress = i + 1;
+  // Отправляем начальное сообщение с кнопкой
+  await bot.telegram.sendMessage(
+    from,
+    `Игра началась! Нажмите кнопку ниже, чтобы сделать бросок ${emoji}`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "Бросить кубик", callback_data: "throw_dice" }]
+        ]
+      }
+    }
+  );
+};
 
-    // Сохранение после каждого броска
+// Обработчик нажатия кнопки
+bot.action('throw_dice', async (ctx) => {
+  if (!currentGameState) return;
+
+  const { row, from, emoji, currentMove } = currentGameState;
+  
+  // Проверяем, не завершена ли уже игра
+  if (currentMove >= row.game.moves) {
+    await ctx.answerCbQuery("Игра уже завершена!");
+    return;
+  }
+
+  try {
+    // Отправляем эмодзи
+    const dice = await ctx.sendDice({ emoji });
+    currentGameState.points += dice.dice.value;
+    currentGameState.currentMove++;
+    currentGameState.row.game.doneUsers[`${from}`].progress = currentGameState.currentMove;
+
+    // Обновляем прогресс в базе
     await supabase
       .from("users")
       .update({ game: row.game })
       .eq("tgId", from);
 
-    if (i < row.game.moves - 1) {
-      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    // Проверяем завершение игры
+    if (currentGameState.currentMove >= row.game.moves) {
+      await finishGame(ctx);
+    } else {
+      // Обновляем сообщение с новым счетом
+      await ctx.editMessageText(
+        `Бросок ${currentGameState.currentMove}/${row.game.moves}\n` +
+        `Текущие очки: ${currentGameState.points}`,
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: "Бросить снова", callback_data: "throw_dice" }]
+            ]
+          }
+        }
+      );
     }
+  } catch (error) {
+    console.error("Ошибка при броске:", error);
+    await ctx.answerCbQuery("Ошибка, попробуйте еще раз");
   }
+});
 
-  // Фиксация результатов
+// Функция завершения игры
+const finishGame = async (ctx: any) => {
+  if (!currentGameState) return;
+
+  const { row, from, points } = currentGameState;
+  
+  // Фиксируем результаты
   row.game.doneUsers[`${from}`].points = points;
-  await bot.telegram.sendMessage(
-    from,
-    `Подведём итоги! 🤖 Бот выбил вам ${points} очков! 🏅`
+
+  // Отправляем итоговое сообщение
+  await ctx.editMessageText(
+    `Игра завершена! 🎉\nВаш результат: ${points} очков!`,
+    { reply_markup: { inline_keyboard: [] } }
   );
 
-  // Формирование топа с нумерацией
+  // Формируем топ игроков
   const sortedUsers = Object.entries(row.game.doneUsers)
     .filter(([_, data]: any) => data?.progress >= row.game.moves)
     .sort((a: any, b: any) => b[1].points - a[1].points)
@@ -349,7 +404,7 @@ const startBotGaming = async (row: any, from: number) => {
     )
     .join("\n");
 
-  // Обновление сообщения в чате
+  // Обновляем основное сообщение в чате
   await bot.telegram.editMessageText(
     row.game.chatId,
     row.game.msgId,
@@ -359,17 +414,19 @@ const startBotGaming = async (row: any, from: number) => {
       parse_mode: "HTML",
       reply_markup: {
         inline_keyboard: [
-          [Markup.button.url("🧩 Играть", `https://t.me/StarzHubBot?start=game`)],
-        ],
-      },
+          [Markup.button.url("🧩 Играть снова", `https://t.me/StarzHubBot?start=game`)]
+        ]
+      }
     }
   );
 
-  // Финальное сохранение
+  // Сохраняем финальные данные
   await supabase
     .from("users")
     .update({ game: row.game })
     .eq("tgId", from);
+
+  currentGameState = null;
 };
 
 const getPostGameMessage = async (row: any) => {
