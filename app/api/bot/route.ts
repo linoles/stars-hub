@@ -295,62 +295,68 @@ const getStartGameButtons = async (row: any, from: number) => {
 
 const startBotGaming = async (row: any, from: number) => {
   const emoji =
-    row.game.type === "cubic"
-      ? "🎲"
-      : row.game.type === "darts"
-      ? "🎯"
-      : row.game.type === "bowling"
-      ? "🎳"
-      : row.game.type === "basketball"
-      ? "🏀"
-      : "⚽️";
-  
+    row.game.type === "cubic" ? "🎲" :
+    row.game.type === "darts" ? "🎯" :
+    row.game.type === "bowling" ? "🎳" :
+    row.game.type === "basketball" ? "🏀" : "⚽️";
+
   let points = 0;
-  
-  for (let i = 1; i <= row.game.moves; i++) {
+  let successfulMoves = 0;
+
+  // Отправляем эмодзи строго по одному с задержкой и проверкой
+  for (let i = 0; i < row.game.moves; i++) {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Задержка между запросами
       const dice = await bot.telegram.sendDice(from, { emoji });
-      row.game.doneUsers[`${from}`].progress++;
+      successfulMoves++;
       points += dice.dice.value;
+      row.game.doneUsers[`${from}`].progress = successfulMoves;
+
+      // Сохраняем промежуточный прогресс в Supabase
+      await supabase
+        .from("users")
+        .update({ game: row.game })
+        .eq("tgId", from);
+
+      // Задержка между бросками (1.5–2.5 сек, чтобы избежать блокировки)
+      await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
     } catch (error) {
-      console.error(`Ошибка при отправке эмодзи (попытка ${i}):`, error);
+      console.error(`Ошибка при отправке эмодзи (попытка ${i + 1}):`, error);
+      // Повторяем попытку после задержки
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      i--; // Уменьшаем счетчик, чтобы повторить текущий ход
     }
   }
 
+  // Фиксируем итоговые очки
   row.game.doneUsers[`${from}`].points = points;
-  
+
+  // Отправляем итоговое сообщение
   try {
     await bot.telegram.sendMessage(
-      from, 
+      from,
       `Подведём итоги! 🤖 Бот выбил вам ${points} очков! 🏅`
     );
   } catch (error) {
-    console.error('Ошибка при отправке итогов:', error);
+    console.error("Ошибка при отправке итогов:", error);
   }
 
+  // Обновляем топ игроков
   const sortedUsers = Object.entries(row.game.doneUsers)
-    .filter(([user, data]) => {
-      if (typeof data === 'object' && data !== null && 'progress' in data) {
-        return (data as { progress: number }).progress >= row.game.moves;
-      }
-      return false;
-    })
+    .filter(([_, data]: [string, any]) => data?.progress !== undefined && data.progress >= row.game.moves)
     .sort((a: any, b: any) => b[1].points - a[1].points)
     .slice(0, 10);
 
-  let top = "";
-  for (const [user, data] of sortedUsers) {
-    const userData = data as { name: string, points: number };
-    top += `<b><a href="tg://user?id=${user}">${userData.name}</a></b>: ${userData.points}\n`;
-  }
+  let top = sortedUsers.map(
+    ([user, data]: [string, any]) => `<b><a href="tg://user?id=${user}">${data.name}</a></b>: ${data.points}`
+  ).join("\n");
 
+  // Обновляем основное сообщение игры
   try {
     await bot.telegram.editMessageText(
-      row.game.chatId, 
-      row.game.msgId, 
-      undefined, 
-      `${(await getPostGameMessage(row))}\n\n<blockquote expandable><b>Топ 🏅</b>\n${top}</blockquote>`, 
+      row.game.chatId,
+      row.game.msgId,
+      undefined,
+      `${await getPostGameMessage(row)}\n\n<blockquote expandable><b>Топ 🏅</b>\n${top}</blockquote>`,
       {
         parse_mode: "HTML",
         reply_markup: {
@@ -361,18 +367,17 @@ const startBotGaming = async (row: any, from: number) => {
       }
     );
   } catch (error) {
-    console.error('Ошибка при обновлении сообщения с топом:', error);
+    console.error("Ошибка при обновлении сообщения:", error);
   }
 
+  // Финализируем сохранение в Supabase
   try {
     await supabase
       .from("users")
-      .update({
-        game: row.game,
-      })
-      .eq("tgId", 1);
+      .update({ game: row.game })
+      .eq("tgId", from);
   } catch (error) {
-    console.error('Ошибка при обновлении данных в Supabase:', error);
+    console.error("Ошибка при сохранении в Supabase:", error);
   }
 };
 
