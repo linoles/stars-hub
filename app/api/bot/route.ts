@@ -192,7 +192,7 @@ const getGameButtons = async (row: any) => {
         ],
         [
           Markup.button.callback("Назад ⬅", "gamePrevStage"),
-          Markup.button.callback("Готово ✅", "gameLastStage"),
+          Markup.button.callback("Готово ✅", "stratGame"),
         ],
       ]);
     default:
@@ -376,6 +376,34 @@ bot.action("startLudka", async (ctx) => {
     cache_time: 0,
   });
 });
+
+bot.action("startGame", async (ctx) => {
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  row.game.isActive = true;
+  const postText = `<b>🎮 Начало игры!</b>\n<blockquote>${row.game.text}</blockquote>\n\n<i>🚪 Мест:</i> <b>${row.game.spaces}</b>\n<i>Победителей:</i> <b>${row.game.winners}</b> 🏆\n<i>👣 Ходов:</i> <b>${row.game.moves}</b>`;
+  await bot.telegram.sendMessage(row.game.chatId, postText, {
+    parse_mode: "HTML",
+    reply_markup: {
+      inline_keyboard: [
+        [Markup.button.url("🧩 Играть", `https://t.me/StarzHubBot?start=game`)],
+      ]
+    }
+  })
+  await supabase
+    .from("users")
+    .update({
+      game: row.game,
+    })
+    .eq("tgId", 1);
+  ctx.editMessageText(await getGameMessage(row), {
+    parse_mode: "HTML",
+    reply_markup: (await getGameButtons(row)).reply_markup,
+  });
+})
 
 bot.action(/^game(?:space|moves|winners)=[0-9]+$/, async (ctx) => {
   const action = ctx.match[0].split("=")[0].slice(4);
@@ -1182,6 +1210,15 @@ bot.on("message", async (ctx) => {
           }
         );
         return;
+
+      case "/start game":
+        if (!row.game.isActive) {
+          ctx.reply("❌ Игра не активна в данный момент!", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+        }
 
       case "/ludka":
       case "-лудка":
