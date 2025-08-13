@@ -797,9 +797,6 @@ bot.on("message", async (ctx) => {
             .eq("tgId", 1);
           return;
 
-        case "/123":
-          bot.telegram.deleteMessage(-1002506008123, 54853)
-
         case "/stop_ludka":
         case "-лудка":
         case "/stop_ludka@StarzHubBot":
@@ -864,7 +861,7 @@ bot.on("message", async (ctx) => {
               : -1002606260123;
           await supabase
             .from("users")
-            .update({ game: row.gameLastStage })
+            .update({ game: row.game })
             .eq("tgId", 1);
           return;
       }
