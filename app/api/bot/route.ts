@@ -293,7 +293,7 @@ const getStartGameButtons = async (row: any, from: number) => {
   }
 };
 
-const startBotGaming = (row: any, from: number) => {
+const startBotGaming = async (row: any, from: number) => {
   const emoji = 
     row.game.type === "cubic" ? "🎲" :
     row.game.type === "darts" ? "🎯" :
@@ -301,79 +301,75 @@ const startBotGaming = (row: any, from: number) => {
     row.game.type === "basketball" ? "🏀" : "⚽️";
 
   let points = 0;
-  let currentMove = 0;
-  let isSending = false;
+  const retryDelay = 4000; // 4 сек между бросками
+  const maxRetries = 3;    // Макс. попыток для одного броска
 
-  // Интервал для отправки эмодзи
-  const diceInterval = setInterval(async () => {
-    if (isSending || currentMove >= row.game.moves) return;
-    isSending = true;
-
+  // Отправка одного эмодзи с повторами
+  const sendDice = async (attempt = 1): Promise<number> => {
     try {
       const dice = await bot.telegram.sendDice(from, { emoji });
-      points += dice.dice.value;
-      currentMove++;
-      row.game.doneUsers[`${from}`].progress = currentMove;
-      
-      // Сохраняем прогресс после каждого броска
-      await supabase
-        .from("users")
-        .update({ game: row.game })
-        .eq("tgId", from);
-
-      // Если все эмодзи отправлены — завершаем
-      if (currentMove === row.game.moves) {
-        clearInterval(diceInterval);
-        await finishGame();
-      }
+      return dice.dice.value;
     } catch (error) {
-      console.error(`Ошибка при отправке эмодзи (ход ${currentMove + 1}):`, error);
-    } finally {
-      isSending = false;
+      if (attempt >= maxRetries) throw error;
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+      return sendDice(attempt + 1);
     }
-  }, 3500); // Фиксированная задержка 3.5 сек между бросками
+  };
 
-  // Функция завершения игры
-  const finishGame = async () => {
-    row.game.doneUsers[`${from}`].points = points;
-    
-    // Отправляем итоги
-    await bot.telegram.sendMessage(
-      from,
-      `Подведём итоги! 🤖 Бот выбил вам ${points} очков! 🏅`
-    );
+  // Основной цикл
+  for (let i = 0; i < row.game.moves; i++) {
+    points += await sendDice();
+    row.game.doneUsers[`${from}`].progress = i + 1;
 
-    // Обновляем топ
-    const sortedUsers = Object.entries(row.game.doneUsers)
-      .filter(([_, data]: any) => data?.progress >= row.game.moves)
-      .sort((a: any, b: any) => b[1].points - a[1].points)
-      .slice(0, 10);
-
-    const top = sortedUsers.map(
-      ([user, data]: any) => `<b><a href="tg://user?id=${user}">${data.name}</a></b>: ${data.points}`
-    ).join("\n");
-
-    await bot.telegram.editMessageText(
-      row.game.chatId,
-      row.game.msgId,
-      undefined,
-      `${await getPostGameMessage(row)}\n\n<blockquote expandable><b>Топ 🏅</b>\n${top}</blockquote>`,
-      {
-        parse_mode: "HTML",
-        reply_markup: {
-          inline_keyboard: [
-            [Markup.button.url("🧩 Играть", `https://t.me/StarzHubBot?start=game`)],
-          ],
-        },
-      }
-    );
-
-    // Финализируем в Supabase
+    // Сохранение после каждого броска
     await supabase
       .from("users")
       .update({ game: row.game })
       .eq("tgId", from);
-  };
+
+    if (i < row.game.moves - 1) {
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
+  }
+
+  // Фиксация результатов
+  row.game.doneUsers[`${from}`].points = points;
+  await bot.telegram.sendMessage(
+    from,
+    `Подведём итоги! 🤖 Бот выбил вам ${points} очков! 🏅`
+  );
+
+  // Формирование топа с нумерацией
+  const sortedUsers = Object.entries(row.game.doneUsers)
+    .filter(([_, data]: any) => data?.progress >= row.game.moves)
+    .sort((a: any, b: any) => b[1].points - a[1].points)
+    .slice(0, 10)
+    .map(([user, data]: any, index) => 
+      `${index + 1}. <b><a href="tg://user?id=${user}">${data.name}</a></b>: ${data.points}`
+    )
+    .join("\n");
+
+  // Обновление сообщения в чате
+  await bot.telegram.editMessageText(
+    row.game.chatId,
+    row.game.msgId,
+    undefined,
+    `${await getPostGameMessage(row)}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>`,
+    {
+      parse_mode: "HTML",
+      reply_markup: {
+        inline_keyboard: [
+          [Markup.button.url("🧩 Играть", `https://t.me/StarzHubBot?start=game`)],
+        ],
+      },
+    }
+  );
+
+  // Финальное сохранение
+  await supabase
+    .from("users")
+    .update({ game: row.game })
+    .eq("tgId", from);
 };
 
 const getPostGameMessage = async (row: any) => {
