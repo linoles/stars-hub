@@ -331,7 +331,7 @@ const startBotGaming = (row: any, from: number) => {
     } finally {
       isSending = false;
     }
-  }, 500); // Фиксированная задержка 3.5 сек между бросками
+  }, 1500); // Фиксированная задержка 3.5 сек между бросками
 
   // Функция завершения игры
   const finishGame = async () => {
