@@ -305,12 +305,14 @@ const startBotGaming = async (row: any, from: number) => {
       ? "🏀"
       : "⚽️";
   const promises: Promise<void>[] = [];
+  let points = 0;
   for (let i = 1; i <= row.game.moves; i++) {
     promises.push(new Promise((resolve) => {
       setTimeout(async () => {
         const dice = bot.telegram.sendDice(from, { emoji: emoji });
         row.game.doneUsers[`${from}`].progress++;
-        row.game.doneUsers[`${from}`].points += (await dice).dice.value;
+        points += (await dice).dice.value;
+        row.game.doneUsers[`${from}`].points = points;
         resolve();
       }, i * 1000);
     }));
