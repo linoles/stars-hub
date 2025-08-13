@@ -74,6 +74,63 @@ const getLudkaMessage = async () => {
   return `✅ Лудка успешно запущена!\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>Цель:</i> ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb} 🎰\n<i>🎊 Победители:</i> ${row.ludka.winners}\n<i>Надо выбить (раз):</i> ${row.ludka.requiredTimes} 🗝\n<i>💪 Надо выбить (подряд):</i> ${row.ludka.requiredRow}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>`;
 };
 
+const getGameButtons = async (row: any) => {
+  switch (row.game.setupStage) {
+    case 0:
+      return Markup.inlineKeyboard([
+        [
+          Markup.button.callback("🎲", "game=cubic"),
+          Markup.button.callback("🎯", "game=darts"),
+          Markup.button.callback("🎳", "game=bowling"),
+          Markup.button.callback("🏀", "game=basketball"),
+          Markup.button.callback("⚽️", "game=football"),
+        ],
+        [Markup.button.callback("Дальше 👉", "gameNextStage")],
+      ]);
+    case 1:
+      return Markup.inlineKeyboard([
+        [Markup.button.callback("3", "gameWinners=3"), Markup.button.callback("4", "gameWinners=4"), Markup.button.callback("5", "gameWinners=5"), Markup.button.callback("6", "gameWinners=6"), Markup.button.callback("7", "gameWinners=7"), Markup.button.callback("8", "gameWinners=8")],
+        [Markup.button.callback("9", "gameWinners=9"), Markup.button.callback("10", "gameWinners=10"), Markup.button.callback("11", "gameWinners=11"), Markup.button.callback("12", "gameWinners=12"), Markup.button.callback("13", "gameWinners=13"), Markup.button.callback("14", "gameWinners=14")],
+        [Markup.button.callback("15", "gameWinners=15"), Markup.button.callback("16", "gameWinners=16"), Markup.button.callback("17", "gameWinners=17"), Markup.button.callback("18", "gameWinners=18"), Markup.button.callback("19", "gameWinners=19"), Markup.button.callback("20", "gameWinners=20")],
+        [Markup.button.callback("25", "gameWinners=25"), Markup.button.callback("30", "gameWinners=30"), Markup.button.callback("35", "gameWinners=35"), Markup.button.callback("40", "gameWinners=40"), Markup.button.callback("45", "gameWinners=45"), Markup.button.callback("50", "gameWinners=50")],
+        [Markup.button.callback("60", "gameWinners=60"), Markup.button.callback("70", "gameWinners=70"), Markup.button.callback("80", "gameWinners=80"), Markup.button.callback("90", "gameWinners=90"), Markup.button.callback("100", "gameWinners=100")],
+        [Markup.button.callback("120", "gameWinners=120"), Markup.button.callback("140", "gameWinners=140"), Markup.button.callback("160", "gameWinners=160"), Markup.button.callback("180", "gameWinners=180"), Markup.button.callback("200", "gameWinners=200")],
+        [Markup.button.callback("Назад ⬅", "gamePrevStage"), Markup.button.callback("Дальше 👉", "gameNextStage")],
+      ]);
+    case 2:
+      return Markup.inlineKeyboard([
+        [Markup.button.callback("2", "gameMoves=2"), Markup.button.callback("3", "gameMoves=3"), Markup.button.callback("4", "gameMoves=4"), Markup.button.callback("5", "gameMoves=5")],
+        [Markup.button.callback("6", "gameMoves=6"), Markup.button.callback("7", "gameMoves=7"), Markup.button.callback("8", "gameMoves=8"), Markup.button.callback("9", "gameMoves=9"), Markup.button.callback("10", "gameMoves=10")],
+        [Markup.button.callback("11", "gameMoves=11"), Markup.button.callback("12", "gameMoves=12"), Markup.button.callback("13", "gameMoves=13"), Markup.button.callback("14", "gameMoves=14"), Markup.button.callback("15", "gameMoves=15")],
+        [Markup.button.callback("16", "gameMoves=16"), Markup.button.callback("17", "gameMoves=17"), Markup.button.callback("18", "gameMoves=18"), Markup.button.callback("19", "gameMoves=19"), Markup.button.callback("20", "gameMoves=20")],
+        [Markup.button.callback("21", "gameMoves=21"), Markup.button.callback("22", "gameMoves=22"), Markup.button.callback("23", "gameMoves=23"), Markup.button.callback("24", "gameMoves=24"), Markup.button.callback("25", "gameMoves=25")],
+        [Markup.button.callback("Назад ⬅", "gamePrevStage"), Markup.button.callback("Дальше 👉", "gameNextStage")],
+      ]);
+    case 3:
+      return Markup.inlineKeyboard([
+        [Markup.button.callback("1", "gameWinners=1"), Markup.button.callback("2", "gameWinners=2"), Markup.button.callback("3", "gameWinners=3"), Markup.button.callback("5", "gameWinners=5"), Markup.button.callback("10", "gameWinners=10")],
+        [Markup.button.callback("Назад ⬅", "gamePrevStage"), Markup.button.callback("Готово ✅", "gameNextStage")],
+      ])
+    default:
+      return Markup.inlineKeyboard([]);
+  }
+};
+
+const getGameMessage = async (row: any) => {
+  switch (row.game.setupStage) {
+    case 0:
+      return `⚙ Для начала, выберите тип игры 👇\nСейчас установлено: ${row.game.type === "cubic" ? "🎲" : row.game.type === "darts" ? "🎯" : row.game.type === "bowling" ? "🎳" : row.game.type === "basketball" ? "🏀" : "⚽️"}`;
+    case 1:
+      return `⚙ Теперь выберите количество мест в игре 👇\nСейчас установлено: ${row.game.space}`;
+    case 2:
+      return `⚙ Теперь выберите количество ходов 👇\nСейчас установлено: ${row.game.moves}`;
+    case 3:
+      return `⚙ Ну и наконец, количество победителей 👇\nСейчас установлено: ${row.game.winners}`;
+    default:
+      return "✅ Игра успешно запущена!";
+  }
+};
+
 const sendResults = async (finalText: string) => {
   try {
     bot.telegram.sendMessage(7441988500, finalText, {
@@ -87,20 +144,59 @@ const sendResults = async (finalText: string) => {
       .select("*")
       .eq("tgId", 1)
       .single();
-    await bot.telegram.sendMessage(
-      row.ludka.chatId,
-      finalText,
-      {
-        parse_mode: "HTML",
-        reply_parameters: {
-          message_id: row.ludka.msgId,
-        }
-      }
-    );
+    await bot.telegram.sendMessage(row.ludka.chatId, finalText, {
+      parse_mode: "HTML",
+      reply_parameters: {
+        message_id: row.ludka.msgId,
+      },
+    });
   } catch (error: any) {
-    bot.telegram.sendMessage(7441988500, `Error occurred while processing message:\n${error.stack || error.message}`);
+    bot.telegram.sendMessage(
+      7441988500,
+      `Error occurred while processing message:\n${
+        error.stack || error.message
+      }`
+    );
   }
 };
+
+bot.action("gamePrevStage", async (ctx) => {
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  row.game.setupStage -= 1;
+  await supabase
+    .from("users")
+    .update({
+      game: row.game,
+    })
+    .eq("tgId", 1);
+  ctx.editMessageText(await getGameMessage(row), {
+    parse_mode: "HTML",
+    reply_markup: (await getGameButtons(row)).reply_markup,
+  });
+});
+
+bot.action("gameNextStage", async (ctx) => {
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  row.game.setupStage += 1;
+  await supabase
+    .from("users")
+    .update({
+      game: row.game,
+    })
+    .eq("tgId", 1);
+  ctx.editMessageText(await getGameMessage(row), {
+    parse_mode: "HTML",
+    reply_markup: (await getGameButtons(row)).reply_markup,
+  });
+});
 
 bot.action("showSettings", async (ctx) => {
   ctx.editMessageText(await getLudkaMessage(), {
@@ -531,6 +627,19 @@ bot.on("message", async (ctx) => {
             })
             .eq("tgId", 1);
           return;
+
+        case "/game":
+        case "/игра":
+        case ".игра":
+        case "/game@StarzHubBot":
+          ctx.reply(await getGameMessage(row), {
+            reply_markup: (await getGameButtons(row)).reply_markup,
+            parse_mode: "HTML",
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          return;
       }
     }
 
@@ -556,7 +665,8 @@ bot.on("message", async (ctx) => {
       ctx.message.reply_to_message?.from?.id === 777000 &&
       "dice" in ctx.message &&
       (ctx.message.dice as any).value === neededValue &&
-      row.ludka.winners === row.ludka.currentWinners.length + 1
+      row.ludka.winners === row.ludka.currentWinners.length + 1 &&
+      ctx.message.chat.id === row.ludka.chatId
     ) {
       try {
         row.ludka.doneUsers = row.ludka.doneUsers || {};
@@ -696,7 +806,8 @@ bot.on("message", async (ctx) => {
       ctx.message.reply_to_message?.from?.id === 777000 &&
       "dice" in ctx.message &&
       (ctx.message.dice as any).value === neededValue &&
-      row.ludka.winners !== row.ludka.currentWinners.length + 1
+      row.ludka.winners !== row.ludka.currentWinners.length + 1 &&
+      ctx.message.chat.id === row.ludka.chatId
     ) {
       try {
         row.ludka.doneUsers = row.ludka.doneUsers || {};
@@ -707,7 +818,10 @@ bot.on("message", async (ctx) => {
 
         const userData = await row.ludka.doneUsers[`${senderId}`];
 
-        if (row.ludka.requiredTimes >= (await userData).times + 1 && extraCheck) {
+        if (
+          row.ludka.requiredTimes >= (await userData).times + 1 &&
+          extraCheck
+        ) {
           const remainingWinners =
             row.ludka.winners === 1000
               ? "∞"
@@ -726,7 +840,7 @@ bot.on("message", async (ctx) => {
           row.ludka.doneUsers[`${senderId}`] = {
             lastWins: row.ludka.doneUsers[`${senderId}`].lastWins + 1,
             times: row.ludka.doneUsers[`${senderId}`].times + 1,
-          }
+          };
           await supabase
             .from("users")
             .update({
@@ -825,7 +939,8 @@ bot.on("message", async (ctx) => {
       ctx.message.reply_to_message?.from?.id === 777000 &&
       "dice" in ctx.message &&
       (ctx.message.dice as any).value !== neededValue &&
-      row.ludka.doneUsers[`${senderId}`].lastWins > 0
+      row.ludka.doneUsers[`${senderId}`].lastWins > 0 &&
+      ctx.message.chat.id === row.ludka.chatId
     ) {
       if (row.ludka.requiredRow > 1) {
         ctx.reply("❌ Ваш стрик приостановился!", {
