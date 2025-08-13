@@ -835,6 +835,19 @@ bot.on("message", async (ctx) => {
             .eq("tgId", 1);
           return;
       }
+      if (msg.startsWith("/game_text ")) {
+        row.game.text = msg.slice(11);
+        await supabase
+          .from("users")
+          .update({ game: row.game })
+          .eq("tgId", 1);
+        ctx.reply("Успешно ✅", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
+      }
     }
 
     if (!row.ludka.doneUsers[`${senderId}`]) {
