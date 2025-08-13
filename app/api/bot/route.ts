@@ -192,7 +192,7 @@ const getGameButtons = async (row: any) => {
         ],
         [
           Markup.button.callback("Назад ⬅", "gamePrevStage"),
-          Markup.button.callback("Готово ✅", "stratGame"),
+          Markup.button.callback("Готово ✅", "startGame"),
         ],
       ]);
     default:
@@ -384,6 +384,7 @@ bot.action("startGame", async (ctx) => {
     .eq("tgId", 1)
     .single();
   row.game.isActive = true;
+  row.game.setupStage = 0;
   const postText = `<b>🎮 Начало игры!</b>\n<blockquote>${row.game.text}</blockquote>\n\n<i>🚪 Мест:</i> <b>${row.game.spaces}</b>\n<i>Победителей:</i> <b>${row.game.winners}</b> 🏆\n<i>👣 Ходов:</i> <b>${row.game.moves}</b>`;
   await bot.telegram.sendMessage(row.game.chatId, postText, {
     parse_mode: "HTML",
