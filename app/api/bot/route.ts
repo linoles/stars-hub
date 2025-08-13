@@ -378,7 +378,7 @@ bot.action("startLudka", async (ctx) => {
 });
 
 bot.action(/^game(?:space|moves|winners)=[0-9]+$/, async (ctx) => {
-  const action = ctx.match[0].split("=")[0].slice(5);
+  const action = ctx.match[0].split("=")[0].slice(4);
   const value = ctx.match[0].split("=")[1];
   const admins = [7441988500, 6233759034, 7177688298];
   if (!admins.includes(ctx.callbackQuery.from.id)) {
