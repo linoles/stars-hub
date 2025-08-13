@@ -393,13 +393,27 @@ bot.action(/^game(?:space|moves|winners)=[0-9]+$/, async (ctx) => {
     .select("*")
     .eq("tgId", 1)
     .single();
+  if (error) {
+    ctx.answerCbQuery("❌ Ошибка обновления настройки", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
   row.game[action] = Number(value);
-  await supabase
+  const { error: updateError } = await supabase
     .from("users")
     .update({
       game: row.game,
     })
     .eq("tgId", 1);
+  if (updateError) {
+    ctx.answerCbQuery("❌ Ошибка при сохранении изменений", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
   ctx.editMessageText(await getGameMessage(row), {
     parse_mode: "HTML",
     reply_markup: (await getGameButtons(row)).reply_markup,
