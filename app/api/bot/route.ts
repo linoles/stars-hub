@@ -337,7 +337,11 @@ bot.action(/^gameSet=(gamer|bot)$/, async (ctx) => {
     .select("*")
     .eq("tgId", 1)
     .single();
-  row.game.doneUsers[`${ctx.callbackQuery.from.id}`].set = value;
+  if (!row.game.doneUsers[`${ctx.callbackQuery.from.id}`]) {
+    row.game.doneUsers[`${ctx.callbackQuery.from.id}`] = { name: ctx.callbackQuery.from.first_name, set: value, progress: 0, points: 0 };
+  } else {
+    row.game.doneUsers[`${ctx.callbackQuery.from.id}`].set = value;
+  }
   await supabase
     .from("users")
     .update({
@@ -1316,6 +1320,7 @@ bot.on("message", async (ctx) => {
           });
         } else if (row.game.isActive && !row.game.doneUsers[`${senderId}`]) {
           row.game.doneUsers[`${senderId}`] = {
+            name: ctx.message.from.first_name,
             set: "",
             progress: 0,
             points: 0,
