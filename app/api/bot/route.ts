@@ -377,7 +377,7 @@ bot.action("startLudka", async (ctx) => {
   });
 });
 
-bot.action(/^game(?:space|moves|winners)=[0-201]+$/, async (ctx) => {
+bot.action(/^game(?:space|moves|winners)=[0-9]+$/, async (ctx) => {
   const action = ctx.match[0].split("=")[0].slice(5);
   const value = ctx.match[0].split("=")[1];
   const admins = [7441988500, 6233759034, 7177688298];
@@ -403,13 +403,12 @@ bot.action(/^game(?:space|moves|winners)=[0-201]+$/, async (ctx) => {
   ctx.editMessageText(await getGameMessage(row), {
     parse_mode: "HTML",
     reply_markup: (await getGameButtons(row)).reply_markup,
-  })
+  });
   ctx.answerCbQuery("✅ Текущие настройки успешно обновлены!", {
     show_alert: false,
     cache_time: 0,
   });
-  return;
-})
+});
 
 bot.action(/^gametype=(?:cubic|darts|bowling|basketball|football)$/, async (ctx) => {
   const admins = [7441988500, 6233759034, 7177688298];
@@ -441,7 +440,7 @@ bot.action(/^gametype=(?:cubic|darts|bowling|basketball|football)$/, async (ctx)
     cache_time: 0,
   });
   return;
-})
+});
 
 bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
   const admins = [7441988500, 6233759034, 7177688298];
