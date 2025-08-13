@@ -304,21 +304,20 @@ const startBotGaming = async (row: any, from: number) => {
       : row.game.type === "basketball"
       ? "🏀"
       : "⚽️";
-  const promises: Promise<void>[] = [];
-  let points = 0;
+  const diceResults = [];
+  
   for (let i = 1; i <= row.game.moves; i++) {
-    promises.push(new Promise((resolve) => {
-      setTimeout(async () => {
-        const dice = bot.telegram.sendDice(from, { emoji: emoji });
-        row.game.doneUsers[`${from}`].progress++;
-        points += (await dice).dice.value;
-        resolve();
-      }, i * 1000);
-    }));
+    await new Promise(resolve => setTimeout(resolve, i * 1000));
+    const dice = await bot.telegram.sendDice(from, { emoji: emoji });
+    row.game.doneUsers[`${from}`].progress++;
+    diceResults.push(dice.dice.value);
   }
-  await Promise.all(promises);
+
+  const points = diceResults.reduce((sum, value) => sum + value, 0);
   row.game.doneUsers[`${from}`].points = points;
-  bot.telegram.sendMessage(from, `Подведём итоги! 🤖 Бот выбил вам ${row.game.doneUsers[`${from}`].points} очков! 🏅`)
+  
+  bot.telegram.sendMessage(from, `Подведём итоги! 🤖 Бот выбил вам ${row.game.doneUsers[`${from}`].points} очков! 🏅`);
+  
   const sortedUsers = Object.entries(row.game.doneUsers)
     .filter(([user, data]) => {
       if (typeof data === 'object' && data !== null && 'progress' in data) {
@@ -334,6 +333,7 @@ const startBotGaming = async (row: any, from: number) => {
     const userData = data as { name: string, points: number };
     top += `<b><a href="tg://user?id=${user}">${userData.name}</a></b>: ${userData.points}\n`;
   }
+  
   bot.telegram.editMessageText(row.game.chatId, row.game.msgId, undefined, `${(await getPostGameMessage(row))}\n\n<blockquote expandable><b>Топ 🏅</b>\n${top}</blockquote>`, {
     parse_mode: "HTML",
     reply_markup: {
@@ -341,7 +341,8 @@ const startBotGaming = async (row: any, from: number) => {
         [Markup.button.url("🧩 Играть", `https://t.me/StarzHubBot?start=game`)],
       ],
     },
-  })
+  });
+  
   await supabase
     .from("users")
     .update({
