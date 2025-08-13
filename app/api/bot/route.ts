@@ -304,13 +304,18 @@ const startBotGaming = async (row: any, from: number) => {
       : row.game.type === "basketball"
       ? "🏀"
       : "⚽️";
+  const promises: Promise<void>[] = [];
   for (let i = 1; i <= row.game.moves; i++) {
-    setTimeout(async () => {
-      const dice = bot.telegram.sendDice(from, { emoji: emoji });
-      row.game.doneUsers[`${from}`].progress++;
-      row.game.doneUsers[`${from}`].points += (await dice).dice.value;
-    }, i * 1000);
+    promises.push(new Promise((resolve) => {
+      setTimeout(async () => {
+        const dice = bot.telegram.sendDice(from, { emoji: emoji });
+        row.game.doneUsers[`${from}`].progress++;
+        row.game.doneUsers[`${from}`].points += (await dice).dice.value;
+        resolve();
+      }, i * 1000);
+    }));
   }
+  await Promise.all(promises);
   bot.telegram.sendMessage(from, `Подведём итоги! 🤖 Бот выбил вам ${row.game.doneUsers[`${from}`].points} очков! 🏅`)
   let top = "";
   const filteredUsers = Object.keys(row.game.doneUsers).filter(user => row.game.doneUsers[user].progress >= row.game.moves);
