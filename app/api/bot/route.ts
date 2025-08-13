@@ -317,10 +317,20 @@ const startBotGaming = async (row: any, from: number) => {
   }
   await Promise.all(promises);
   bot.telegram.sendMessage(from, `Подведём итоги! 🤖 Бот выбил вам ${row.game.doneUsers[`${from}`].points} очков! 🏅`)
+  const sortedUsers = Object.entries(row.game.doneUsers)
+    .filter(([user, data]) => {
+      if (typeof data === 'object' && data !== null && 'progress' in data) {
+        return (data as { progress: number }).progress >= row.game.moves;
+      }
+      return false;
+    })
+    .sort((a: any, b: any) => b[1].points - a[1].points)
+    .slice(0, 10);
+
   let top = "";
-  const filteredUsers = Object.keys(row.game.doneUsers).filter(user => row.game.doneUsers[user].progress >= row.game.moves);
-  for (let i = 0; i < filteredUsers.length; i++) {
-    top += `<b>${row.game.doneUsers[`${filteredUsers[i]}`].name}</b>: ${row.game.doneUsers[`${filteredUsers[i]}`].points}\n`;
+  for (const [user, data] of sortedUsers) {
+    const userData = data as { name: string, points: number };
+    top += `<b><a href="tg://user?id=${user}">${userData.name}</a></b>: ${userData.points}\n`;
   }
   bot.telegram.editMessageText(row.game.chatId, row.game.msgId, undefined, `${(await getPostGameMessage(row))}\n\n<blockquote expandable><b>Топ 🏅</b>\n${top}</blockquote>`, {
     parse_mode: "HTML",
@@ -341,6 +351,17 @@ const startBotGaming = async (row: any, from: number) => {
 const getPostGameMessage = async (row: any) => {
   return `<b>🎮 Начало игры!</b>\n<blockquote>${row.game.text}</blockquote>\n\n<i>🚪 Мест:</i> <b>${row.game.space}</b>\n<i>Победителей:</i> <b>${row.game.winners}</b> 🏆\n<i>👣 Ходов:</i> <b>${row.game.moves}</b>`;
 }
+
+
+
+
+
+// доделать окончание игры и кол-во мест
+
+
+
+
+
 
 bot.action(/^gameSet=(gamer|bot)$/, async (ctx) => {
   const value = ctx.match[0].split("=")[1];
