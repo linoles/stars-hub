@@ -345,12 +345,12 @@ const startBotGaming = (row: any, from: number) => {
 
     // Обновляем топ
     const sortedUsers = Object.entries(row.game.doneUsers)
-      .filter(([_, data]) => data?.progress >= row.game.moves)
+      .filter(([_, data]: any) => data?.progress >= row.game.moves)
       .sort((a: any, b: any) => b[1].points - a[1].points)
       .slice(0, 10);
 
     const top = sortedUsers.map(
-      ([user, data]) => `<b><a href="tg://user?id=${user}">${data.name}</a></b>: ${data.points}`
+      ([user, data]: any) => `<b><a href="tg://user?id=${user}">${data.name}</a></b>: ${data.points}`
     ).join("\n");
 
     await bot.telegram.editMessageText(
