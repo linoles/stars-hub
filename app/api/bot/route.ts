@@ -718,7 +718,7 @@ bot.on("message", async (ctx) => {
     }${ctx.message.from.last_name ?? ""}`;
     const admins = [7441988500, 6233759034, 7177688298];
 
-    if (admins.includes(senderId)) {
+    if (admins.includes(senderId) && msg) {
       switch (msg) {
         case "/ludka":
         case "/лудка":
