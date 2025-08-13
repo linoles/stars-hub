@@ -79,38 +79,122 @@ const getGameButtons = async (row: any) => {
     case 0:
       return Markup.inlineKeyboard([
         [
-          Markup.button.callback("🎲", "game=cubic"),
-          Markup.button.callback("🎯", "game=darts"),
-          Markup.button.callback("🎳", "game=bowling"),
-          Markup.button.callback("🏀", "game=basketball"),
-          Markup.button.callback("⚽️", "game=football"),
+          Markup.button.callback("🎲", "gametype=cubic"),
+          Markup.button.callback("🎯", "gametype=darts"),
+          Markup.button.callback("🎳", "gametype=bowling"),
+          Markup.button.callback("🏀", "gametype=basketball"),
+          Markup.button.callback("⚽️", "gametype=football"),
         ],
         [Markup.button.callback("Дальше 👉", "gameNextStage")],
       ]);
     case 1:
       return Markup.inlineKeyboard([
-        [Markup.button.callback("3", "gameWinners=3"), Markup.button.callback("4", "gameWinners=4"), Markup.button.callback("5", "gameWinners=5"), Markup.button.callback("6", "gameWinners=6"), Markup.button.callback("7", "gameWinners=7"), Markup.button.callback("8", "gameWinners=8")],
-        [Markup.button.callback("9", "gameWinners=9"), Markup.button.callback("10", "gameWinners=10"), Markup.button.callback("11", "gameWinners=11"), Markup.button.callback("12", "gameWinners=12"), Markup.button.callback("13", "gameWinners=13"), Markup.button.callback("14", "gameWinners=14")],
-        [Markup.button.callback("15", "gameWinners=15"), Markup.button.callback("16", "gameWinners=16"), Markup.button.callback("17", "gameWinners=17"), Markup.button.callback("18", "gameWinners=18"), Markup.button.callback("19", "gameWinners=19"), Markup.button.callback("20", "gameWinners=20")],
-        [Markup.button.callback("25", "gameWinners=25"), Markup.button.callback("30", "gameWinners=30"), Markup.button.callback("35", "gameWinners=35"), Markup.button.callback("40", "gameWinners=40"), Markup.button.callback("45", "gameWinners=45"), Markup.button.callback("50", "gameWinners=50")],
-        [Markup.button.callback("60", "gameWinners=60"), Markup.button.callback("70", "gameWinners=70"), Markup.button.callback("80", "gameWinners=80"), Markup.button.callback("90", "gameWinners=90"), Markup.button.callback("100", "gameWinners=100")],
-        [Markup.button.callback("120", "gameWinners=120"), Markup.button.callback("140", "gameWinners=140"), Markup.button.callback("160", "gameWinners=160"), Markup.button.callback("180", "gameWinners=180"), Markup.button.callback("200", "gameWinners=200")],
-        [Markup.button.callback("Назад ⬅", "gamePrevStage"), Markup.button.callback("Дальше 👉", "gameNextStage")],
+        [
+          Markup.button.callback("3", "gamespace=3"),
+          Markup.button.callback("4", "gamespace=4"),
+          Markup.button.callback("5", "gamespace=5"),
+          Markup.button.callback("6", "gamespace=6"),
+          Markup.button.callback("7", "gamespace=7"),
+          Markup.button.callback("8", "gamespace=8"),
+        ],
+        [
+          Markup.button.callback("9", "gamespace=9"),
+          Markup.button.callback("10", "gamespace=10"),
+          Markup.button.callback("11", "gamespace=11"),
+          Markup.button.callback("12", "gamespace=12"),
+          Markup.button.callback("13", "gamespace=13"),
+          Markup.button.callback("14", "gamespace=14"),
+        ],
+        [
+          Markup.button.callback("15", "gamespace=15"),
+          Markup.button.callback("16", "gamespace=16"),
+          Markup.button.callback("17", "gamespace=17"),
+          Markup.button.callback("18", "gamespace=18"),
+          Markup.button.callback("19", "gamespace=19"),
+          Markup.button.callback("20", "gamespace=20"),
+        ],
+        [
+          Markup.button.callback("25", "gamespace=25"),
+          Markup.button.callback("30", "gamespace=30"),
+          Markup.button.callback("35", "gamespace=35"),
+          Markup.button.callback("40", "gamespace=40"),
+          Markup.button.callback("45", "gamespace=45"),
+          Markup.button.callback("50", "gamespace=50"),
+        ],
+        [
+          Markup.button.callback("60", "gamespace=60"),
+          Markup.button.callback("70", "gamespace=70"),
+          Markup.button.callback("80", "gamespace=80"),
+          Markup.button.callback("90", "gamespace=90"),
+          Markup.button.callback("100", "gamespace=100"),
+        ],
+        [
+          Markup.button.callback("120", "gamespace=120"),
+          Markup.button.callback("140", "gamespace=140"),
+          Markup.button.callback("160", "gamespace=160"),
+          Markup.button.callback("180", "gamespace=180"),
+          Markup.button.callback("200", "gamespace=200"),
+        ],
+        [
+          Markup.button.callback("Назад ⬅", "gamePrevStage"),
+          Markup.button.callback("Дальше 👉", "gameNextStage"),
+        ],
       ]);
     case 2:
       return Markup.inlineKeyboard([
-        [Markup.button.callback("2", "gameMoves=2"), Markup.button.callback("3", "gameMoves=3"), Markup.button.callback("4", "gameMoves=4"), Markup.button.callback("5", "gameMoves=5")],
-        [Markup.button.callback("6", "gameMoves=6"), Markup.button.callback("7", "gameMoves=7"), Markup.button.callback("8", "gameMoves=8"), Markup.button.callback("9", "gameMoves=9"), Markup.button.callback("10", "gameMoves=10")],
-        [Markup.button.callback("11", "gameMoves=11"), Markup.button.callback("12", "gameMoves=12"), Markup.button.callback("13", "gameMoves=13"), Markup.button.callback("14", "gameMoves=14"), Markup.button.callback("15", "gameMoves=15")],
-        [Markup.button.callback("16", "gameMoves=16"), Markup.button.callback("17", "gameMoves=17"), Markup.button.callback("18", "gameMoves=18"), Markup.button.callback("19", "gameMoves=19"), Markup.button.callback("20", "gameMoves=20")],
-        [Markup.button.callback("21", "gameMoves=21"), Markup.button.callback("22", "gameMoves=22"), Markup.button.callback("23", "gameMoves=23"), Markup.button.callback("24", "gameMoves=24"), Markup.button.callback("25", "gameMoves=25")],
-        [Markup.button.callback("Назад ⬅", "gamePrevStage"), Markup.button.callback("Дальше 👉", "gameNextStage")],
+        [
+          Markup.button.callback("2", "gamemoves=2"),
+          Markup.button.callback("3", "gamemoves=3"),
+          Markup.button.callback("4", "gamemoves=4"),
+          Markup.button.callback("5", "gamemoves=5"),
+        ],
+        [
+          Markup.button.callback("6", "gamemoves=6"),
+          Markup.button.callback("7", "gamemoves=7"),
+          Markup.button.callback("8", "gamemoves=8"),
+          Markup.button.callback("9", "gamemoves=9"),
+          Markup.button.callback("10", "gamemoves=10"),
+        ],
+        [
+          Markup.button.callback("11", "gamemoves=11"),
+          Markup.button.callback("12", "gamemoves=12"),
+          Markup.button.callback("13", "gamemoves=13"),
+          Markup.button.callback("14", "gamemoves=14"),
+          Markup.button.callback("15", "gamemoves=15"),
+        ],
+        [
+          Markup.button.callback("16", "gamemoves=16"),
+          Markup.button.callback("17", "gamemoves=17"),
+          Markup.button.callback("18", "gamemoves=18"),
+          Markup.button.callback("19", "gamemoves=19"),
+          Markup.button.callback("20", "gamemoves=20"),
+        ],
+        [
+          Markup.button.callback("21", "gamemoves=21"),
+          Markup.button.callback("22", "gamemoves=22"),
+          Markup.button.callback("23", "gamemoves=23"),
+          Markup.button.callback("24", "gamemoves=24"),
+          Markup.button.callback("25", "gamemoves=25"),
+        ],
+        [
+          Markup.button.callback("Назад ⬅", "gamePrevStage"),
+          Markup.button.callback("Дальше 👉", "gameNextStage"),
+        ],
       ]);
     case 3:
       return Markup.inlineKeyboard([
-        [Markup.button.callback("1", "gameWinners=1"), Markup.button.callback("2", "gameWinners=2"), Markup.button.callback("3", "gameWinners=3"), Markup.button.callback("5", "gameWinners=5"), Markup.button.callback("10", "gameWinners=10")],
-        [Markup.button.callback("Назад ⬅", "gamePrevStage"), Markup.button.callback("Готово ✅", "gameNextStage")],
-      ])
+        [
+          Markup.button.callback("1", "gamewinners=1"),
+          Markup.button.callback("2", "gamewinners=2"),
+          Markup.button.callback("3", "gamewinners=3"),
+          Markup.button.callback("5", "gamewinners=5"),
+          Markup.button.callback("10", "gamewinners=10"),
+        ],
+        [
+          Markup.button.callback("Назад ⬅", "gamePrevStage"),
+          Markup.button.callback("Готово ✅", "gameLastStage"),
+        ],
+      ]);
     default:
       return Markup.inlineKeyboard([]);
   }
@@ -119,7 +203,17 @@ const getGameButtons = async (row: any) => {
 const getGameMessage = async (row: any) => {
   switch (row.game.setupStage) {
     case 0:
-      return `⚙ Для начала, выберите тип игры 👇\nСейчас установлено: ${row.game.type === "cubic" ? "🎲" : row.game.type === "darts" ? "🎯" : row.game.type === "bowling" ? "🎳" : row.game.type === "basketball" ? "🏀" : "⚽️"}`;
+      return `⚙ Для начала, выберите тип игры 👇\nСейчас установлено: ${
+        row.game.type === "cubic"
+          ? "🎲"
+          : row.game.type === "darts"
+          ? "🎯"
+          : row.game.type === "bowling"
+          ? "🎳"
+          : row.game.type === "basketball"
+          ? "🏀"
+          : "⚽️"
+      }`;
     case 1:
       return `⚙ Теперь выберите количество мест в игре 👇\nСейчас установлено: ${row.game.space}`;
     case 2:
@@ -282,6 +376,73 @@ bot.action("startLudka", async (ctx) => {
     cache_time: 0,
   });
 });
+
+// сделать отдельно type
+bot.action(/^game(?:space|moves|winners)=[0-201]+$/, async (ctx) => {
+  const action = ctx.match[0].split("=")[0].slice(5);
+  const value = ctx.match[0].split("=")[1];
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  row.game[action] = Number(value);
+  await supabase
+    .from("users")
+    .update({
+      game: row.game,
+    })
+    .eq("tgId", 1);
+  ctx.editMessageText(await getGameMessage(row), {
+    parse_mode: "HTML",
+    reply_markup: (await getGameButtons(row)).reply_markup,
+  })
+  ctx.answerCbQuery("✅ Текущие настройки успешно обновлены!", {
+    show_alert: false,
+    cache_time: 0,
+  });
+  return;
+})
+
+bot.action(/^gametype=(?:cubic|darts|bowling|basketball|football)$/, async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  row.game.type = ctx.match[0].split("=")[1];
+  await supabase
+    .from("users")
+    .update({
+      game: row.game,
+    })
+    .eq("tgId", 1);
+  ctx.editMessageText(await getGameMessage(row), {
+    parse_mode: "HTML",
+    reply_markup: (await getGameButtons(row)).reply_markup,
+  })
+  ctx.answerCbQuery("✅ Текущие настройки успешно обновлены!", {
+    show_alert: false,
+    cache_time: 0,
+  });
+  return;
+})
 
 bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
   const admins = [7441988500, 6233759034, 7177688298];
@@ -639,6 +800,27 @@ bot.on("message", async (ctx) => {
               message_id: ctx.message.message_id,
             },
           });
+          return;
+
+        case "/set_game*hub":
+        case "/set_game*lnt":
+        case "/set_game*test":
+          ctx.reply("Успешно ✅", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          const channel = msg.split("*")[1];
+          row.game.chatId =
+            channel === "hub"
+              ? -1002506008123
+              : channel === "lnt"
+              ? -1002551457192
+              : -1002606260123;
+          await supabase
+            .from("users")
+            .update({ game: row.gameLastStage })
+            .eq("tgId", 1);
           return;
       }
     }
