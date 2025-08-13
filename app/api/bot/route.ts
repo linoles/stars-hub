@@ -317,7 +317,14 @@ const startBotGaming = async (row: any, from: number) => {
   for (let i = 0; i < filteredUsers.length; i++) {
     top += `<b>${row.game.doneUsers[`${filteredUsers[i]}`].name}</b>: ${row.game.doneUsers[`${filteredUsers[i]}`].points}\n`;
   }
-  bot.telegram.editMessageText(row.game.chatId, row.game.msgId, undefined, `${(await getPostGameMessage(row))}\n\n<blockquote expandable><b>Топ 🏅</b>\n${top}</blockquote>`)
+  bot.telegram.editMessageText(row.game.chatId, row.game.msgId, undefined, `${(await getPostGameMessage(row))}\n\n<blockquote expandable><b>Топ 🏅</b>\n${top}</blockquote>`, {
+    parse_mode: "HTML",
+    reply_markup: {
+      inline_keyboard: [
+        [Markup.button.url("🧩 Играть", `https://t.me/StarzHubBot?start=game`)],
+      ],
+    },
+  })
   await supabase
     .from("users")
     .update({
