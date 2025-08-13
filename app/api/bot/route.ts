@@ -235,6 +235,11 @@ const sendResults = async (finalText: string) => {
       .select("*")
       .eq("tgId", 1)
       .single();
+    if (row.ludka.chatId == -1002506008123) {
+      bot.telegram.sendMessage(6233759034, finalText, {
+        parse_mode: "HTML",
+      });
+    }
     await bot.telegram.sendMessage(row.ludka.chatId, finalText, {
       parse_mode: "HTML",
       reply_parameters: {
@@ -250,6 +255,104 @@ const sendResults = async (finalText: string) => {
     );
   }
 };
+
+const getStartGameMessage = async (row: any, from: number) => {
+  const set = row.game.doneUsers[`${from}`].set;
+  const emoji =
+    row.game.type === "cubic"
+      ? "🎲"
+      : row.game.type === "darts"
+      ? "🎯"
+      : row.game.type === "bowling"
+      ? "🎳"
+      : row.game.type === "basketball"
+      ? "🏀"
+      : "⚽️";
+  if (set === "") {
+    return "✅ Вы успешно присоединились к игре! Теперь выберете, кто будет отправлять эмодзи 🍀";
+  } else if (set === "gamer") {
+    bot.telegram.sendDice(from, { emoji: emoji });
+    return `✅ Начинайте отправлять эмодзи! (Надо отправить раз: ${row.game.moves}) 👣`;
+  } else {
+    return `✅ Сейчас бот начнёт отправлять вам все ${row.game.moves} эмодзи для игры! 🎮`;
+  }
+};
+
+const getStartGameButtons = async (row: any, from: number) => {
+  const set = row.game.doneUsers[`${from}`].set;
+  if (set === "") {
+    return Markup.inlineKeyboard([
+      [
+        Markup.button.callback("👤 Я сам", "gameSet=gamer"),
+        Markup.button.callback("🤖 Бот", "gameSet=bot"),
+      ],
+    ]);
+  } else {
+    startBotGaming(row, from);
+    return Markup.inlineKeyboard([]);
+  }
+};
+
+const startBotGaming = async (row: any, from: number) => {
+  const emoji =
+    row.game.type === "cubic"
+      ? "🎲"
+      : row.game.type === "darts"
+      ? "🎯"
+      : row.game.type === "bowling"
+      ? "🎳"
+      : row.game.type === "basketball"
+      ? "🏀"
+      : "⚽️";
+  for (let i = 1; i <= row.game.moves; i++) {
+    setTimeout(async () => {
+      const dice = bot.telegram.sendDice(from, { emoji: emoji });
+      row.game.doneUsers[`${from}`].progress++;
+      row.game.doneUsers[`${from}`].points += (await dice).dice.value;
+    }, i * 1000);
+  }
+  bot.telegram.sendMessage(from, `Подведём итоги! 🤖 Бот выбил вам ${row.game.doneUsers[`${from}`].points} очков! 🏅`)
+  let top = "";
+  const filteredUsers = Object.keys(row.game.doneUsers).filter(user => row.game.doneUsers[user].progress >= row.game.moves);
+  for (let i = 0; i < filteredUsers.length; i++) {
+    top += `<b>${row.game.doneUsers[`${filteredUsers[i]}`].name}</b>: ${row.game.doneUsers[`${filteredUsers[i]}`].points}\n`;
+  }
+  bot.telegram.editMessageText(row.game.chatId, row.game.msgId, undefined, `${(await getPostGameMessage(row))}\n\n<blockquote expandable><b>Топ 🏅</b>\n${top}</blockquote>`)
+  await supabase
+    .from("users")
+    .update({
+      game: row.game,
+    })
+    .eq("tgId", 1);
+};
+
+const getPostGameMessage = async (row: any) => {
+  return `<b>🎮 Начало игры!</b>\n<blockquote>${row.game.text}</blockquote>\n\n<i>🚪 Мест:</i> <b>${row.game.space}</b>\n<i>Победителей:</i> <b>${row.game.winners}</b> 🏆\n<i>👣 Ходов:</i> <b>${row.game.moves}</b>`;
+}
+
+bot.action(/^gameSet=(gamer|bot)$/, async (ctx) => {
+  const value = ctx.match[0].split("=")[1];
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  row.game.doneUsers[`${ctx.callbackQuery.from.id}`].set = value;
+  await supabase
+    .from("users")
+    .update({
+      game: row.game,
+    })
+    .eq("tgId", 1);
+  ctx.editMessageText(
+    await getStartGameMessage(row, ctx.callbackQuery.from.id),
+    {
+      parse_mode: "HTML",
+      reply_markup: (await getStartGameButtons(row, ctx.callbackQuery.from.id))
+        .reply_markup,
+    }
+  );
+});
 
 bot.action("gamePrevStage", async (ctx) => {
   const { data: row, error } = await supabase
@@ -382,14 +485,14 @@ bot.action("startGame", async (ctx) => {
     .single();
   row.game.isActive = true;
   row.game.setupStage = 0;
-  const postText = `<b>🎮 Начало игры!</b>\n<blockquote>${row.game.text}</blockquote>\n\n<i>🚪 Мест:</i> <b>${row.game.spaces}</b>\n<i>Победителей:</i> <b>${row.game.winners}</b> 🏆\n<i>👣 Ходов:</i> <b>${row.game.moves}</b>`;
+  const postText = await getPostGameMessage(row);
   const msg = await bot.telegram.sendMessage(row.game.chatId, postText, {
     parse_mode: "HTML",
     reply_markup: {
       inline_keyboard: [
         [Markup.button.url("🧩 Играть", `https://t.me/StarzHubBot?start=game`)],
-      ]
-    }
+      ],
+    },
   });
   row.game.msgId = msg.message_id;
   await supabase
@@ -402,7 +505,7 @@ bot.action("startGame", async (ctx) => {
     parse_mode: "HTML",
     reply_markup: (await getGameButtons(row)).reply_markup,
   });
-})
+});
 
 bot.action(/^game(?:space|moves|winners)=[0-9]+$/, async (ctx) => {
   const action = ctx.match[0].split("=")[0].slice(4);
@@ -451,37 +554,40 @@ bot.action(/^game(?:space|moves|winners)=[0-9]+$/, async (ctx) => {
   });
 });
 
-bot.action(/^gametype=(?:cubic|darts|bowling|basketball|football)$/, async (ctx) => {
-  const admins = [7441988500, 6233759034, 7177688298];
-  if (!admins.includes(ctx.callbackQuery.from.id)) {
-    ctx.answerCbQuery("❌ У вас нет прав!", {
-      show_alert: true,
+bot.action(
+  /^gametype=(?:cubic|darts|bowling|basketball|football)$/,
+  async (ctx) => {
+    const admins = [7441988500, 6233759034, 7177688298];
+    if (!admins.includes(ctx.callbackQuery.from.id)) {
+      ctx.answerCbQuery("❌ У вас нет прав!", {
+        show_alert: true,
+        cache_time: 0,
+      });
+      return;
+    }
+    const { data: row, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("tgId", 1)
+      .single();
+    row.game.type = ctx.match[0].split("=")[1];
+    await supabase
+      .from("users")
+      .update({
+        game: row.game,
+      })
+      .eq("tgId", 1);
+    ctx.editMessageText(await getGameMessage(row), {
+      parse_mode: "HTML",
+      reply_markup: (await getGameButtons(row)).reply_markup,
+    });
+    ctx.answerCbQuery("✅ Текущие настройки успешно обновлены!", {
+      show_alert: false,
       cache_time: 0,
     });
     return;
   }
-  const { data: row, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("tgId", 1)
-    .single();
-  row.game.type = ctx.match[0].split("=")[1];
-  await supabase
-    .from("users")
-    .update({
-      game: row.game,
-    })
-    .eq("tgId", 1);
-  ctx.editMessageText(await getGameMessage(row), {
-    parse_mode: "HTML",
-    reply_markup: (await getGameButtons(row)).reply_markup,
-  })
-  ctx.answerCbQuery("✅ Текущие настройки успешно обновлены!", {
-    show_alert: false,
-    cache_time: 0,
-  });
-  return;
-});
+);
 
 bot.action(/^ludka\s+(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
   const admins = [7441988500, 6233759034, 7177688298];
@@ -856,18 +962,12 @@ bot.on("message", async (ctx) => {
               : channel === "lnt"
               ? -1002551457192
               : -1002606260123;
-          await supabase
-            .from("users")
-            .update({ game: row.game })
-            .eq("tgId", 1);
+          await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
           return;
       }
       if (msg.startsWith("/game_text ")) {
         row.game.text = msg.slice(11);
-        await supabase
-          .from("users")
-          .update({ game: row.game })
-          .eq("tgId", 1);
+        await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
         ctx.reply("Успешно ✅", {
           reply_parameters: {
             message_id: ctx.message.message_id,
@@ -1214,7 +1314,28 @@ bot.on("message", async (ctx) => {
               message_id: ctx.message.message_id,
             },
           });
+        } else if (row.game.isActive && !row.game.doneUsers[`${senderId}`]) {
+          row.game.doneUsers[`${senderId}`] = {
+            set: "",
+            progress: 0,
+            points: 0,
+          };
+          ctx.reply(await getStartGameMessage(row, senderId), {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+            reply_markup: (await getStartGameButtons(row, senderId))
+              .reply_markup,
+          });
+        } else {
+          ctx.reply("❌ Вы уже присоединились ранее!", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
         }
+        // Доделать отправку ботом и сделать обработку получения
+        return;
 
       case "/ludka":
       case "-лудка":
