@@ -324,7 +324,7 @@ const startBotGaming = async (row: any, from: number) => {
     {
       reply_markup: {
         inline_keyboard: [
-          [{ text: "Бросить кубик", callback_data: "throw_dice" }]
+          [{ text: "Бросить эмодзи 🎮", callback_data: "throw_dice" }]
         ]
       }
     }
