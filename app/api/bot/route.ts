@@ -312,12 +312,12 @@ const startBotGaming = async (row: any, from: number) => {
         const dice = bot.telegram.sendDice(from, { emoji: emoji });
         row.game.doneUsers[`${from}`].progress++;
         points += (await dice).dice.value;
-        row.game.doneUsers[`${from}`].points = points;
         resolve();
       }, i * 1000);
     }));
   }
   await Promise.all(promises);
+  row.game.doneUsers[`${from}`].points = points;
   bot.telegram.sendMessage(from, `Подведём итоги! 🤖 Бот выбил вам ${row.game.doneUsers[`${from}`].points} очков! 🏅`)
   const sortedUsers = Object.entries(row.game.doneUsers)
     .filter(([user, data]) => {
