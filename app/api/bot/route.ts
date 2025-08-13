@@ -230,9 +230,6 @@ const sendResults = async (finalText: string) => {
     bot.telegram.sendMessage(7441988500, finalText, {
       parse_mode: "HTML",
     }); /* !! */
-    bot.telegram.sendMessage(6233759034, finalText, {
-      parse_mode: "HTML",
-    });
     const { data: row, error } = await supabase
       .from("users")
       .select("*")
@@ -902,8 +899,7 @@ bot.on("message", async (ctx) => {
       ctx.message.reply_to_message?.from?.id === 777000 &&
       "dice" in ctx.message &&
       (ctx.message.dice as any).value === neededValue &&
-      row.ludka.winners === row.ludka.currentWinners.length + 1 &&
-      ctx.message.chat.id === row.ludka.chatId
+      row.ludka.winners === row.ludka.currentWinners.length + 1
     ) {
       try {
         row.ludka.doneUsers = row.ludka.doneUsers || {};
@@ -1043,8 +1039,7 @@ bot.on("message", async (ctx) => {
       ctx.message.reply_to_message?.from?.id === 777000 &&
       "dice" in ctx.message &&
       (ctx.message.dice as any).value === neededValue &&
-      row.ludka.winners !== row.ludka.currentWinners.length + 1 &&
-      ctx.message.chat.id === row.ludka.chatId
+      row.ludka.winners !== row.ludka.currentWinners.length + 1
     ) {
       try {
         row.ludka.doneUsers = row.ludka.doneUsers || {};
@@ -1176,8 +1171,7 @@ bot.on("message", async (ctx) => {
       ctx.message.reply_to_message?.from?.id === 777000 &&
       "dice" in ctx.message &&
       (ctx.message.dice as any).value !== neededValue &&
-      row.ludka.doneUsers[`${senderId}`].lastWins > 0 &&
-      ctx.message.chat.id === row.ludka.chatId
+      row.ludka.doneUsers[`${senderId}`].lastWins > 0
     ) {
       if (row.ludka.requiredRow > 1) {
         ctx.reply("❌ Ваш стрик приостановился!", {
