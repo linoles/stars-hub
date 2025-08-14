@@ -387,8 +387,6 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
       points: gameState.points,
     };
 
-    await saveGameState(gameState.from, gameState.row.game);
-
     // Сообщение о полученных очках
     await ctx.reply(
       `🐾 Вы получили +${pointsEarned} очк${
@@ -416,6 +414,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
       gameState.startMessageId = newMessage.message_id;
       gameStates.set(from, gameState);
     }
+    await saveGameState(gameState.from, gameState.row.game);
   } catch (error) {
     console.error("Ошибка в игре:", error);
     await ctx.reply("Произошла ошибка, попробуйте еще раз");
@@ -431,9 +430,6 @@ const finishGame = async (ctx: any, from: number) => {
     // Фиксируем результаты
     gameState.row.game.doneUsers[`${from}`].points = gameState.points;
     gameState.row.game.doneUsers[`${from}`].progress = gameState.row.game.moves;
-
-    // Сохраняем финальные данные
-    await saveGameState(from, gameState.row.game);
 
     // Отправляем итоговое сообщение
     await ctx.reply(
@@ -476,6 +472,7 @@ const finishGame = async (ctx: any, from: number) => {
         },
       }
     );
+    await saveGameState(from, gameState.row.game);
 
     // Отправляем финальное сообщение
     await ctx.reply(`🏁 Итоговый результат сохранен в таблице лидеров!`);
