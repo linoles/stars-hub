@@ -482,7 +482,6 @@ const finishGame = async (ctx: any, from: number) => {
         reply_markup: replyMarkup,
       }
     );
-    await saveGameState(from, gameState.row.game);
 
     await ctx.reply(`🏁 Итоговый результат сохранен в таблице лидеров!`);
     if (
@@ -491,12 +490,12 @@ const finishGame = async (ctx: any, from: number) => {
         ([_, data]: any) => data?.progress >= gameState.row.game.moves
       ).length
     ) {
-      const winners = Object.entries(row.game.doneUsers)
+      const winners = Object.entries(gameState.row.game.doneUsers)
         .filter(([_, data]: any) =>
-          row.game.moves ? data?.progress >= row.game.moves : false
+          gameState.row.game.moves ? data?.progress >= gameState.row.game.moves : false
         )
         .sort((a: any, b: any) => b[1].points - a[1].points)
-        .slice(0, row.game.winners)
+        .slice(0, gameState.row.game.winners)
         .map(
           ([user, data]: any, index) =>
             `<a href="tg://user?id=${user}">${data.name}</a> (Очки: ${data.points})`
@@ -517,7 +516,7 @@ const finishGame = async (ctx: any, from: number) => {
         gameState.row.game.chatId,
         gameState.row.game.msgId,
         undefined,
-        `${await getPostGameMessage(row)}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>\n\n🎊 Игра окончена!\n🏆 Победители: ${winners}`,
+        `${await getPostGameMessage(gameState.row)}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>\n\n🎊 Игра окончена!\n🏆 Победители: ${winners}`,
         {
           parse_mode: "HTML",
           reply_markup: {
@@ -532,11 +531,13 @@ const finishGame = async (ctx: any, from: number) => {
           },
         }
       );
-      row.game.isActive = false;
-      row.game.doneUsers = {};
-      row.game.setupStage = 0;
-      row.game.msgId = 0;
-      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      gameState.row.game.isActive = false;
+      gameState.row.game.doneUsers = {};
+      gameState.row.game.setupStage = 0;
+      gameState.row.game.msgId = 0;
+      await saveGameState(from, gameState.row.game);
+    } else {
+      await saveGameState(from, gameState.row.game);
     }
   } catch (error) {
     console.error("Ошибка при завершении игры:", error);
