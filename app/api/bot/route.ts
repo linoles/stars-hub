@@ -382,7 +382,7 @@ bot.action('start_game', async (ctx) => {
     await saveGameState(currentGameState.from, currentGameState.row.game);
 
     // Сообщение о полученных очках
-    await ctx.reply(`🐾 Вы получили +${pointsEarned} очк${pointsEarned === 1 ? "а" : [2, 3, 4].includes(pointsEarned) ? "а" : "ов"}\nВаши очки: ${currentGameState.points} 🦾`);
+    await ctx.reply(`🐾 Вы получили +${pointsEarned} очк${pointsEarned === 1 ? "о" : [2, 3, 4].includes(pointsEarned) ? "а" : "ов"}\nВаши очки: ${currentGameState.points} 🦾\n♟ Ход: ${currentGameState.currentMove}/${currentGameState.row.game.moves}`);
 
     // Проверяем завершение игры
     if (currentGameState.currentMove >= currentGameState.row.game.moves) {
@@ -428,7 +428,7 @@ const finishGame = async (ctx: any) => {
 
   // Отправляем итоговое сообщение
   await ctx.reply(
-    `🎉 Игра завершена! Ваш результат: ${currentGameState.points} очков!`
+    `🎉 Игра завершена! Ваш результат в очках: ${currentGameState.points}! 🏆`
   );
 
   // Обновляем топ в основном чате
