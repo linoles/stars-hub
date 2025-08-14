@@ -376,6 +376,8 @@ bot.action('start_game', async (ctx) => {
     // Обновляем прогресс в базе
     currentGameState.row.game.doneUsers[`${currentGameState.from}`].progress = 
       currentGameState.currentMove;
+    currentGameState.row.game.doneUsers[`${currentGameState.from}`].points =
+      currentGameState.points;
     
     await saveGameState(currentGameState.from, currentGameState.row.game);
 
