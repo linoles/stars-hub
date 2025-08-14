@@ -380,7 +380,7 @@ bot.action('start_game', async (ctx) => {
     await saveGameState(currentGameState.from, currentGameState.row.game);
 
     // Сообщение о полученных очках
-    await ctx.reply(`🐾 Вы получили +${pointsEarned - 1} очк${pointsEarned - 1 === 1 ? "а" : [2, 3, 4].includes(pointsEarned - 1) ? "а" : "ов"}\nВаши очки: ${currentGameState.points} 🦾`);
+    await ctx.reply(`🐾 Вы получили +${pointsEarned} очк${pointsEarned === 1 ? "а" : [2, 3, 4].includes(pointsEarned) ? "а" : "ов"}\nВаши очки: ${currentGameState.points} 🦾`);
 
     // Проверяем завершение игры
     if (currentGameState.currentMove >= currentGameState.row.game.moves) {
