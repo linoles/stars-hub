@@ -327,11 +327,16 @@ let currentGameState: {
 } | null = null;
 
 const startBotGaming = async (row: any, from: number) => {
-  const emoji = 
-    row.game.type === "cubic" ? "🎲" :
-    row.game.type === "darts" ? "🎯" :
-    row.game.type === "bowling" ? "🎳" :
-    row.game.type === "basketball" ? "🏀" : "⚽️";
+  const emoji =
+    row.game.type === "cubic"
+      ? "🎲"
+      : row.game.type === "darts"
+      ? "🎯"
+      : row.game.type === "bowling"
+      ? "🎳"
+      : row.game.type === "basketball"
+      ? "🏀"
+      : "⚽️";
 
   // Отправляем начальное сообщение с кнопкой
   const startMessage = await bot.telegram.sendMessage(
@@ -340,9 +345,9 @@ const startBotGaming = async (row: any, from: number) => {
     {
       reply_markup: {
         inline_keyboard: [
-          [{ text: "Начать игру 🚀", callback_data: "start_game" }]
-        ]
-      }
+          [{ text: "Начать игру 🚀", callback_data: "start_game" }],
+        ],
+      },
     }
   );
 
@@ -353,14 +358,14 @@ const startBotGaming = async (row: any, from: number) => {
     emoji,
     points: 0,
     currentMove: 0,
-    startMessageId: startMessage.message_id
+    startMessageId: startMessage.message_id,
   };
 };
 
 // Обработчик начала игры
-bot.action('start_game', async (ctx) => {
+bot.action("start_game", async (ctx) => {
   if (!currentGameState) return;
-  
+
   try {
     // Удаляем сообщение с кнопкой "Начать игру"
     if (currentGameState.startMessageId) {
@@ -372,34 +377,37 @@ bot.action('start_game', async (ctx) => {
     const pointsEarned = dice.dice.value;
     currentGameState.points += pointsEarned;
     currentGameState.currentMove++;
-    
+
     // Обновляем прогресс в базе
-    currentGameState.row.game.doneUsers[`${currentGameState.from}`].progress = 
+    currentGameState.row.game.doneUsers[`${currentGameState.from}`].progress =
       currentGameState.currentMove;
     currentGameState.row.game.doneUsers[`${currentGameState.from}`].points =
       currentGameState.points;
-    
+
     await saveGameState(currentGameState.from, currentGameState.row.game);
 
     // Сообщение о полученных очках
-    await ctx.reply(`🐾 Вы получили +${pointsEarned} очк${pointsEarned === 1 ? "о" : [2, 3, 4].includes(pointsEarned) ? "а" : "ов"}\nВаши очки: ${currentGameState.points} 🦾\n♟ Ход: ${currentGameState.currentMove}/${currentGameState.row.game.moves}`);
+    await ctx.reply(
+      `🐾 Вы получили +${pointsEarned} очк${
+        pointsEarned === 1 ? "о" : [2, 3, 4].includes(pointsEarned) ? "а" : "ов"
+      }\nВаши очки: ${currentGameState.points} 🦾\n♟ Ход: ${
+        currentGameState.currentMove
+      }/${currentGameState.row.game.moves}`
+    );
 
     // Проверяем завершение игры
     if (currentGameState.currentMove >= currentGameState.row.game.moves) {
       await finishGame(ctx);
     } else {
       // Отправляем сообщение для следующего раунда
-      const newMessage = await ctx.reply(
-        `Готовы к следующему броску?`,
-        {
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: "Начать игру 🚀", callback_data: "start_game" }]
-            ]
-          }
-        }
-      );
-      
+      const newMessage = await ctx.reply(`Готовы к следующему броску?`, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "Начать игру 🚀", callback_data: "start_game" }],
+          ],
+        },
+      });
+
       // Обновляем ID сообщения в состоянии
       currentGameState.startMessageId = newMessage.message_id;
     }
@@ -414,7 +422,7 @@ const finishGame = async (ctx: any) => {
   if (!currentGameState) return;
 
   // Фиксируем результаты
-  currentGameState.row.game.doneUsers[`${currentGameState.from}`].points = 
+  currentGameState.row.game.doneUsers[`${currentGameState.from}`].points =
     currentGameState.points;
 
   // Удаляем последнее сообщение с кнопкой
@@ -433,11 +441,18 @@ const finishGame = async (ctx: any) => {
 
   // Обновляем топ в основном чате
   const sortedUsers = Object.entries(currentGameState.row.game.doneUsers)
-    .filter(([_, data]: any) => currentGameState?.row.game.moves ? data?.progress >= currentGameState?.row.game.moves : false)
+    .filter(([_, data]: any) =>
+      currentGameState?.row.game.moves
+        ? data?.progress >= currentGameState?.row.game.moves
+        : false
+    )
     .sort((a: any, b: any) => b[1].points - a[1].points)
     .slice(0, 10)
-    .map(([user, data]: any, index) => 
-      `${index + 1}. <b><a href="tg://user?id=${user}">${data.name}</a></b>: ${data.points}`
+    .map(
+      ([user, data]: any, index) =>
+        `${index + 1}. <b><a href="tg://user?id=${user}">${
+          data.name
+        }</a></b>: ${data.points}`
     )
     .join("\n");
 
@@ -445,14 +460,21 @@ const finishGame = async (ctx: any) => {
     currentGameState.row.game.chatId,
     currentGameState.row.game.msgId,
     undefined,
-    `${await getPostGameMessage(currentGameState.row)}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>`,
+    `${await getPostGameMessage(
+      currentGameState.row
+    )}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>`,
     {
       parse_mode: "HTML",
       reply_markup: {
         inline_keyboard: [
-          [Markup.button.url("🧩 Играть снова", `https://t.me/StarzHubBot?start=game`)]
-        ]
-      }
+          [
+            Markup.button.url(
+              "🧩 Играть снова",
+              `https://t.me/StarzHubBot?start=game`
+            ),
+          ],
+        ],
+      },
     }
   );
 
@@ -1091,6 +1113,55 @@ bot.on("message", async (ctx) => {
               message_id: ctx.message.message_id,
             },
           });
+          return;
+
+        case "/stop_game":
+        case "-игра":
+        case "/stop_game@StarzHubBot":
+          ctx.reply("❌ Игра успешно остановлена!", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          const winners = Object.entries(row.game.doneUsers)
+            .filter(([_, data]: any) =>
+              currentGameState?.row.game.moves
+                ? data?.progress >= currentGameState?.row.game.moves
+                : false
+            )
+            .sort((a: any, b: any) => b[1].points - a[1].points)
+            .slice(0, row.game.winners)
+            .map(
+              ([user, data]: any, index) =>
+                `<a href="tg://user?id=${user}">${
+                  data.name
+                }</a> (Очки: ${data.points})`
+            )
+            .join(", ");
+          bot.telegram.sendMessage(
+            row.game.chatId,
+            `❌ Игра остановлена!\n🏆 Победители: ${winners}`,
+            {
+              reply_parameters: {
+                message_id: row.game.msgId,
+              },
+              parse_mode: "HTML"
+            }
+          );
+          bot.telegram.editMessageText(
+            row.game.chatId,
+            row.game.msgId,
+            undefined,
+            `${await getGameMessage(row)}\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
+            {
+              parse_mode: "HTML",
+            }
+          )
+          row.game.isActive = false;
+          row.game.doneUsers = {};
+          row.game.setupStage = 0;
+          row.game.msgId = 0;
+          await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
           return;
 
         case "/set_game*hub":
