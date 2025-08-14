@@ -293,14 +293,6 @@ const getStartGameButtons = async (row: any, from: number) => {
   }
 };
 
-let currentGameState: {
-  row: any;
-  from: number;
-  emoji: string;
-  points: number;
-  currentMove: number;
-} | null = null;
-
 // Функция для сохранения игры в базу
 const saveGameState = async (userId: number, gameData: any) => {
   try {
@@ -325,17 +317,34 @@ const saveGameState = async (userId: number, gameData: any) => {
   }
 };
 
+let currentGameState: {
+  row: any;
+  from: number;
+  emoji: string;
+  points: number;
+  currentMove: number;
+  startMessageId?: number;
+} | null = null;
+
 const startBotGaming = async (row: any, from: number) => {
-  const emoji =
-    row.game.type === "cubic"
-      ? "🎲"
-      : row.game.type === "darts"
-      ? "🎯"
-      : row.game.type === "bowling"
-      ? "🎳"
-      : row.game.type === "basketball"
-      ? "🏀"
-      : "⚽️";
+  const emoji = 
+    row.game.type === "cubic" ? "🎲" :
+    row.game.type === "darts" ? "🎯" :
+    row.game.type === "bowling" ? "🎳" :
+    row.game.type === "basketball" ? "🏀" : "⚽️";
+
+  // Отправляем начальное сообщение с кнопкой
+  const startMessage = await bot.telegram.sendMessage(
+    from,
+    `🎮 Готовы начать игру? Нажмите кнопку ниже!`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "Начать игру 🚀", callback_data: "start_game" }]
+        ]
+      }
+    }
+  );
 
   // Сохраняем состояние игры
   currentGameState = {
@@ -344,132 +353,112 @@ const startBotGaming = async (row: any, from: number) => {
     emoji,
     points: 0,
     currentMove: 0,
+    startMessageId: startMessage.message_id
   };
-
-  // Отправляем начальное сообщение с кнопкой
-  await bot.telegram.sendMessage(
-    from,
-    `Игра началась! Нажмите кнопку ниже, чтобы сделать бросок ${emoji}`,
-    {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: "Бросить эмодзи 🎮", callback_data: "throw_dice" }],
-        ],
-      },
-    }
-  );
 };
 
-// Обработчик нажатия кнопки
-bot.action("throw_dice", async (ctx) => {
+// Обработчик начала игры
+bot.action('start_game', async (ctx) => {
   if (!currentGameState) return;
-
-  const { row, from, emoji, currentMove } = currentGameState;
-
-  // Проверяем, не завершена ли уже игра
-  if (currentMove >= row.game.moves) {
-    await ctx.answerCbQuery("Игра уже завершена!");
-    return;
-  }
-
+  
   try {
-    // Отправляем эмодзи
-    const dice = await ctx.sendDice({ emoji });
-    currentGameState.points += dice.dice.value;
-    currentGameState.currentMove++;
-    currentGameState.row.game.doneUsers[`${from}`].progress =
-      currentGameState.currentMove;
-
-    // Обновляем прогресс в базе
-    const saved = await saveGameState(from, row.game);
-    if (!saved) {
-      await ctx.answerCbQuery("Ошибка сохранения прогресса");
-      return;
+    // Удаляем сообщение с кнопкой "Начать игру"
+    if (currentGameState.startMessageId) {
+      await ctx.deleteMessage();
     }
 
+    // Отправляем эмодзи
+    const dice = await ctx.sendDice({ emoji: currentGameState.emoji });
+    const pointsEarned = dice.dice.value;
+    currentGameState.points += pointsEarned;
+    currentGameState.currentMove++;
+    
+    // Обновляем прогресс в базе
+    currentGameState.row.game.doneUsers[`${currentGameState.from}`].progress = 
+      currentGameState.currentMove;
+    
+    await saveGameState(currentGameState.from, currentGameState.row.game);
+
+    // Сообщение о полученных очках
+    await ctx.reply(`🐾 Вы получили +${pointsEarned} очка`);
+
     // Проверяем завершение игры
-    if (currentGameState.currentMove >= row.game.moves) {
+    if (currentGameState.currentMove >= currentGameState.row.game.moves) {
       await finishGame(ctx);
     } else {
-      // Обновляем сообщение с новым счетом
-      await ctx.editMessageText(
-        `Бросок ${currentGameState.currentMove}/${row.game.moves} ⚡\n` +
-          `🔗 Текущие очки: ${currentGameState.points}`,
+      // Отправляем сообщение для следующего раунда
+      const newMessage = await ctx.reply(
+        `Готовы к следующему броску?`,
         {
           reply_markup: {
             inline_keyboard: [
-              [{ text: "🎮 Бросить снова", callback_data: "throw_dice" }],
-            ],
-          },
+              [{ text: "Начать игру 🚀", callback_data: "start_game" }]
+            ]
+          }
         }
       );
+      
+      // Обновляем ID сообщения в состоянии
+      currentGameState.startMessageId = newMessage.message_id;
     }
   } catch (error) {
-    console.error("Ошибка при броске:", error);
-    await ctx.answerCbQuery("Ошибка, попробуйте еще раз");
+    console.error("Ошибка в игре:", error);
+    await ctx.reply("Произошла ошибка, попробуйте еще раз");
   }
 });
 
-// Функция завершения игры
+// Функция завершения игры (аналогичная предыдущей, но с удалением сообщений)
 const finishGame = async (ctx: any) => {
   if (!currentGameState) return;
 
-  const { row, from, points } = currentGameState;
-
   // Фиксируем результаты
-  row.game.doneUsers[`${from}`].points = points;
+  currentGameState.row.game.doneUsers[`${currentGameState.from}`].points = 
+    currentGameState.points;
+
+  // Удаляем последнее сообщение с кнопкой
+  if (currentGameState.startMessageId) {
+    try {
+      await ctx.deleteMessage();
+    } catch (e) {
+      console.log("Не удалось удалить сообщение:", e);
+    }
+  }
 
   // Отправляем итоговое сообщение
-  await ctx.editMessageText(
-    `Игра завершена! 🎉\nВаш результат: ${points} очков! 🏅`,
-    { reply_markup: { inline_keyboard: [] } }
+  await ctx.reply(
+    `🎉 Игра завершена! Ваш результат: ${currentGameState.points} очков!`
   );
 
-  // Формируем топ игроков
-  const sortedUsers = Object.entries(row.game.doneUsers)
-    .filter(([_, data]: any) => data?.progress >= row.game.moves)
+  // Обновляем топ в основном чате
+  const sortedUsers = Object.entries(currentGameState.row.game.doneUsers)
+    .filter(([_, data]: any) => currentGameState?.row.game.moves ? data?.progress >= currentGameState?.row.game.moves : false)
     .sort((a: any, b: any) => b[1].points - a[1].points)
     .slice(0, 10)
-    .map(
-      ([user, data]: any, index) =>
-        `${index + 1}. <b><a href="tg://user?id=${user}">${
-          data.name
-        }</a></b>: ${data.points}`
+    .map(([user, data]: any, index) => 
+      `${index + 1}. <b><a href="tg://user?id=${user}">${data.name}</a></b>: ${data.points}`
     )
     .join("\n");
 
-  // Обновляем основное сообщение в чате
   await bot.telegram.editMessageText(
-    row.game.chatId,
-    row.game.msgId,
+    currentGameState.row.game.chatId,
+    currentGameState.row.game.msgId,
     undefined,
-    `${await getPostGameMessage(
-      row
-    )}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>`,
+    `${await getPostGameMessage(currentGameState.row)}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>`,
     {
       parse_mode: "HTML",
       reply_markup: {
         inline_keyboard: [
-          [
-            Markup.button.url(
-              "🧩 Играть снова",
-              `https://t.me/StarzHubBot?start=game`
-            ),
-          ],
-        ],
-      },
+          [Markup.button.url("🧩 Играть снова", `https://t.me/StarzHubBot?start=game`)]
+        ]
+      }
     }
   );
 
   // Сохраняем финальные данные
-  const saved = await saveGameState(from, row.game);
-  if (!saved) {
-    await ctx.reply("Ошибка сохранения результатов");
-  }
+  await saveGameState(currentGameState.from, currentGameState.row.game);
 
   currentGameState = null;
 };
-
 const getPostGameMessage = async (row: any) => {
   return `<b>🎮 Начало игры!</b>\n<blockquote>${row.game.text}</blockquote>\n\n<i>🚪 Мест:</i> <b>${row.game.space}</b>\n<i>Победителей:</i> <b>${row.game.winners}</b> 🏆\n<i>👣 Ходов:</i> <b>${row.game.moves}</b>`;
 };
