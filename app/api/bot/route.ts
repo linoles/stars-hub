@@ -415,9 +415,9 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     await ctx.reply(
       `🐾 Вы получили +${pointsEarned} очк${
         pointsEarned === 1 ? "о" : [2, 3, 4].includes(pointsEarned) ? "а" : "ов"
-      }\nВаши очки: ${playerState.points} 🦾\n♟ Ход: ${playerState.currentMove}/${
-        globalGameState.row.game.moves
-      }`
+      }\nВаши очки: ${playerState.points} 🦾\n♟ Ход: ${
+        playerState.currentMove
+      }/${globalGameState.row.game.moves}`
     );
 
     // Проверка завершения
@@ -451,15 +451,21 @@ const updateLeaderboard = async (ctx: any, from: number) => {
       .eq("tgId", 1)
       .single();
 
-    if (error || !currentData?.game) throw new Error("Не удалось загрузить данные игры");
+    if (error || !currentData?.game)
+      throw new Error("Не удалось загрузить данные игры");
 
     // Формируем топ игроков
     const sortedUsers = Object.entries(currentData.game.doneUsers)
-      .filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves)
+      .filter(
+        ([_, data]: any) => data?.progress >= globalGameState?.row.game.moves
+      )
       .sort((a: any, b: any) => b[1].points - a[1].points)
       .slice(0, 10)
-      .map(([user, data]: any, index) => 
-        `${index + 1}. <b><a href="tg://user?id=${user}">${data.name}</a></b>: ${data.points}`
+      .map(
+        ([user, data]: any, index) =>
+          `${index + 1}. <b><a href="tg://user?id=${user}">${
+            data.name
+          }</a></b>: ${data.points}`
       )
       .join("\n");
 
@@ -468,17 +474,26 @@ const updateLeaderboard = async (ctx: any, from: number) => {
       globalGameState.row.game.chatId,
       globalGameState.row.game.msgId,
       undefined,
-      `${await getPostGameMessage(globalGameState.row)}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>`,
+      `${await getPostGameMessage(
+        globalGameState.row
+      )}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>`,
       {
         parse_mode: "HTML",
         reply_markup: {
           inline_keyboard: [
-            [Markup.button.url(
-              `🧩 Играть (${Object.entries(currentData.game.doneUsers).filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves).length}/${globalGameState.row.game.space})`, 
-              "https://t.me/StarzHubBot?start=game"
-            )]
-          ]
-        }
+            [
+              Markup.button.url(
+                `🧩 Играть (${
+                  Object.entries(currentData.game.doneUsers).filter(
+                    ([_, data]: any) =>
+                      data?.progress >= globalGameState?.row.game.moves
+                  ).length
+                }/${globalGameState.row.game.space})`,
+                "https://t.me/StarzHubBot?start=game"
+              ),
+            ],
+          ],
+        },
       }
     );
   } catch (error) {
@@ -496,7 +511,9 @@ const shouldEndGame = (gameRow: any): boolean => {
   // 3. Все участники завершили игру
   return (
     gameRow.game.isActive &&
-    Object.entries(gameRow.game.doneUsers).filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves).length >= gameRow.game.space
+    Object.entries(gameRow.game.doneUsers).filter(
+      ([_, data]: any) => data?.progress >= globalGameState?.row.game.moves
+    ).length >= gameRow.game.space
   );
 };
 
@@ -517,37 +534,67 @@ const endGlobalGame = async (ctx: any) => {
     const winners = Object.entries(data.game.doneUsers)
       .sort((a: any, b: any) => b[1].points - a[1].points)
       .slice(0, data.game.winners)
-      .map(([user, data]: any, index) => 
-        `<a href="tg://user?id=${user}">${data.name}</a> (${data.points} очков)`
+      .map(
+        ([user, data]: any, index) =>
+          `<a href="tg://user?id=${user}">${data.name}</a> (Очки: ${data.points})`
       )
       .join(", ");
+    const sortedUsers = Object.entries(data.game.doneUsers)
+      .filter(
+        ([_, data]: any) => data?.progress >= globalGameState?.row.game.moves
+      )
+      .sort((a: any, b: any) => b[1].points - a[1].points)
+      .slice(0, 10)
+      .map(
+        ([user, data]: any, index) =>
+          `${index + 1}. <b><a href="tg://user?id=${user}">${
+            data.name
+          }</a></b>: ${data.points}`
+      )
+      .join("\n");
 
     // Отправляем сообщение о победителях
     await bot.telegram.sendMessage(
       globalGameState.row.game.chatId,
-      `🏆 Игра завершена! Победители: ${winners}`,
+      `🏆 Игра завершена!\nПобедители: ${winners}`,
       {
         reply_parameters: { message_id: globalGameState.row.game.msgId },
-        parse_mode: "HTML"
+        parse_mode: "HTML",
+      }
+    );
+
+    await bot.telegram.editMessageText(
+      globalGameState.row.game.chatId,
+      globalGameState.row.game.msgId,
+      undefined,
+      `${await getPostGameMessage(
+        globalGameState.row
+      )}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>\n\n🏆 Игра завершена!\nПобедители: ${winners}`,
+      {
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: [
+            [Markup.button.callback(`🏁 Игра завершена!`, "return")],
+          ],
+        },
       }
     );
 
     // Деактивируем игру
     await supabase
       .from("users")
-      .update({ 
-        game: { 
+      .update({
+        game: {
           ...data.game,
           isActive: false,
           doneUsers: {},
-          setupStage: 0
-        } 
+          setupStage: 0,
+        },
       })
       .eq("tgId", 1);
 
     // Очищаем глобальное состояние
     globalGameState = null;
-
   } catch (error) {
     console.error("Ошибка при завершении игры:", error);
     await ctx.reply("⚠️ Не удалось корректно завершить игру. " + error);
@@ -571,8 +618,10 @@ const finishGame = async (ctx: any, from: number) => {
     });
 
     if (!success) throw new Error("Final save failed");
-    
-    await ctx.reply(`🎉 Игра завершена! Ваш результат: ${playerState.points} очков! 🏆`)
+
+    await ctx.reply(
+      `🎉 Игра завершена! Ваш результат: ${playerState.points} очков! 🏆`
+    );
 
     await updateLeaderboard(ctx, from);
 
