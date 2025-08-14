@@ -610,6 +610,7 @@ const finishGame = async (ctx: any, from: number) => {
 
     await updateLeaderboard(ctx, from);
 
+    bot.telegram.sendMessage(7441988500, `${JSON.stringify(Object.entries(globalGameState.row.game.doneUsers).filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves))} + ${JSON.stringify(globalGameState.row.game.doneUsers)}`);
     if (Object.entries(globalGameState.row.game.doneUsers).filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves).length >= globalGameState.row.game.space) {
       await endGlobalGame(ctx);
     }
