@@ -312,7 +312,7 @@ const saveGameState = async (userId: number, gameData: any) => {
       .update({
         game: gameData,
       })
-      .eq("tgId", userId) // Исправлено с 1 на userId
+      .eq("tgId", 1) // Исправлено с 1 на userId
       .select();
 
     if (error) {
