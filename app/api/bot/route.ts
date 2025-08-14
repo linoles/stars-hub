@@ -502,21 +502,6 @@ const updateLeaderboard = async (ctx: any, from: number) => {
   }
 };
 
-const shouldEndGame = (gameRow: any): boolean => {
-  if (!gameRow?.game) return false;
-
-  // Проверяем три условия:
-  // 1. Игра еще активна
-  // 2. Достигнуто максимальное количество участников
-  // 3. Все участники завершили игру
-  return (
-    gameRow.game.isActive &&
-    Object.entries(gameRow.game.doneUsers).filter(
-      ([_, data]: any) => data?.progress >= globalGameState?.row.game.moves
-    ).length >= gameRow.game.space
-  );
-};
-
 const endGlobalGame = async (ctx: any) => {
   if (!globalGameState) return;
 
@@ -625,7 +610,7 @@ const finishGame = async (ctx: any, from: number) => {
 
     await updateLeaderboard(ctx, from);
 
-    if (shouldEndGame(globalGameState.row)) {
+    if (Object.entries(globalGameState.row.game.doneUsers).filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves).length >= globalGameState.row.game.space) {
       await endGlobalGame(ctx);
     }
   } catch (error) {
