@@ -428,7 +428,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
       const msg = await ctx.reply("Готовы к следующему броску?", {
         reply_markup: {
           inline_keyboard: [
-            [{ text: "Бросить снова", callback_data: `start_game_${from}` }],
+            [{ text: "👣 Следующий ход", callback_data: `start_game_${from}` }],
           ],
         },
       });
@@ -474,8 +474,8 @@ const updateLeaderboard = async (ctx: any, from: number) => {
         reply_markup: {
           inline_keyboard: [
             [Markup.button.url(
-              "🧩 Играть снова", 
-              `https://t.me/StarzHubBot?start=game`
+              `🧩 Играть (${Object.entries(currentData.game.doneUsers).filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves).length}/${globalGameState.row.game.space})`, 
+              "https://t.me/StarzHubBot?start=game"
             )]
           ]
         }
