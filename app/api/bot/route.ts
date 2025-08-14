@@ -301,12 +301,41 @@ let currentGameState: {
   currentMove: number;
 } | null = null;
 
+// Функция для сохранения игры в базу
+const saveGameState = async (userId: number, gameData: any) => {
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .update({
+        game: gameData,
+      })
+      .eq("tgId", userId)
+      .select(); // Добавляем select для получения результата
+
+    if (error) {
+      console.error("Ошибка сохранения:", error);
+      return false;
+    }
+
+    console.log("Успешно сохранено:", data);
+    return true;
+  } catch (err) {
+    console.error("Ошибка при сохранении:", err);
+    return false;
+  }
+};
+
 const startBotGaming = async (row: any, from: number) => {
-  const emoji = 
-    row.game.type === "cubic" ? "🎲" :
-    row.game.type === "darts" ? "🎯" :
-    row.game.type === "bowling" ? "🎳" :
-    row.game.type === "basketball" ? "🏀" : "⚽️";
+  const emoji =
+    row.game.type === "cubic"
+      ? "🎲"
+      : row.game.type === "darts"
+      ? "🎯"
+      : row.game.type === "bowling"
+      ? "🎳"
+      : row.game.type === "basketball"
+      ? "🏀"
+      : "⚽️";
 
   // Сохраняем состояние игры
   currentGameState = {
@@ -314,7 +343,7 @@ const startBotGaming = async (row: any, from: number) => {
     from,
     emoji,
     points: 0,
-    currentMove: 0
+    currentMove: 0,
   };
 
   // Отправляем начальное сообщение с кнопкой
@@ -324,19 +353,19 @@ const startBotGaming = async (row: any, from: number) => {
     {
       reply_markup: {
         inline_keyboard: [
-          [{ text: "Бросить эмодзи 🎮", callback_data: "throw_dice" }]
-        ]
-      }
+          [{ text: "Бросить эмодзи 🎮", callback_data: "throw_dice" }],
+        ],
+      },
     }
   );
 };
 
 // Обработчик нажатия кнопки
-bot.action('throw_dice', async (ctx) => {
+bot.action("throw_dice", async (ctx) => {
   if (!currentGameState) return;
 
   const { row, from, emoji, currentMove } = currentGameState;
-  
+
   // Проверяем, не завершена ли уже игра
   if (currentMove >= row.game.moves) {
     await ctx.answerCbQuery("Игра уже завершена!");
@@ -348,13 +377,15 @@ bot.action('throw_dice', async (ctx) => {
     const dice = await ctx.sendDice({ emoji });
     currentGameState.points += dice.dice.value;
     currentGameState.currentMove++;
-    currentGameState.row.game.doneUsers[`${from}`].progress = currentGameState.currentMove;
+    currentGameState.row.game.doneUsers[`${from}`].progress =
+      currentGameState.currentMove;
 
     // Обновляем прогресс в базе
-    await supabase
-      .from("users")
-      .update({ game: row.game })
-      .eq("tgId", from);
+    const saved = await saveGameState(from, row.game);
+    if (!saved) {
+      await ctx.answerCbQuery("Ошибка сохранения прогресса");
+      return;
+    }
 
     // Проверяем завершение игры
     if (currentGameState.currentMove >= row.game.moves) {
@@ -363,13 +394,13 @@ bot.action('throw_dice', async (ctx) => {
       // Обновляем сообщение с новым счетом
       await ctx.editMessageText(
         `Бросок ${currentGameState.currentMove}/${row.game.moves} ⚡\n` +
-        `🔗 Текущие очки: ${currentGameState.points}`,
+          `🔗 Текущие очки: ${currentGameState.points}`,
         {
           reply_markup: {
             inline_keyboard: [
-              [{ text: "🎮 Бросить снова", callback_data: "throw_dice" }]
-            ]
-          }
+              [{ text: "🎮 Бросить снова", callback_data: "throw_dice" }],
+            ],
+          },
         }
       );
     }
@@ -384,7 +415,7 @@ const finishGame = async (ctx: any) => {
   if (!currentGameState) return;
 
   const { row, from, points } = currentGameState;
-  
+
   // Фиксируем результаты
   row.game.doneUsers[`${from}`].points = points;
 
@@ -399,55 +430,51 @@ const finishGame = async (ctx: any) => {
     .filter(([_, data]: any) => data?.progress >= row.game.moves)
     .sort((a: any, b: any) => b[1].points - a[1].points)
     .slice(0, 10)
-    .map(([user, data]: any, index) => 
-      `${index + 1}. <b><a href="tg://user?id=${user}">${data.name}</a></b>: ${data.points}`
+    .map(
+      ([user, data]: any, index) =>
+        `${index + 1}. <b><a href="tg://user?id=${user}">${
+          data.name
+        }</a></b>: ${data.points}`
     )
     .join("\n");
-
-  await supabase
-    .from("users")
-    .update({ game: row.game })
-    .eq("tgId", from);
 
   // Обновляем основное сообщение в чате
   await bot.telegram.editMessageText(
     row.game.chatId,
     row.game.msgId,
     undefined,
-    `${await getPostGameMessage(row)}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>`,
+    `${await getPostGameMessage(
+      row
+    )}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>`,
     {
       parse_mode: "HTML",
       reply_markup: {
         inline_keyboard: [
-          [Markup.button.url("🧩 Играть снова", `https://t.me/StarzHubBot?start=game`)]
-        ]
-      }
+          [
+            Markup.button.url(
+              "🧩 Играть снова",
+              `https://t.me/StarzHubBot?start=game`
+            ),
+          ],
+        ],
+      },
     }
   );
 
   // Сохраняем финальные данные
-  await supabase
-    .from("users")
-    .update({ game: row.game })
-    .eq("tgId", from);
+  const saved = await saveGameState(from, row.game);
+  if (!saved) {
+    await ctx.reply("Ошибка сохранения результатов");
+  }
 
   currentGameState = null;
 };
 
 const getPostGameMessage = async (row: any) => {
   return `<b>🎮 Начало игры!</b>\n<blockquote>${row.game.text}</blockquote>\n\n<i>🚪 Мест:</i> <b>${row.game.space}</b>\n<i>Победителей:</i> <b>${row.game.winners}</b> 🏆\n<i>👣 Ходов:</i> <b>${row.game.moves}</b>`;
-}
-
-
-
-
+};
 
 // доделать окончание игры и кол-во мест
-
-
-
-
-
 
 bot.action(/^gameSet=(gamer|bot)$/, async (ctx) => {
   const value = ctx.match[0].split("=")[1];
@@ -457,7 +484,12 @@ bot.action(/^gameSet=(gamer|bot)$/, async (ctx) => {
     .eq("tgId", 1)
     .single();
   if (!row.game.doneUsers[`${ctx.callbackQuery.from.id}`]) {
-    row.game.doneUsers[`${ctx.callbackQuery.from.id}`] = { name: ctx.callbackQuery.from.first_name, set: value, progress: 0, points: 0 };
+    row.game.doneUsers[`${ctx.callbackQuery.from.id}`] = {
+      name: ctx.callbackQuery.from.first_name,
+      set: value,
+      progress: 0,
+      points: 0,
+    };
   } else {
     row.game.doneUsers[`${ctx.callbackQuery.from.id}`].set = value;
   }
