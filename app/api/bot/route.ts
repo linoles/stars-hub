@@ -1125,8 +1125,8 @@ bot.on("message", async (ctx) => {
           });
           const winners = Object.entries(row.game.doneUsers)
             .filter(([_, data]: any) =>
-              currentGameState?.row.game.moves
-                ? data?.progress >= currentGameState?.row.game.moves
+              row.game.moves
+                ? data?.progress >= row.game.moves
                 : false
             )
             .sort((a: any, b: any) => b[1].points - a[1].points)
@@ -1152,7 +1152,7 @@ bot.on("message", async (ctx) => {
             row.game.chatId,
             row.game.msgId,
             undefined,
-            `${await getGameMessage(row)}\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
+            `${await getPostGameMessage(row)}\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
             {
               parse_mode: "HTML",
             }
