@@ -496,10 +496,7 @@ const shouldEndGame = (gameRow: any): boolean => {
   // 3. Все участники завершили игру
   return (
     gameRow.game.isActive &&
-    Object.keys(gameRow.game.doneUsers).length >= gameRow.game.space &&
-    Object.values(gameRow.game.doneUsers).every(
-      (user: any) => user.progress >= gameRow.game.moves
-    )
+    Object.entries(gameRow.game.doneUsers).filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves).length >= gameRow.game.space
   );
 };
 
