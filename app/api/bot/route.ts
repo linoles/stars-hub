@@ -504,7 +504,7 @@ const finishGame = async (ctx: any, from: number) => {
         .join(", ");
       await bot.telegram.sendMessage(
         gameState.row.game.chatId,
-        `✅ Игра остановлена!\n🏆 Победители: ${winners}`,
+        `🎊 Игра окончена!\n🏆 Победители: ${winners}`,
         {
           reply_parameters: {
             message_id: gameState.row.game.msgId,
@@ -517,15 +517,15 @@ const finishGame = async (ctx: any, from: number) => {
         gameState.row.game.chatId,
         gameState.row.game.msgId,
         undefined,
-        `✅ Игра окончена!\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>\n\n🏆 Победители: ${winners}`,
+        `${await getPostGameMessage(row)}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>\n\n🎊 Игра окончена!\n🏆 Победители: ${winners}`,
         {
           parse_mode: "HTML",
           reply_markup: {
             inline_keyboard: [
               [
-                Markup.button.url(
+                Markup.button.callback(
                   "🏁 Игра завершена!",
-                  `https://t.me/StarzHubBot`
+                  "return"
                 ),
               ],
             ],
@@ -550,7 +550,9 @@ const getPostGameMessage = async (row: any) => {
   return `<b>🎮 Начало игры!</b>\n<blockquote>${row.game.text}</blockquote>\n\n<i>🚪 Мест:</i> <b>${row.game.space}</b>\n<i>Победителей:</i> <b>${row.game.winners}</b> 🏆\n<i>👣 Ходов:</i> <b>${row.game.moves}</b>`;
 };
 
-// доделать окончание игры и кол-во мест
+bot.action("return", async (ctx) => {
+  return;
+});
 
 bot.action(/^gameSet=(gamer|bot)$/, async (ctx) => {
   const value = ctx.match[0].split("=")[1];
