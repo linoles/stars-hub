@@ -411,8 +411,14 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
 
     if (!success) throw new Error("Save failed");
 
-    // Отправка сообщения о ходе
-    await ctx.reply(`Вы получили +${dice.dice.value} очков!`);
+    const pointsEarned = dice.dice.value;
+    await ctx.reply(
+      `🐾 Вы получили +${pointsEarned} очк${
+        pointsEarned === 1 ? "о" : [2, 3, 4].includes(pointsEarned) ? "а" : "ов"
+      }\nВаши очки: ${playerState.points} 🦾\n♟ Ход: ${playerState.currentMove}/${
+        globalGameState.row.game.moves
+      }`
+    );
 
     // Проверка завершения
     if (playerState.currentMove >= globalGameState.row.game.moves) {
@@ -434,9 +440,6 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
   }
 });
 
-/**
- * Обновляет таблицу лидеров в чате игры
- */
 const updateLeaderboard = async (ctx: any, from: number) => {
   if (!globalGameState) return;
 
@@ -478,19 +481,12 @@ const updateLeaderboard = async (ctx: any, from: number) => {
         }
       }
     );
-
-    // Уведомление игрока
-    await ctx.reply("✅ Таблица лидеров успешно обновлена!");
-
   } catch (error) {
     console.error("Ошибка при обновлении таблицы лидеров:", error);
     await ctx.reply("⚠️ Не удалось обновить таблицу лидеров");
   }
 };
 
-/**
- * Проверяет условия завершения всей игры
- */
 const shouldEndGame = (gameRow: any): boolean => {
   if (!gameRow?.game) return false;
 
@@ -507,9 +503,6 @@ const shouldEndGame = (gameRow: any): boolean => {
   );
 };
 
-/**
- * Завершает глобальную игру и объявляет победителей
- */
 const endGlobalGame = async (ctx: any) => {
   if (!globalGameState) return;
 
@@ -581,11 +574,11 @@ const finishGame = async (ctx: any, from: number) => {
     });
 
     if (!success) throw new Error("Final save failed");
+    
+    await ctx.reply(`🎉 Игра завершена! Ваш результат: ${playerState.points} очков! 🏆`)
 
-    // Обновление таблицы лидеров
     await updateLeaderboard(ctx, from);
 
-    // Проверка завершения всей игры
     if (shouldEndGame(globalGameState.row)) {
       await endGlobalGame(ctx);
     }
