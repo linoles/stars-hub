@@ -436,7 +436,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     }
   } catch (error) {
     console.error("Ошибка:", error);
-    await ctx.reply("Произошла ошибка, попробуйте еще раз");
+    await ctx.reply("Произошла ошибка:" + error);
   }
 });
 
@@ -483,7 +483,7 @@ const updateLeaderboard = async (ctx: any, from: number) => {
     );
   } catch (error) {
     console.error("Ошибка при обновлении таблицы лидеров:", error);
-    await ctx.reply("⚠️ Не удалось обновить таблицу лидеров");
+    await ctx.reply("⚠️ Не удалось обновить таблицу лидеров. " + error);
   }
 };
 
@@ -553,7 +553,7 @@ const endGlobalGame = async (ctx: any) => {
 
   } catch (error) {
     console.error("Ошибка при завершении игры:", error);
-    await ctx.reply("⚠️ Не удалось корректно завершить игру");
+    await ctx.reply("⚠️ Не удалось корректно завершить игру. " + error);
   }
 };
 
@@ -584,7 +584,7 @@ const finishGame = async (ctx: any, from: number) => {
     }
   } catch (error) {
     console.error("Ошибка завершения:", error);
-    await ctx.reply("Ошибка при завершении игры");
+    await ctx.reply("Ошибка при завершении игры. " + error);
   } finally {
     playerStates.delete(from);
   }
