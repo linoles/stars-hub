@@ -293,14 +293,17 @@ const getStartGameButtons = async (row: any, from: number) => {
   }
 };
 
-const gameStates = new Map<number, {
-  row: any;
-  from: number;
-  emoji: string;
-  points: number;
-  currentMove: number;
-  startMessageId?: number;
-}>();
+const gameStates = new Map<
+  number,
+  {
+    row: any;
+    from: number;
+    emoji: string;
+    points: number;
+    currentMove: number;
+    startMessageId?: number;
+  }
+>();
 
 const saveGameState = async (userId: number, gameData: any) => {
   try {
@@ -325,10 +328,15 @@ const saveGameState = async (userId: number, gameData: any) => {
 
 const startBotGaming = async (row: any, from: number) => {
   const emoji =
-    row.game.type === "cubic" ? "🎲" :
-    row.game.type === "darts" ? "🎯" :
-    row.game.type === "bowling" ? "🎳" :
-    row.game.type === "basketball" ? "🏀" : "⚽️";
+    row.game.type === "cubic"
+      ? "🎲"
+      : row.game.type === "darts"
+      ? "🎯"
+      : row.game.type === "bowling"
+      ? "🎳"
+      : row.game.type === "basketball"
+      ? "🏀"
+      : "⚽️";
 
   // Отправляем начальное сообщение с кнопкой
   const startMessage = await bot.telegram.sendMessage(
@@ -376,7 +384,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     gameState.row.game.doneUsers[`${gameState.from}`] = {
       ...gameState.row.game.doneUsers[`${gameState.from}`],
       progress: gameState.currentMove,
-      points: gameState.points
+      points: gameState.points,
     };
 
     await saveGameState(gameState.from, gameState.row.game);
@@ -385,14 +393,17 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     await ctx.reply(
       `🐾 Вы получили +${pointsEarned} очк${
         pointsEarned === 1 ? "о" : [2, 3, 4].includes(pointsEarned) ? "а" : "ов"
-      }\nВаши очки: ${gameState.points} 🦾\n♟ Ход: ${
-        gameState.currentMove
-      }/${gameState.row.game.moves}`
+      }\nВаши очки: ${gameState.points} 🦾\n♟ Ход: ${gameState.currentMove}/${
+        gameState.row.game.moves
+      }`
     );
 
     // Проверяем завершение игры
     if (gameState.currentMove >= gameState.row.game.moves) {
+      // Добавляем небольшую задержку перед завершением
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       await finishGame(ctx, from);
+      return; // Важно выйти из функции после завершения
     } else {
       // Отправляем сообщение для следующего раунда
       const newMessage = await ctx.reply(`Готовы к следующему броску?`, {
@@ -411,23 +422,26 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
   }
 });
 
-// Функция завершения игры
+// Функция завершения игры (добавляем вызов в обработчик)
 const finishGame = async (ctx: any, from: number) => {
   const gameState = gameStates.get(from);
   if (!gameState) return;
 
   try {
-    // Удаляем последнее сообщение с кнопкой
-    if (gameState.startMessageId) {
-      await ctx.deleteMessage();
-    }
+    // Фиксируем результаты
+    gameState.row.game.doneUsers[`${from}`].points = gameState.points;
+    gameState.row.game.doneUsers[`${from}`].progress = gameState.row.game.moves;
+
+    // Сохраняем финальные данные
+    await saveGameState(from, gameState.row.game);
 
     // Отправляем итоговое сообщение
     await ctx.reply(
-      `🎉 Игра завершена! Ваш результат в очках: ${gameState.points}! 🏆`
+      `🎉 Игра завершена! Ваш результат: ${gameState.points} очков! 🏆\n` +
+        `Ожидайте обновления таблицы лидеров...`
     );
 
-    // Обновляем топ в основном чате
+    // Формируем топ игроков
     const sortedUsers = Object.entries(gameState.row.game.doneUsers)
       .filter(([_, data]: any) => data?.progress >= gameState.row.game.moves)
       .sort((a: any, b: any) => b[1].points - a[1].points)
@@ -440,6 +454,7 @@ const finishGame = async (ctx: any, from: number) => {
       )
       .join("\n");
 
+    // Обновляем основное сообщение в чате
     await bot.telegram.editMessageText(
       gameState.row.game.chatId,
       gameState.row.game.msgId,
@@ -462,10 +477,11 @@ const finishGame = async (ctx: any, from: number) => {
       }
     );
 
-    // Сохраняем финальные данные
-    await saveGameState(from, gameState.row.game);
+    // Отправляем финальное сообщение
+    await ctx.reply(`🏁 Итоговый результат сохранен в таблице лидеров!`);
   } catch (error) {
     console.error("Ошибка при завершении игры:", error);
+    await ctx.reply("Произошла ошибка при сохранении результатов");
   } finally {
     gameStates.delete(from);
   }
@@ -1113,17 +1129,13 @@ bot.on("message", async (ctx) => {
           });
           const winners = Object.entries(row.game.doneUsers)
             .filter(([_, data]: any) =>
-              row.game.moves
-                ? data?.progress >= row.game.moves
-                : false
+              row.game.moves ? data?.progress >= row.game.moves : false
             )
             .sort((a: any, b: any) => b[1].points - a[1].points)
             .slice(0, row.game.winners)
             .map(
               ([user, data]: any, index) =>
-                `<a href="tg://user?id=${user}">${
-                  data.name
-                }</a> (Очки: ${data.points})`
+                `<a href="tg://user?id=${user}">${data.name}</a> (Очки: ${data.points})`
             )
             .join(", ");
           bot.telegram.sendMessage(
@@ -1133,18 +1145,20 @@ bot.on("message", async (ctx) => {
               reply_parameters: {
                 message_id: row.game.msgId,
               },
-              parse_mode: "HTML"
+              parse_mode: "HTML",
             }
           );
           bot.telegram.editMessageText(
             row.game.chatId,
             row.game.msgId,
             undefined,
-            `${await getPostGameMessage(row)}\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
+            `${await getPostGameMessage(
+              row
+            )}\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
             {
               parse_mode: "HTML",
             }
-          )
+          );
           row.game.isActive = false;
           row.game.doneUsers = {};
           row.game.setupStage = 0;
