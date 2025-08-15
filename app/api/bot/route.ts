@@ -389,7 +389,7 @@ const startBotGaming = async (row: any, from: number) => {
 bot.action(/start_game_(\d+)/, async (ctx) => {
   const from = Number(ctx.match[1]);
   const playerState = playerStates.get(from);
-  if (!playerState || !globalGameState) return;
+  if (!playerState || !globalGameState || !globalGameState.row.game.moves) return;
 
   try {
     // Удаление сообщения и бросок кубика
