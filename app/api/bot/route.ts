@@ -452,7 +452,6 @@ const updateLeaderboard = async (ctx: any, from: number) => {
     if (error || !currentData?.game)
       throw new Error("Не удалось загрузить данные игры");
 
-    // Формируем топ игроков
     const sortedUsers = Object.entries(currentData.game.doneUsers)
     .sort((a: any, b: any) => b[1].points - a[1].points)
     .slice(0, 50)
@@ -600,9 +599,7 @@ const finishGame = async (ctx: any, from: number) => {
     await updateLeaderboard(ctx, from);
 
     if (
-      Object.entries(row?.game.doneUsers).filter(
-        ([_, data]: any) => data?.progress >= row?.game.moves
-      ).length >= row?.game.space
+      Object.entries(row?.game.doneUsers).length >= row?.game.space
     ) {
       await endGlobalGame(ctx);
     }
