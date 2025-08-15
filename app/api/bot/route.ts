@@ -454,8 +454,8 @@ const updateLeaderboard = async (ctx: any, from: number) => {
 
     // Формируем топ игроков
     const sortedUsers = Object.entries(currentData.game.doneUsers)
-      .slice(0, 50)
-      .sort((a: any, b: any) => b[1].points - a[1].points)
+    .sort((a: any, b: any) => b[1].points - a[1].points)
+    .slice(0, 50)
       .map(
         ([user, data]: any, index) =>
           `${index + 1}. <b><a href="tg://user?id=${user}">${
