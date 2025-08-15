@@ -467,8 +467,6 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
 });
 
 const updateLeaderboard = async (ctx: any, from: number) => {
-  if (!globalGameState) return;
-
   try {
     // Получаем актуальные данные из базы
     const { data: currentData, error } = await supabase
@@ -1754,7 +1752,7 @@ bot.on("message", async (ctx) => {
         }
         return 0;
       })();
-      row.game.doneUsers[`${senderId}`].progress++;
+      row.game.doneUsers[`${senderId}`].progress += 1;
       row.game.doneUsers[`${senderId}`].points += PlusDice;
       await supabase
         .from("users")
