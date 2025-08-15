@@ -1713,6 +1713,66 @@ bot.on("message", async (ctx) => {
           ludka: row.ludka,
         })
         .eq("tgId", 1);
+    } else if (
+      row.game.isActive &&
+      senderId === ctx.message.chat.id &&
+      "dice" in ctx.message &&
+      ctx.message.dice.emoji ===
+        (row.game.type === "cubic"
+          ? "🎲"
+          : row.game.type === "darts"
+          ? "🎯"
+          : row.game.type === "bowling"
+          ? "🎳"
+          : row.game.type === "basketball"
+          ? "🏀"
+          : "⚽️") &&
+      row.game.doneUsers[`${senderId}`] &&
+      row.game.doneUsers[`${senderId}`].set === "gamer" &&
+      row.game.doneUsers[`${senderId}`].progress < row.game.moves
+    ) {
+      const PlusDice = (() => {
+        if (row.game.type === "cubic") {
+          return ctx.message.dice.value;
+        } else if (row.game.type === "darts") {
+          return ctx.message.dice.value - 1;
+        } else if (row.game.type === "basketball") {
+          return ctx.message.dice.value >= 4 ? 1 : 0;
+        } else if (row.game.type === "football") {
+          return ctx.message.dice.value >= 3 ? 1 : 0;
+        } else if (row.game.type === "bowling") {
+          return ctx.message.dice.value === 2
+            ? 1
+            : ctx.message.dice.value === 1
+            ? 0
+            : ctx.message.dice.value;
+        }
+        return 0;
+      })();
+      row.game.doneUsers[`${senderId}`].progress++;
+      row.game.doneUsers[`${senderId}`].points += PlusDice;
+      await supabase
+        .from("users")
+        .update({
+          game: row.game,
+        })
+        .eq("tgId", 1);
+      await ctx.reply(`🐾 Вы получили +${PlusDice} очк${
+        PlusDice === 1 ? "о" : [2, 3, 4].includes(PlusDice) ? "а" : "ов"
+      }\nВаши очки: ${row.game.doneUsers[`${senderId}`].points} 🦾\n♟ Ход: ${
+        row.game.doneUsers[`${senderId}`].progress
+      }/${row.game.moves}`, {
+        reply_parameters: {
+          message_id: ctx.message.message_id,
+        },
+      });
+      if (row.game.doneUsers[`${senderId}`].progress >= row.game.moves) {
+        await ctx.reply(`🎉 Игра завершена! Ваш результат: ${row.game.doneUsers[`${senderId}`].points} очков 🏆`, {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+      }
     }
 
     switch (msg) {
@@ -1818,42 +1878,25 @@ bot.on("pre_checkout_query", async (ctx) => {
     const payload = ctx.update.pre_checkout_query.invoice_payload;
     const userId = ctx.update.pre_checkout_query.from.id;
 
-    // Если payload просто строка "top_up"
-    if (payload === "top_up") {
-      // Здесь должна быть логика обработки пополнения
-      // Но у вас в коде используется data.amount, которого нет в payload
-      // Вам нужно либо:
-      // 1. Передавать в invoice_payload JSON строку, например: '{"type":"top_up","amount":100}'
-      // 2. Или хранить amount где-то ещё (например, в сессии пользователя)
-
-      await ctx.answerPreCheckoutQuery(true);
-      return;
-    }
-
-    // Если payload - JSON строка
     try {
       const data = JSON.parse(payload);
-      if (data.type === "top_up") {
-        const user = await supabase
-          .from("users")
-          .select("tgId, stars")
-          .eq("tgId", userId)
-          .single();
+      const user = await supabase
+        .from("users")
+        .select("tgId, stars")
+        .eq("tgId", userId)
+        .single();
 
-        if (user.data) {
-          const newStars = user.data.stars + data.amount;
-          await supabase
-            .from("users")
-            .update({ stars: newStars })
-            .eq("tgId", userId);
-          await ctx.reply(
-            `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
-          );
-        }
-        await ctx.answerPreCheckoutQuery(true);
-      } else {
-        await ctx.answerPreCheckoutQuery(false, "Неверный тип платежа");
+      if (user.data) {
+        const newStars = user.data.stars + data.amount;
+        await supabase
+          .from("users")
+          .update({ stars: newStars })
+          .eq("tgId", userId);
+        await ctx.reply(
+          `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
+        );
       }
+      await ctx.answerPreCheckoutQuery(true);
     } catch (e) {
       await ctx.answerPreCheckoutQuery(false, "Ошибка обработки платежа");
     }
