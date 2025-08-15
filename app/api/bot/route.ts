@@ -399,7 +399,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
 
     // Обновление состояния
     const PlusDice = (() => {
-      if (globalGameState.row.game.type === "cubic" || globalGameState.row.game.type === "bowling") {
+      if (globalGameState.row.game.type === "cubic") {
         return dice.dice.value;
       } else if (globalGameState.row.game.type === "darts") {
         return dice.dice.value - 1;
@@ -407,6 +407,8 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
         return dice.dice.value >= 4 ? 1 : 0;
       } else if (globalGameState.row.game.type === "football") {
         return dice.dice.value >= 3 ? 1 : 0;
+      } else if (globalGameState.row.game.type === "bowling") {
+        return dice.dice.value === 2 ? 1 : dice.dice.value === 1 ? 0 : dice.dice.value;
       }
       return 0;
     })();
