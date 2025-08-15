@@ -398,20 +398,18 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     const dice = await ctx.sendDice({ emoji: playerState.emoji });
 
     // Обновление состояния
-    let PlusDice = 0
-    if (playerState.emoji === "cubic" || playerState.emoji === "bowling") {
-      PlusDice += dice.dice.value;
-    } else if (playerState.emoji === "darts") {
-      PlusDice += dice.dice.value - 1;
-    } else if (playerState.emoji === "basketball") {
-      if (dice.dice.value >= 4) {
-        PlusDice += 1;
+    const PlusDice = (() => {
+      if (playerState.emoji === "cubic" || playerState.emoji === "bowling") {
+        return dice.dice.value;
+      } else if (playerState.emoji === "darts") {
+        return dice.dice.value - 1;
+      } else if (playerState.emoji === "basketball") {
+        return dice.dice.value >= 4 ? 1 : 0;
+      } else if (playerState.emoji === "football") {
+        return dice.dice.value >= 3 ? 1 : 0;
       }
-    } else if (playerState.emoji === "football") {
-      if (dice.dice.value >= 3) {
-        PlusDice += 1;
-      }
-    }
+      return 0;
+    })();
     playerState.points += PlusDice;
     playerState.currentMove++;
 
