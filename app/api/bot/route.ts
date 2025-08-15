@@ -398,20 +398,21 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     const dice = await ctx.sendDice({ emoji: playerState.emoji });
 
     // Обновление состояния
-    playerState.points +=
-      playerState.emoji === "cubic" || playerState.emoji === "bowling"
-        ? dice.dice.value
-        : playerState.emoji === "darts"
-        ? dice.dice.value - 1
-        : playerState.emoji === "basketball"
-        ? dice.dice.value >= 4
-          ? 1
-          : 0
-        : playerState.emoji === "football"
-        ? dice.dice.value >= 3
-          ? 1
-          : 0
-        : 0;
+    let PlusDice = 0
+    if (playerState.emoji === "cubic" || playerState.emoji === "bowling") {
+      PlusDice += dice.dice.value;
+    } else if (playerState.emoji === "darts") {
+      PlusDice += dice.dice.value - 1;
+    } else if (playerState.emoji === "basketball") {
+      if (dice.dice.value >= 4) {
+        PlusDice += 1;
+      }
+    } else if (playerState.emoji === "football") {
+      if (dice.dice.value >= 3) {
+        PlusDice += 1;
+      }
+    }
+    playerState.points += PlusDice;
     playerState.currentMove++;
 
     // Атомарное сохранение
@@ -427,7 +428,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
 
     if (!success) throw new Error("Save failed");
 
-    const pointsEarned = dice.dice.value;
+    const pointsEarned = PlusDice;
     await ctx.reply(
       `🐾 Вы получили +${pointsEarned} очк${
         pointsEarned === 1 ? "о" : [2, 3, 4].includes(pointsEarned) ? "а" : "ов"
@@ -607,7 +608,6 @@ const finishGame = async (ctx: any, from: number) => {
   if (!playerState || !globalGameState) return;
 
   try {
-    // Фиксация результатов
     const success = await saveGameState({
       doneUsers: {
         [`${from}`]: {
