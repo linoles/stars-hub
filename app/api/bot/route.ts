@@ -348,7 +348,7 @@ const saveGameState = async (gameData: any) => {
 };
 
 const startBotGaming = async (row: any, from: number) => {
-  if (!row.game.isActive) return;
+  if (!row.game.isActive || row.game.doneUsers[`${from}`].set !== "bot") return;
 
   // Инициализация глобального состояния
   if (!globalGameState) {
