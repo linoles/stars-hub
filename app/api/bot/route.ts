@@ -1720,12 +1720,6 @@ bot.on("message", async (ctx) => {
       })();
       row.game.doneUsers[`${senderId}`].progress += 1;
       row.game.doneUsers[`${senderId}`].points += PlusDice;
-      await supabase
-        .from("users")
-        .update({
-          game: row.game,
-        })
-        .eq("tgId", 1);
       await ctx.reply(`🐾 Вы получили +${PlusDice} очк${
         PlusDice === 1 ? "о" : [2, 3, 4].includes(PlusDice) ? "а" : "ов"
       }\nВаши очки: ${row.game.doneUsers[`${senderId}`].points} 🦾\n♟ Ход: ${
@@ -1744,6 +1738,11 @@ bot.on("message", async (ctx) => {
         });
         await updateLeaderboard(ctx, senderId);
       }
+      if (
+      Object.entries(row?.game.doneUsers).length >= row?.game.space
+    ) {
+      await endGlobalGame(ctx);
+    }
     }
 
     switch (msg) {
