@@ -1803,6 +1803,29 @@ bot.on("message", async (ctx) => {
   }
 });
 
+bot.on("pre_checkout_query", async (ctx) => {
+  if (ctx.update.pre_checkout_query.invoice_payload === "top_up") {
+    const data = JSON.parse(ctx.update.pre_checkout_query.invoice_payload);
+    const userId = ctx.update.pre_checkout_query.from.id;
+
+    if (data.data === "top_up") {
+      const user = await supabase
+        .from("users")
+        .select("tgId, stars")
+        .eq("tgId", userId)
+        .single();
+      if (user.data) {
+        const newStars = user.data.stars + data.amount;
+        await supabase
+          .from("users")
+          .update({ stars: newStars })
+          .eq("tgId", userId);
+      }
+    }
+    await ctx.answerPreCheckoutQuery(true);
+  }
+});
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
