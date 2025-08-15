@@ -359,14 +359,14 @@ const startBotGaming = async (row: any, from: number) => {
 };
 
 bot.action(/start_game_(\d+)/, async (ctx) => {
-  const from = Number(ctx.match[1]);
+  const from = ctx.callbackQuery.from.id;
   const { data: row, error } = await supabase
     .from("users")
     .select("game")
-    .eq("tgId", from)
+    .eq("tgId", 1)
     .single();
   if (row?.game.doneUsers[`${from}`].set !== "bot" || error) {
-    await ctx.answerCbQuery("Check: some errors: " + String(error) + " " + row?.game.doneUsers[`${from}`].set);
+    await ctx.answerCbQuery("Check: some errors: " + String(error) + " " + row?.game.doneUsers[`${ctx.callbackQuery.from.id}`].set);
     return;
   }
 
