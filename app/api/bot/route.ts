@@ -404,6 +404,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
           name: ctx.from?.first_name || "Игрок",
           progress: row.game.doneUsers[`${from}`].progress,
           points: row.game.doneUsers[`${from}`].points,
+          set: "bot",
         },
       },
     });
@@ -591,6 +592,7 @@ const finishGame = async (ctx: any, from: number) => {
           name: ctx.from?.first_name || "Игрок",
           progress: row?.game.moves,
           points: row?.game.doneUsers[`${from}`].points,
+          set: row?.game.doneUsers[`${from}`].set,
         },
       },
     });
