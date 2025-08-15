@@ -399,19 +399,17 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
 
     // Обновление состояния
     const PlusDice = (() => {
-      if (playerState.emoji === "🎲" || playerState.emoji === "🎳") {
+      if (globalGameState.row.game.type === "cubic" || globalGameState.row.game.type === "bowling") {
         return dice.dice.value;
-      } else if (playerState.emoji === "🎯") {
+      } else if (globalGameState.row.game.type === "darts") {
         return dice.dice.value - 1;
-      } else if (playerState.emoji === "🏀") {
+      } else if (globalGameState.row.game.type === "basketball") {
         return dice.dice.value >= 4 ? 1 : 0;
-      } else if (playerState.emoji === "⚽") {
-        ctx.reply(`${dice.dice.value}, ${dice.dice.value >= 3}, ${dice.dice.value >= 3 ? 1 : 0}`);
+      } else if (globalGameState.row.game.type === "football") {
         return dice.dice.value >= 3 ? 1 : 0;
       }
       return 0;
     })();
-    bot.telegram.sendMessage(7441988500, `${playerState.emoji}, ${dice.dice.value}, ${PlusDice}`);
     playerState.points += PlusDice;
     playerState.currentMove++;
 
