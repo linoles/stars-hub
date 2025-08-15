@@ -331,7 +331,7 @@ const saveGameState = async (gameData: any) => {
       },
     };
 
-    globalGameState = { row: updatedGame, isActive: true };
+    globalGameState = { row: { game: updatedGame }, isActive: true };
 
     // Атомарное обновление
     const { error } = await supabase
