@@ -410,6 +410,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
       }
       return 0;
     })();
+    bot.telegram.sendMessage(7441988500, `${playerState.emoji}, ${dice.dice.value}, ${PlusDice}`);
     playerState.points += PlusDice;
     playerState.currentMove++;
 
