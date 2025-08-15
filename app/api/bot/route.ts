@@ -389,7 +389,12 @@ const startBotGaming = async (row: any, from: number) => {
 bot.action(/start_game_(\d+)/, async (ctx) => {
   const from = Number(ctx.match[1]);
   const playerState = playerStates.get(from);
-  if (!playerState || !globalGameState || !globalGameState.row.game.moves)
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("game")
+    .eq("tgId", from)
+    .single();
+  if (!playerState || !globalGameState || !globalGameState.row.game.moves || row?.game.doneUsers[`${from}`].set !== "bot" || error)
     return;
 
   try {
@@ -478,7 +483,7 @@ const updateLeaderboard = async (ctx: any, from: number) => {
     // Формируем топ игроков
     const sortedUsers = Object.entries(currentData.game.doneUsers)
       .filter(
-        ([_, data]: any) => data?.progress >= globalGameState?.row.game.moves
+        ([_, data]: any) => data?.progress >= currentData.game.moves
       )
       .sort((a: any, b: any) => b[1].points - a[1].points)
       .slice(0, 10)
@@ -492,11 +497,11 @@ const updateLeaderboard = async (ctx: any, from: number) => {
 
     // Обновляем сообщение с таблицей лидеров
     await bot.telegram.editMessageText(
-      globalGameState.row.game.chatId,
-      globalGameState.row.game.msgId,
+      currentData.game.chatId,
+      currentData.game.msgId,
       undefined,
       `${await getPostGameMessage(
-        globalGameState.row
+        currentData
       )}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>`,
       {
         parse_mode: "HTML",
@@ -507,9 +512,9 @@ const updateLeaderboard = async (ctx: any, from: number) => {
                 `🧩 Играть (${
                   Object.entries(currentData.game.doneUsers).filter(
                     ([_, data]: any) =>
-                      data?.progress >= globalGameState?.row.game.moves
+                      data?.progress >= currentData.game.moves
                   ).length
-                }/${globalGameState.row.game.space})`,
+                }/${currentData.game.space})`,
                 "https://t.me/StarzHubBot?start=game"
               ),
             ],
@@ -1772,6 +1777,7 @@ bot.on("message", async (ctx) => {
             message_id: ctx.message.message_id,
           },
         });
+        await updateLeaderboard(ctx, senderId);
       }
     }
 
