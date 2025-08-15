@@ -293,28 +293,9 @@ const getStartGameButtons = async (row: any, from: number) => {
   }
 };
 
-// Глобальное состояние игры
-let globalGameState: {
-  row: any;
-  isActive: boolean;
-} | null = null;
-
-// Состояния игроков
-const playerStates = new Map<
-  number,
-  {
-    emoji: string;
-    points: number;
-    currentMove: number;
-    startMessageId?: number;
-    set: string
-  }
->();
-
 const saveGameState = async (gameData: any) => {
   try {
-    // Сначала получаем текущее состояние
-    const { data: currentData, error: fetchError } = await supabase
+    const { data: row, error: fetchError } = await supabase
       .from("users")
       .select("game")
       .eq("tgId", 1)
@@ -322,19 +303,15 @@ const saveGameState = async (gameData: any) => {
 
     if (fetchError) throw fetchError;
 
-    // Объединяем изменения
     const updatedGame = {
-      ...currentData.game,
+      ...row.game,
       ...gameData,
       doneUsers: {
-        ...currentData.game?.doneUsers,
+        ...row.game?.doneUsers,
         ...gameData.doneUsers,
       },
     };
 
-    globalGameState = { row: { game: updatedGame }, isActive: true };
-
-    // Атомарное обновление
     const { error } = await supabase
       .from("users")
       .update({ game: updatedGame })
@@ -350,11 +327,6 @@ const saveGameState = async (gameData: any) => {
 
 const startBotGaming = async (row: any, from: number) => {
   if (!row.game.isActive || row.game.doneUsers[`${from}`].set !== "bot") return;
-
-  // Инициализация глобального состояния
-  if (!globalGameState) {
-    globalGameState = { row, isActive: true };
-  }
 
   const emoji =
     row.game.type === "cubic"
@@ -379,44 +351,41 @@ const startBotGaming = async (row: any, from: number) => {
     }
   );
 
-  playerStates.set(from, {
-    emoji,
-    points: 0,
-    currentMove: 0,
-    startMessageId: startMessage.message_id,
-    set: "bot"
-  });
+  row.game.doneUsers[`${from}`].startMessageId = startMessage.message_id;
+  await supabase
+    .from("users")
+    .update({ game: row.game })
+    .eq("tgId", from);
 };
 
 bot.action(/start_game_(\d+)/, async (ctx) => {
   const from = Number(ctx.match[1]);
-  const playerState = playerStates.get(from);
   const { data: row, error } = await supabase
     .from("users")
     .select("game")
     .eq("tgId", from)
     .single();
-  if (!playerState || !globalGameState || !globalGameState.row.game.moves || row?.game.doneUsers[`${from}`].set !== "bot" || error) {
+  if (!row || !row.game.moves || row.game.doneUsers[`${from}`].set !== "bot" || error) {
     await ctx.answerCbQuery("Check: some trouble");
     return;
   }
 
   try {
     // Удаление сообщения и бросок кубика
-    if (playerState.startMessageId) await ctx.deleteMessage();
-    const dice = await ctx.sendDice({ emoji: playerState.emoji });
+    if (row.game.doneUsers[`${from}`].startMessageId) await ctx.deleteMessage();
+    const dice = await ctx.sendDice({ emoji: row.game.type === "cubic" ? "🎲" : row.game.type === "darts" ? "🎯" : row.game.type === "bowling" ? "🎳" : row.game.type === "basketball" ? "🏀" : "⚽️"});
 
     // Обновление состояния
     const PlusDice = (() => {
-      if (globalGameState.row.game.type === "cubic") {
+      if (row.game.type === "cubic") {
         return dice.dice.value;
-      } else if (globalGameState.row.game.type === "darts") {
+      } else if (row.game.type === "darts") {
         return dice.dice.value - 1;
-      } else if (globalGameState.row.game.type === "basketball") {
+      } else if (row.game.type === "basketball") {
         return dice.dice.value >= 4 ? 1 : 0;
-      } else if (globalGameState.row.game.type === "football") {
+      } else if (row.game.type === "football") {
         return dice.dice.value >= 3 ? 1 : 0;
-      } else if (globalGameState.row.game.type === "bowling") {
+      } else if (row.game.type === "bowling") {
         return dice.dice.value === 2
           ? 1
           : dice.dice.value === 1
@@ -425,16 +394,16 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
       }
       return 0;
     })();
-    playerState.points += PlusDice;
-    playerState.currentMove++;
+    row.game.doneUsers[`${from}`].points += PlusDice;
+    row.game.doneUsers[`${from}`].progress++;
 
     // Атомарное сохранение
     const success = await saveGameState({
       doneUsers: {
         [`${from}`]: {
           name: ctx.from?.first_name || "Игрок",
-          progress: playerState.currentMove,
-          points: playerState.points,
+          progress: row.game.doneUsers[`${from}`].progress,
+          points: row.game.doneUsers[`${from}`].points,
         },
       },
     });
@@ -445,13 +414,13 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     await ctx.reply(
       `🐾 Вы получили +${pointsEarned} очк${
         pointsEarned === 1 ? "о" : [2, 3, 4].includes(pointsEarned) ? "а" : "ов"
-      }\nВаши очки: ${playerState.points} 🦾\n♟ Ход: ${
-        playerState.currentMove
-      }/${globalGameState.row.game.moves}`
+      }\nВаши очки: ${row.game.doneUsers[`${from}`].points} 🦾\n♟ Ход: ${
+        row.game.doneUsers[`${from}`].progress
+      }/${row.game.moves}`
     );
 
     // Проверка завершения
-    if (playerState.currentMove >= globalGameState.row.game.moves) {
+    if (row.game.doneUsers[`${from}`].progress >= row.game.moves) {
       await finishGame(ctx, from);
     } else {
       // Кнопка для следующего хода
@@ -462,7 +431,8 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
           ],
         },
       });
-      playerState.startMessageId = msg.message_id;
+      row.game.doneUsers[`${from}`].startMessageId = msg.message_id;
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
     }
   } catch (error) {
     console.error("Ошибка:", error);
@@ -529,31 +499,29 @@ const updateLeaderboard = async (ctx: any, from: number) => {
   }
 };
 
-const endGlobalGame = async (ctx: any) => {
-  if (!globalGameState) return;
-
+const endGlobalGame = (async (ctx: any) => {
   try {
     // Получаем актуальные данные
-    const { data } = await supabase
+    const { data: row } = await supabase
       .from("users")
       .select("game")
       .eq("tgId", 1)
       .single();
 
-    if (!data?.game) throw new Error("Данные игры не найдены");
+    if (row?.game) throw new Error("Данные игры не найдены");
 
     // Определяем победителей
-    const winners = Object.entries(data.game.doneUsers)
+    const winners = Object.entries(row?.game.doneUsers)
       .sort((a: any, b: any) => b[1].points - a[1].points)
-      .slice(0, data.game.winners)
+      .slice(0, row?.game.winners)
       .map(
         ([user, data]: any, index) =>
           `<a href="tg://user?id=${user}">${data.name}</a> (Очки: ${data.points})`
       )
       .join(", ");
-    const sortedUsers = Object.entries(data.game.doneUsers)
+    const sortedUsers = Object.entries(row?.game.doneUsers)
       .filter(
-        ([_, data]: any) => data?.progress >= globalGameState?.row.game.moves
+        ([_, data]: any) => data?.progress >= row?.game.moves
       )
       .sort((a: any, b: any) => b[1].points - a[1].points)
       .slice(0, 10)
@@ -567,20 +535,20 @@ const endGlobalGame = async (ctx: any) => {
 
     // Отправляем сообщение о победителях
     await bot.telegram.sendMessage(
-      globalGameState.row.game.chatId,
+      row?.game.chatId,
       `🏆 Игра завершена!\nПобедители: ${winners}`,
       {
-        reply_parameters: { message_id: globalGameState.row.game.msgId },
+        reply_parameters: { message_id: row?.game.msgId },
         parse_mode: "HTML",
       }
     );
 
-    await bot.telegram.editMessageText(
-      globalGameState.row.game.chatId,
-      globalGameState.row.game.msgId,
+    await bot.telegram.editMessageText
+      row?.game.chatId,
+      row?.game.msgId,
       undefined,
       `${await getPostGameMessage(
-        globalGameState.row
+        row
       )}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>\n\n🏆 Игра завершена!\nПобедители: ${winners}`,
       {
         parse_mode: "HTML",
@@ -590,40 +558,39 @@ const endGlobalGame = async (ctx: any) => {
           ],
         },
       }
-    );
+    ;
 
     // Деактивируем игру
     await supabase
       .from("users")
       .update({
         game: {
-          ...data.game,
+          ...row?.game,
           isActive: false,
           doneUsers: {},
           setupStage: 0,
         },
       })
       .eq("tgId", 1);
-
-    // Очищаем глобальное состояние
-    globalGameState = null;
   } catch (error) {
     console.error("Ошибка при завершении игры:", error);
     await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
   }
-};
+});
 
 const finishGame = async (ctx: any, from: number) => {
-  const playerState = playerStates.get(from);
-  if (!playerState || !globalGameState) return;
-
+  const { data: row } = await supabase
+    .from("users")
+    .select("game")
+    .eq("tgId", from)
+    .single();
   try {
     const success = await saveGameState({
       doneUsers: {
         [`${from}`]: {
           name: ctx.from?.first_name || "Игрок",
-          progress: globalGameState.row.game.moves,
-          points: playerState.points,
+          progress: row?.game.moves,
+          points: row?.game.doneUsers[`${from}`].points,
         },
       },
     });
@@ -631,23 +598,21 @@ const finishGame = async (ctx: any, from: number) => {
     if (!success) throw new Error("Final save failed");
 
     await ctx.reply(
-      `🎉 Игра завершена! Ваш результат: ${playerState.points} очков! 🏆`
+      `🎉 Игра завершена! Ваш результат: ${row?.game.doneUsers[`${from}`].points} очков! 🏆`
     );
 
     await updateLeaderboard(ctx, from);
 
     if (
-      Object.entries(globalGameState.row.game.doneUsers).filter(
-        ([_, data]: any) => data?.progress >= globalGameState?.row.game.moves
-      ).length >= globalGameState.row.game.space
+      Object.entries(row?.game.doneUsers).filter(
+        ([_, data]: any) => data?.progress >= row?.game.moves
+      ).length >= row?.game.space
     ) {
       await endGlobalGame(ctx);
     }
   } catch (error) {
     console.error("Ошибка завершения:", error);
     await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
-  } finally {
-    playerStates.delete(from);
   }
 };
 
