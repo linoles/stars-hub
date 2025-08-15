@@ -365,8 +365,8 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     .select("game")
     .eq("tgId", from)
     .single();
-  if (!row || !row.game.moves || row.game.doneUsers[`${from}`].set !== "bot" || error) {
-    await ctx.answerCbQuery("Check: some trouble");
+  if (row?.game.doneUsers[`${from}`].set !== "bot" || error) {
+    await ctx.answerCbQuery("Check: some errors");
     return;
   }
 
