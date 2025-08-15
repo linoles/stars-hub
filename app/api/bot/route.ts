@@ -453,7 +453,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     }
   } catch (error) {
     console.error("Ошибка:", error);
-    await ctx.reply("Произошла ошибка:" + error);
+    await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
   }
 });
 
@@ -515,7 +515,7 @@ const updateLeaderboard = async (ctx: any, from: number) => {
     );
   } catch (error) {
     console.error("Ошибка при обновлении таблицы лидеров:", error);
-    await ctx.reply("⚠️ Не удалось обновить таблицу лидеров. " + error);
+    await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
   }
 };
 
@@ -599,7 +599,7 @@ const endGlobalGame = async (ctx: any) => {
     globalGameState = null;
   } catch (error) {
     console.error("Ошибка при завершении игры:", error);
-    await ctx.reply("⚠️ Не удалось корректно завершить игру. " + error);
+    await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
   }
 };
 
@@ -635,7 +635,7 @@ const finishGame = async (ctx: any, from: number) => {
     }
   } catch (error) {
     console.error("Ошибка завершения:", error);
-    await ctx.reply("Ошибка при завершении игры. " + error);
+    await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
   } finally {
     playerStates.delete(from);
   }
@@ -1544,11 +1544,7 @@ bot.on("message", async (ctx) => {
       } catch (error: any) {
         console.error("Error in ludka handler:", error);
         try {
-          await ctx.reply(`Произошла ошибка: ${error.message}`, {
-            reply_parameters: {
-              message_id: ctx.message.message_id,
-            },
-          });
+          await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
         } catch (e) {
           console.error("Failed to send error message:", e);
         }
@@ -1676,11 +1672,7 @@ bot.on("message", async (ctx) => {
       } catch (error: any) {
         console.error("Error in ludka handler (second block):", error);
         try {
-          await ctx.reply(`Произошла ошибка: ${error.message}`, {
-            reply_parameters: {
-              message_id: ctx.message.message_id,
-            },
-          });
+          await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
         } catch (e) {
           console.error("Failed to send error message:", e);
         }
