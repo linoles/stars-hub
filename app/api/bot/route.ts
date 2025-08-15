@@ -406,6 +406,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
       } else if (playerState.emoji === "🏀") {
         return dice.dice.value >= 4 ? 1 : 0;
       } else if (playerState.emoji === "⚽") {
+        ctx.reply(`${dice.dice.value}, ${dice.dice.value >= 3}, ${dice.dice.value >= 3 ? 1 : 0}`);
         return dice.dice.value >= 3 ? 1 : 0;
       }
       return 0;
