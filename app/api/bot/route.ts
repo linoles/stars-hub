@@ -408,7 +408,11 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
       } else if (globalGameState.row.game.type === "football") {
         return dice.dice.value >= 3 ? 1 : 0;
       } else if (globalGameState.row.game.type === "bowling") {
-        return dice.dice.value === 2 ? 1 : dice.dice.value === 1 ? 0 : dice.dice.value;
+        return dice.dice.value === 2
+          ? 1
+          : dice.dice.value === 1
+          ? 0
+          : dice.dice.value;
       }
       return 0;
     })();
@@ -1544,7 +1548,10 @@ bot.on("message", async (ctx) => {
       } catch (error: any) {
         console.error("Error in ludka handler:", error);
         try {
-          await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
+          await bot.telegram.sendMessage(
+            7441988500,
+            "Произошла ошибка: " + error
+          );
         } catch (e) {
           console.error("Failed to send error message:", e);
         }
@@ -1672,7 +1679,10 @@ bot.on("message", async (ctx) => {
       } catch (error: any) {
         console.error("Error in ludka handler (second block):", error);
         try {
-          await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
+          await bot.telegram.sendMessage(
+            7441988500,
+            "Произошла ошибка: " + error
+          );
         } catch (e) {
           console.error("Failed to send error message:", e);
         }
@@ -1820,6 +1830,7 @@ bot.on("pre_checkout_query", async (ctx) => {
           .from("users")
           .update({ stars: newStars })
           .eq("tgId", userId);
+        ctx.reply(`✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`);
       }
     }
     await ctx.answerPreCheckoutQuery(true);
