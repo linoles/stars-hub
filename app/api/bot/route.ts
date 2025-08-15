@@ -389,7 +389,8 @@ const startBotGaming = async (row: any, from: number) => {
 bot.action(/start_game_(\d+)/, async (ctx) => {
   const from = Number(ctx.match[1]);
   const playerState = playerStates.get(from);
-  if (!playerState || !globalGameState || !globalGameState.row.game.moves) return;
+  if (!playerState || !globalGameState || !globalGameState.row.game.moves)
+    return;
 
   try {
     // Удаление сообщения и бросок кубика
@@ -397,7 +398,20 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     const dice = await ctx.sendDice({ emoji: playerState.emoji });
 
     // Обновление состояния
-    playerState.points += dice.dice.value;
+    playerState.points +=
+      playerState.emoji === "cubic" || playerState.emoji === "bowling"
+        ? dice.dice.value
+        : playerState.emoji === "darts"
+        ? dice.dice.value - 1
+        : playerState.emoji === "basketball"
+        ? dice.dice.value >= 4
+          ? 1
+          : 0
+        : playerState.emoji === "football"
+        ? dice.dice.value >= 3
+          ? 1
+          : 0
+        : 0;
     playerState.currentMove++;
 
     // Атомарное сохранение
@@ -612,9 +626,11 @@ const finishGame = async (ctx: any, from: number) => {
 
     await updateLeaderboard(ctx, from);
 
-    bot.telegram.sendMessage(7441988500, JSON.stringify(globalGameState));
-
-    if (Object.entries(globalGameState.row.game.doneUsers).filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves).length >= globalGameState.row.game.space) {
+    if (
+      Object.entries(globalGameState.row.game.doneUsers).filter(
+        ([_, data]: any) => data?.progress >= globalGameState?.row.game.moves
+      ).length >= globalGameState.row.game.space
+    ) {
       await endGlobalGame(ctx);
     }
   } catch (error) {
@@ -667,6 +683,14 @@ bot.action(/^gameSet=(gamer|bot)$/, async (ctx) => {
 });
 
 bot.action("gamePrevStage", async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
   const { data: row, error } = await supabase
     .from("users")
     .select("*")
@@ -686,6 +710,14 @@ bot.action("gamePrevStage", async (ctx) => {
 });
 
 bot.action("gameNextStage", async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
   const { data: row, error } = await supabase
     .from("users")
     .select("*")
@@ -820,8 +852,6 @@ bot.action("startGame", async (ctx) => {
 });
 
 bot.action(/^game(?:space|moves|winners)=[0-9]+$/, async (ctx) => {
-  const action = ctx.match[0].split("=")[0].slice(4);
-  const value = ctx.match[0].split("=")[1];
   const admins = [7441988500, 6233759034, 7177688298];
   if (!admins.includes(ctx.callbackQuery.from.id)) {
     ctx.answerCbQuery("❌ У вас нет прав!", {
@@ -830,6 +860,8 @@ bot.action(/^game(?:space|moves|winners)=[0-9]+$/, async (ctx) => {
     });
     return;
   }
+  const action = ctx.match[0].split("=")[0].slice(4);
+  const value = ctx.match[0].split("=")[1];
   const { data: row, error } = await supabase
     .from("users")
     .select("*")
