@@ -1814,26 +1814,52 @@ bot.on("message", async (ctx) => {
 });
 
 bot.on("pre_checkout_query", async (ctx) => {
-  if (ctx.update.pre_checkout_query.invoice_payload === "top_up") {
-    const data = JSON.parse(ctx.update.pre_checkout_query.invoice_payload);
+  try {
+    const payload = ctx.update.pre_checkout_query.invoice_payload;
     const userId = ctx.update.pre_checkout_query.from.id;
 
-    if (data.data === "top_up") {
-      const user = await supabase
-        .from("users")
-        .select("tgId, stars")
-        .eq("tgId", userId)
-        .single();
-      if (user.data) {
-        const newStars = user.data.stars + data.amount;
-        await supabase
-          .from("users")
-          .update({ stars: newStars })
-          .eq("tgId", userId);
-        ctx.reply(`✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`);
-      }
+    // Если payload просто строка "top_up"
+    if (payload === "top_up") {
+      // Здесь должна быть логика обработки пополнения
+      // Но у вас в коде используется data.amount, которого нет в payload
+      // Вам нужно либо:
+      // 1. Передавать в invoice_payload JSON строку, например: '{"type":"top_up","amount":100}'
+      // 2. Или хранить amount где-то ещё (например, в сессии пользователя)
+
+      await ctx.answerPreCheckoutQuery(true);
+      return;
     }
-    await ctx.answerPreCheckoutQuery(true);
+
+    // Если payload - JSON строка
+    try {
+      const data = JSON.parse(payload);
+      if (data.type === "top_up") {
+        const user = await supabase
+          .from("users")
+          .select("tgId, stars")
+          .eq("tgId", userId)
+          .single();
+
+        if (user.data) {
+          const newStars = user.data.stars + data.amount;
+          await supabase
+            .from("users")
+            .update({ stars: newStars })
+            .eq("tgId", userId);
+          await ctx.reply(
+            `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
+          );
+        }
+        await ctx.answerPreCheckoutQuery(true);
+      } else {
+        await ctx.answerPreCheckoutQuery(false, "Неверный тип платежа");
+      }
+    } catch (e) {
+      await ctx.answerPreCheckoutQuery(false, "Ошибка обработки платежа");
+    }
+  } catch (error) {
+    console.error("Error in pre_checkout_query:", error);
+    await ctx.answerPreCheckoutQuery(false, "Произошла ошибка");
   }
 });
 
