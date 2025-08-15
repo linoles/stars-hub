@@ -307,6 +307,7 @@ const playerStates = new Map<
     points: number;
     currentMove: number;
     startMessageId?: number;
+    set: string
   }
 >();
 
@@ -383,6 +384,7 @@ const startBotGaming = async (row: any, from: number) => {
     points: 0,
     currentMove: 0,
     startMessageId: startMessage.message_id,
+    set: "bot"
   });
 };
 
