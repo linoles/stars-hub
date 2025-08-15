@@ -582,7 +582,7 @@ const finishGame = async (ctx: any, from: number) => {
   const { data: row } = await supabase
     .from("users")
     .select("game")
-    .eq("tgId", from)
+    .eq("tgId", 1)
     .single();
   try {
     const success = await saveGameState({
@@ -1861,7 +1861,7 @@ bot.on("pre_checkout_query", async (ctx) => {
       const user = await supabase
         .from("users")
         .select("tgId, stars")
-        .eq("tgId", userId)
+        .eq("tgId", 1)
         .single();
 
       if (user.data) {
@@ -1869,7 +1869,7 @@ bot.on("pre_checkout_query", async (ctx) => {
         await supabase
           .from("users")
           .update({ stars: newStars })
-          .eq("tgId", userId);
+          .eq("tgId", 1);
         await ctx.reply(
           `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
         );
