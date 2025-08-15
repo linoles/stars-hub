@@ -331,6 +331,8 @@ const saveGameState = async (gameData: any) => {
       },
     };
 
+    globalGameState = { row: updatedGame, isActive: true };
+
     // Атомарное обновление
     const { error } = await supabase
       .from("users")
@@ -610,7 +612,7 @@ const finishGame = async (ctx: any, from: number) => {
 
     await updateLeaderboard(ctx, from);
 
-    bot.telegram.sendMessage(7441988500, JSON.stringify(playerStates));
+    bot.telegram.sendMessage(7441988500, JSON.stringify(globalGameState));
 
     if (Object.entries(globalGameState.row.game.doneUsers).filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves).length >= globalGameState.row.game.space) {
       await endGlobalGame(ctx);
