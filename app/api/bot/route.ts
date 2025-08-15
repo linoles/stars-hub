@@ -399,13 +399,13 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
 
     // Обновление состояния
     const PlusDice = (() => {
-      if (playerState.emoji === "cubic" || playerState.emoji === "bowling") {
+      if (playerState.emoji === "🎲" || playerState.emoji === "🎳") {
         return dice.dice.value;
-      } else if (playerState.emoji === "darts") {
+      } else if (playerState.emoji === "🎯") {
         return dice.dice.value - 1;
-      } else if (playerState.emoji === "basketball") {
+      } else if (playerState.emoji === "🏀") {
         return dice.dice.value >= 4 ? 1 : 0;
-      } else if (playerState.emoji === "football") {
+      } else if (playerState.emoji === "⚽") {
         return dice.dice.value >= 3 ? 1 : 0;
       }
       return 0;
