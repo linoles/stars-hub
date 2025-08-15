@@ -1331,6 +1331,36 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
+      } else if (msg.toLowerCase().startsWith("ходы ")) {
+        const newState = Number(msg.split(" ")[1]);
+        row.game.moves = newState;
+        await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+        ctx.reply("Успешно ✅", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
+      } else if (msg.toLowerCase().startsWith("места ")) {
+        const newState = Number(msg.split(" ")[1]);
+        row.game.space = newState;
+        await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+        ctx.reply("Успешно ✅", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
+      } else if (msg.toLowerCase().startsWith("победители ")) {
+        const newState = Number(msg.split(" ")[1]);
+        row.game.winners = newState;
+        await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+        ctx.reply("Успешно ✅", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
       }
     }
 
