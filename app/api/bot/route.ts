@@ -468,7 +468,6 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
 
 const updateLeaderboard = async (ctx: any, from: number) => {
   try {
-    // Получаем актуальные данные из базы
     const { data: currentData, error } = await supabase
       .from("users")
       .select("game")
@@ -1344,6 +1343,11 @@ bot.on("message", async (ctx) => {
           row.game.msgId = 0;
           await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
           return;
+
+        case "upd":
+          for(let i = 0; i < Object.keys(row.game.doneUsers).length; i++) {
+            row.game.doneUsers[Object.keys(row.game.doneUsers)[i]].set = "bot";
+          }
 
         case "/set_game*hub":
         case "/set_game*lnt":
