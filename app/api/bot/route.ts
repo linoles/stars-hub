@@ -454,11 +454,8 @@ const updateLeaderboard = async (ctx: any, from: number) => {
 
     // Формируем топ игроков
     const sortedUsers = Object.entries(currentData.game.doneUsers)
-      .filter(
-        ([_, data]: any) => data?.progress >= currentData.game.moves
-      )
+      .slice(0, 50)
       .sort((a: any, b: any) => b[1].points - a[1].points)
-      .slice(0, 10)
       .map(
         ([user, data]: any, index) =>
           `${index + 1}. <b><a href="tg://user?id=${user}">${
@@ -482,10 +479,7 @@ const updateLeaderboard = async (ctx: any, from: number) => {
             [
               Markup.button.url(
                 `🧩 Играть (${
-                  Object.entries(currentData.game.doneUsers).filter(
-                    ([_, data]: any) =>
-                      data?.progress >= currentData.game.moves
-                  ).length
+                  Object.entries(currentData.game.doneUsers).length
                 }/${currentData.game.space})`,
                 "https://t.me/StarzHubBot?start=game"
               ),
