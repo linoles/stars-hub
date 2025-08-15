@@ -1771,6 +1771,7 @@ bot.on("message", async (ctx) => {
           message_id: ctx.message.message_id,
         },
       });
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
       if (row.game.doneUsers[`${senderId}`].progress >= row.game.moves) {
         await ctx.reply(`🎉 Игра завершена! Ваш результат: ${row.game.doneUsers[`${senderId}`].points} очков 🏆`, {
           reply_parameters: {
