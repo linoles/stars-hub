@@ -396,8 +396,10 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     .select("game")
     .eq("tgId", from)
     .single();
-  if (!playerState || !globalGameState || !globalGameState.row.game.moves || row?.game.doneUsers[`${from}`].set !== "bot" || error)
+  if (!playerState || !globalGameState || !globalGameState.row.game.moves || row?.game.doneUsers[`${from}`].set !== "bot" || error) {
+    await ctx.answerCbQuery("Check: some trouble");
     return;
+  }
 
   try {
     // Удаление сообщения и бросок кубика
