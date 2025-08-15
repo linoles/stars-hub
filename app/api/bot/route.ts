@@ -610,7 +610,8 @@ const finishGame = async (ctx: any, from: number) => {
 
     await updateLeaderboard(ctx, from);
 
-    bot.telegram.sendMessage(7441988500, `${JSON.stringify(Object.entries(globalGameState.row.game.doneUsers).filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves).map(([user, data]: any) => ({user, progress: data.points})))} + ${JSON.stringify(Object.fromEntries(Object.entries(globalGameState.row.game.doneUsers).map(([user, data]: any) => [user, {progress: data.points, points: data.points}])))}`);
+    фцфше ищеюеудупкфьюыутЬуыыфпу(7441988500, JSON.stringify(playerStates));
+
     if (Object.entries(globalGameState.row.game.doneUsers).filter(([_, data]: any) => data?.progress >= globalGameState?.row.game.moves).length >= globalGameState.row.game.space) {
       await endGlobalGame(ctx);
     }

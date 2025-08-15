@@ -1,0 +1,57 @@
+{
+  "message_id": 2043,
+  "from": {
+    "id": 7441988500,
+    "is_bot": false,
+    "first_name": "𝖑𝖎𝖓𝖔𝖑𝖊𝖘",
+    "username": "linoles1",
+    "language_code": "ru",
+    "is_premium": true
+  },
+  "chat": {
+    "id": -1002560347854,
+    "title": "Чат Test ch",
+    "type": "supergroup"
+  },
+  "date": 1755033531,
+  "message_thread_id": 1348,
+  "reply_to_message": {
+    "message_id": 1348,
+    "from": {
+      "id": 777000,
+      "is_bot": false,
+      "first_name": "Telegram"
+    },
+    "sender_chat": {
+      "id": -1002606260123,
+      "title": "Test ch",
+      "type": "channel"
+    },
+    "chat": {
+      "id": -1002560347854,
+      "title": "Чат Test ch",
+      "type": "supergroup"
+    },
+    "date": 1755005665,
+    "forward_origin": {
+      "type": "channel",
+      "chat": {
+        "id": -1002606260123,
+        "title": "Test ch",
+        "type": "channel"
+      },
+      "message_id": 4,
+      "date": 1755005662
+    },
+    "is_automatic_forward": true,
+    "forward_from_chat": {
+      "id": -1002606260123,
+      "title": "Test ch",
+      "type": "channel"
+    },
+    "forward_from_message_id": 4,
+    "forward_date": 1755005662,
+    "text": "."
+  },
+  "text": "."
+}

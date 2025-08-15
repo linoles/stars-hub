@@ -1,0 +1,38 @@
+{
+  "message_id": 2045,
+  "from": {
+    "id": 7441988500,
+    "is_bot": false,
+    "first_name": "𝖑𝖎𝖓𝖔𝖑𝖊𝖘",
+    "username": "linoles1",
+    "language_code": "ru",
+    "is_premium": true
+  },
+  "chat": {
+    "id": -1002560347854,
+    "title": "Чат Test ch",
+    "type": "supergroup"
+  },
+  "date": 1755033608,
+  "message_thread_id": 1348,
+  "reply_to_message": {
+    "message_id": 2043,
+    "from": {
+      "id": 7441988500,
+      "is_bot": false,
+      "first_name": "𝖑𝖎𝖓𝖔𝖑𝖊𝖘",
+      "username": "linoles1",
+      "language_code": "ru",
+      "is_premium": true
+    },
+    "chat": {
+      "id": -1002560347854,
+      "title": "Чат Test ch",
+      "type": "supergroup"
+    },
+    "date": 1755033531,
+    "message_thread_id": 1348,
+    "text": "."
+  },
+  "text": ".2"
+}
