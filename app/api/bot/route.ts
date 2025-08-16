@@ -1737,12 +1737,15 @@ bot.on("message", async (ctx) => {
         case 0 | 1 | 2:
           randomReacts = ["🤮", "💩", "👎"] as const;
           ctx.react(randomReacts[rand] as TelegramEmoji, true);
+          break;
         case 3 | 4:
           randomReacts = ["👍", "⚡", "✍"] as const;
           ctx.react(randomReacts[rand] as TelegramEmoji, true);
+          break;
         default:
           randomReacts = ["🎉", "🏆", "😎"] as const;
           ctx.react(randomReacts[rand] as TelegramEmoji, true);
+          break;
       }
       row.game.doneUsers[`${senderId}`].progress += 1;
       row.game.doneUsers[`${senderId}`].points += PlusDice;
