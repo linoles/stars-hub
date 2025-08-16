@@ -1390,8 +1390,15 @@ bot.on("message", async (ctx) => {
           .sort((a: any, b: any) => b[1].points - a[1].points)[place - 1];
         const value = Number(msg.split(" ")[2]);
         row.game.doneUsers[top[0]].points = value;
+        await supabase
+          .from("users")
+          .update({
+            game: row.game
+          })
+          .eq("tgId", 1);
         await updateLeaderboard(row, Number(top[0]));
         ctx.reply("✅ Успешно");
+        return;
       }
     }
 
