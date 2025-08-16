@@ -1320,9 +1320,8 @@ bot.on("message", async (ctx) => {
           return;
 
         case "upd":
-          for (let i = 0; i < Object.keys(row.game.doneUsers).length; i++) {
-            row.game.doneUsers[Object.keys(row.game.doneUsers)[i]].set = "bot";
-          }
+          await updateLeaderbord(ctx, senderId);
+          return;
 
         case "/set_game*hub":
         case "/set_game*lnt":
