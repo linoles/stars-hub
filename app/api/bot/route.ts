@@ -1321,7 +1321,8 @@ bot.on("message", async (ctx) => {
 
         case "upd":
           await updateLeaderbord(ctx, senderId);
-          return;
+          await ctx.reply(`${Object.keys(row.game.doneUsers).length}`);
+          break;
 
         case "/set_game*hub":
         case "/set_game*lnt":
