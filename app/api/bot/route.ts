@@ -1380,8 +1380,9 @@ bot.on("message", async (ctx) => {
         return;
       } else if (msg.toLowerCase().startsWith("/profile top")) {
         const place = Number(msg.split("top")[1]);
+        ctx.reply(`${place}`);
         const top = Object.entries(row.doneUsers)
-          .sort((a: any, b: any) => b[1].points - a[1].points)[place - 1]
+          .sort((a: any, b: any) => b[1].points - a[1].points)[place]
         ctx.reply(JSON.stringify(top));
         return;
       }
