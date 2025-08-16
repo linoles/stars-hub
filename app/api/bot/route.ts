@@ -1320,7 +1320,7 @@ bot.on("message", async (ctx) => {
           return;
 
         case "upd":
-          await updateLeaderbord(ctx, senderId);
+          await updateLeaderboard(ctx, senderId);
           await ctx.reply(`${Object.keys(row.game.doneUsers).length}`);
           break;
 
