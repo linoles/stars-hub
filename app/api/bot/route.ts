@@ -1734,15 +1734,19 @@ bot.on("message", async (ctx) => {
       let randomReacts = [];
       const rand = Math.floor(Math.random() * 3)
       switch (PlusDice) {
-        case 0 | 1 | 2:
+        case 0:
+        case 1:
+        case 2:
           randomReacts = ["🤮", "💩", "👎"] as const;
           ctx.react(randomReacts[rand] as TelegramEmoji, true);
           break;
-        case 3 | 4:
+        case 3:
+        case 4:
           randomReacts = ["👍", "⚡", "✍"] as const;
           ctx.react(randomReacts[rand] as TelegramEmoji, true);
           break;
-        case 5 | 6:
+        case 5:
+        case 6:
           randomReacts = ["🎉", "🏆", "😎"] as const;
           ctx.react(randomReacts[rand] as TelegramEmoji, true);
           break;
