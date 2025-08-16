@@ -352,10 +352,7 @@ const startBotGaming = async (row: any, from: number) => {
   );
 
   row.game.doneUsers[`${from}`].startMessageId = startMessage.message_id;
-  await supabase
-    .from("users")
-    .update({ game: row.game })
-    .eq("tgId", from);
+  await supabase.from("users").update({ game: row.game }).eq("tgId", from);
 };
 
 bot.action(/start_game_(\d+)/, async (ctx) => {
@@ -366,14 +363,30 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     .eq("tgId", 1)
     .single();
   if (row?.game.doneUsers[`${from}`].set !== "bot" || error) {
-    await ctx.answerCbQuery("Check: some errors: " + String(error) + " " + row?.game.doneUsers[`${ctx.callbackQuery.from.id}`].set);
+    await ctx.answerCbQuery(
+      "Check: some errors: " +
+        String(error) +
+        " " +
+        row?.game.doneUsers[`${ctx.callbackQuery.from.id}`].set
+    );
     return;
   }
 
   try {
     // Удаление сообщения и бросок кубика
     if (row.game.doneUsers[`${from}`].startMessageId) await ctx.deleteMessage();
-    const dice = await ctx.sendDice({ emoji: row.game.type === "cubic" ? "🎲" : row.game.type === "darts" ? "🎯" : row.game.type === "bowling" ? "🎳" : row.game.type === "basketball" ? "🏀" : "⚽️"});
+    const dice = await ctx.sendDice({
+      emoji:
+        row.game.type === "cubic"
+          ? "🎲"
+          : row.game.type === "darts"
+          ? "🎯"
+          : row.game.type === "bowling"
+          ? "🎳"
+          : row.game.type === "basketball"
+          ? "🏀"
+          : "⚽️",
+    });
 
     // Обновление состояния
     const PlusDice = (() => {
@@ -452,18 +465,20 @@ const updateLeaderboard = async (ctx: any, from: number) => {
     if (error || !currentData?.game)
       throw new Error("Не удалось загрузить данные игры");
 
-    const sortedUsers = Object.entries(currentData.game.doneUsers)
-    .sort((a: any, b: any) => b[1].points - a[1].points)
-    .slice(0, 50)
-      .map(
+    const top = Object.entries(currentData.game.doneUsers)
+      .sort((a: any, b: any) => b[1].points - a[1].points)
+      .slice(0, 50)
+
+    const sortedUsers = top.map(
         ([user, data]: any, index) =>
           `${index + 1}. <b><a href="tg://user?id=${user}">${
             data.name
           }</a></b>: ${data.points}`
-      )
-      .join("\n");
+      ).join("\n");
 
-    // Обновляем сообщение с таблицей лидеров
+    if (!top.includes([`${from}`, currentData.game.doneUsers[`${from}`]])) {
+      return;
+    }
     await bot.telegram.editMessageText(
       currentData.game.chatId,
       currentData.game.msgId,
@@ -493,7 +508,7 @@ const updateLeaderboard = async (ctx: any, from: number) => {
   }
 };
 
-const endGlobalGame = (async (ctx: any) => {
+const endGlobalGame = async (ctx: any) => {
   try {
     // Получаем актуальные данные
     const { data: row } = await supabase
@@ -514,9 +529,7 @@ const endGlobalGame = (async (ctx: any) => {
       )
       .join(", ");
     const sortedUsers = Object.entries(row?.game.doneUsers)
-      .filter(
-        ([_, data]: any) => data?.progress >= row?.game.moves
-      )
+      .filter(([_, data]: any) => data?.progress >= row?.game.moves)
       .sort((a: any, b: any) => b[1].points - a[1].points)
       .slice(0, 10)
       .map(
@@ -537,8 +550,8 @@ const endGlobalGame = (async (ctx: any) => {
       }
     );
 
-    await bot.telegram.editMessageText
-      row?.game.chatId,
+    await bot.telegram.editMessageText;
+    row?.game.chatId,
       row?.game.msgId,
       undefined,
       `${await getPostGameMessage(
@@ -551,8 +564,7 @@ const endGlobalGame = (async (ctx: any) => {
             [Markup.button.callback(`🏁 Игра завершена!`, "return")],
           ],
         },
-      }
-    ;
+      };
 
     // Деактивируем игру
     await supabase
@@ -570,7 +582,7 @@ const endGlobalGame = (async (ctx: any) => {
     console.error("Ошибка при завершении игры:", error);
     await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
   }
-});
+};
 
 const finishGame = async (ctx: any, from: number) => {
   const { data: row } = await supabase
@@ -593,14 +605,14 @@ const finishGame = async (ctx: any, from: number) => {
     if (!success) throw new Error("Final save failed");
 
     await ctx.reply(
-      `🎉 Игра завершена! Ваш результат: ${row?.game.doneUsers[`${from}`].points} очков! 🏆`
+      `🎉 Игра завершена! Ваш результат: ${
+        row?.game.doneUsers[`${from}`].points
+      } очков! 🏆`
     );
 
     await updateLeaderboard(ctx, from);
 
-    if (
-      Object.entries(row?.game.doneUsers).length >= row?.game.space
-    ) {
+    if (Object.entries(row?.game.doneUsers).length >= row?.game.space) {
       await endGlobalGame(ctx);
     }
   } catch (error) {
@@ -739,7 +751,7 @@ bot.action("stopLudka", async (ctx) => {
   let finalText = `🏆 Лудка закончена! Победители:\n`;
   await Promise.all(
     currentWinners.map(async (id: any) => {
-      finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
+      finalText += `<a href="tg://openmessage?user_id=${id}">${row.ludka.doneUsers[`${id}`].name}</a>\n`;
     })
   );
   sendResults(finalText);
@@ -1224,7 +1236,7 @@ bot.on("message", async (ctx) => {
           let finalText = `🏆 Лудка закончена! Победители:\n`;
           await Promise.all(
             currentWinners.map(async (id: any) => {
-              finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
+              finalText += `<a href="tg://openmessage?user_id=${id}">${row.ludka.doneUsers[`${id}`].name}</a>\n`;
             })
           );
           await sendResults(finalText);
@@ -1307,7 +1319,7 @@ bot.on("message", async (ctx) => {
           return;
 
         case "upd":
-          for(let i = 0; i < Object.keys(row.game.doneUsers).length; i++) {
+          for (let i = 0; i < Object.keys(row.game.doneUsers).length; i++) {
             row.game.doneUsers[Object.keys(row.game.doneUsers)[i]].set = "bot";
           }
 
@@ -1372,7 +1384,7 @@ bot.on("message", async (ctx) => {
     }
 
     if (!row.ludka.doneUsers[`${senderId}`]) {
-      row.ludka.doneUsers[`${senderId}`] = { lastWins: 0, times: 0 };
+      row.ludka.doneUsers[`${senderId}`] = { lastWins: 0, times: 0, name: ctx.message.from?.first_name || "Player" };
     }
     await supabase.from("users").update(row).eq("tgId", 1);
     let extraCheck =
@@ -1420,7 +1432,7 @@ bot.on("message", async (ctx) => {
 
           await Promise.all(
             currentWinners.map(async (id) => {
-              finalText += `<a href="tg://openmessage?user_id=${id}">${id}</a>\n`;
+              finalText += `<a href="tg://openmessage?user_id=${id}">${row.ludka.doneUsers[`${id}`].name}</a>\n`;
             })
           );
 
@@ -1720,29 +1732,35 @@ bot.on("message", async (ctx) => {
       })();
       row.game.doneUsers[`${senderId}`].progress += 1;
       row.game.doneUsers[`${senderId}`].points += PlusDice;
-      await ctx.reply(`🐾 Вы получили +${PlusDice} очк${
-        PlusDice === 1 ? "о" : [2, 3, 4].includes(PlusDice) ? "а" : "ов"
-      }\nВаши очки: ${row.game.doneUsers[`${senderId}`].points} 🦾\n♟ Ход: ${
-        row.game.doneUsers[`${senderId}`].progress
-      }/${row.game.moves}`, {
-        reply_parameters: {
-          message_id: ctx.message.message_id,
-        },
-      });
-      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
-      if (row.game.doneUsers[`${senderId}`].progress >= row.game.moves) {
-        await ctx.reply(`🎉 Игра завершена! Ваш результат: ${row.game.doneUsers[`${senderId}`].points} очков 🏆`, {
+      await ctx.reply(
+        `🐾 Вы получили +${PlusDice} очк${
+          PlusDice === 1 ? "о" : [2, 3, 4].includes(PlusDice) ? "а" : "ов"
+        }\nВаши очки: ${row.game.doneUsers[`${senderId}`].points} 🦾\n♟ Ход: ${
+          row.game.doneUsers[`${senderId}`].progress
+        }/${row.game.moves}`,
+        {
           reply_parameters: {
             message_id: ctx.message.message_id,
           },
-        });
+        }
+      );
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      if (row.game.doneUsers[`${senderId}`].progress >= row.game.moves) {
+        await ctx.reply(
+          `🎉 Игра завершена! Ваш результат: ${
+            row.game.doneUsers[`${senderId}`].points
+          } очков 🏆`,
+          {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          }
+        );
         await updateLeaderboard(ctx, senderId);
       }
-      if (
-      Object.entries(row?.game.doneUsers).length >= row?.game.space
-    ) {
-      await endGlobalGame(ctx);
-    }
+      if (Object.entries(row?.game.doneUsers).length >= row?.game.space) {
+        await endGlobalGame(ctx);
+      }
     }
 
     switch (msg) {
@@ -1853,15 +1871,12 @@ bot.on("pre_checkout_query", async (ctx) => {
       const user = await supabase
         .from("users")
         .select("tgId, stars")
-        .eq("tgId", 1)
+        .eq("tgId", userId)
         .single();
 
       if (user.data) {
         const newStars = user.data.stars + data.amount;
-        await supabase
-          .from("users")
-          .update({ stars: newStars })
-          .eq("tgId", 1);
+        await supabase.from("users").update({ stars: newStars }).eq("tgId", userId);
         await ctx.reply(
           `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
         );
