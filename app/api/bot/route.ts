@@ -1742,7 +1742,7 @@ bot.on("message", async (ctx) => {
           randomReacts = ["👍", "⚡", "✍"] as const;
           ctx.react(randomReacts[rand] as TelegramEmoji, true);
           break;
-        default:
+        case 5 | 6:
           randomReacts = ["🎉", "🏆", "😎"] as const;
           ctx.react(randomReacts[rand] as TelegramEmoji, true);
           break;
