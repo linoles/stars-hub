@@ -477,9 +477,6 @@ const updateLeaderboard = async (ctx: any, from: number) => {
           }</a></b>: ${data.points}`
       ).join("\n");
 
-    if (!top.includes([`${from}`, currentData.game.doneUsers[`${from}`]])) {
-      return;
-    }
     await bot.telegram.editMessageText(
       currentData.game.chatId,
       currentData.game.msgId,
