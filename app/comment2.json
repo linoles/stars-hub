@@ -1,38 +1,724 @@
 {
-  "message_id": 2045,
-  "from": {
-    "id": 7441988500,
-    "is_bot": false,
-    "first_name": "𝖑𝖎𝖓𝖔𝖑𝖊𝖘",
-    "username": "linoles1",
-    "language_code": "ru",
-    "is_premium": true
-  },
-  "chat": {
-    "id": -1002560347854,
-    "title": "Чат Test ch",
-    "type": "supergroup"
-  },
-  "date": 1755033608,
-  "message_thread_id": 1348,
-  "reply_to_message": {
-    "message_id": 2043,
-    "from": {
-      "id": 7441988500,
-      "is_bot": false,
-      "first_name": "𝖑𝖎𝖓𝖔𝖑𝖊𝖘",
-      "username": "linoles1",
-      "language_code": "ru",
-      "is_premium": true
+    "68728565": {
+      "name": "M",
+      "points": 0,
+      "progress": 1
     },
-    "chat": {
-      "id": -1002560347854,
-      "title": "Чат Test ch",
-      "type": "supergroup"
+    "323224994": {
+      "name": "Daniya",
+      "points": 29,
+      "progress": 10
     },
-    "date": 1755033531,
-    "message_thread_id": 1348,
-    "text": "."
-  },
-  "text": ".2"
+    "724769569": {
+      "name": "𝔅𝔬𝔩𝔢𝔫 | 𝔉𝔞𝔯𝔪𝔞",
+      "points": 24,
+      "progress": 10
+    },
+    "754826357": {
+      "name": "Roma",
+      "points": 19,
+      "progress": 10
+    },
+    "880535732": {
+      "name": "Елена Сокоженко 🍭",
+      "points": 29,
+      "progress": 10
+    },
+    "925749451": {
+      "name": "санечка",
+      "points": 24,
+      "progress": 6
+    },
+    "933071578": {
+      "name": "Laptchik",
+      "points": 31,
+      "progress": 10
+    },
+    "1038953895": {
+      "name": "Егор",
+      "points": 21,
+      "progress": 10
+    },
+    "1053486624": {
+      "name": "quant1ty",
+      "points": 36,
+      "progress": 10
+    },
+    "1083610282": {
+      "name": "Кристишка",
+      "points": 38,
+      "progress": 10
+    },
+    "1106048723": {
+      "name": "FFDD #by",
+      "points": 46,
+      "progress": 10
+    },
+    "1135470143": {
+      "name": "💿𝓡𝓸𝓫.💿 #лёнк #Удачаприди🍀☘️",
+      "points": 40,
+      "progress": 10
+    },
+    "1206803396": {
+      "name": "Макс",
+      "points": 27,
+      "progress": 10
+    },
+    "1222654139": {
+      "name": "︎ ︎",
+      "points": 29,
+      "progress": 10
+    },
+    "1224671294": {
+      "name": "૮₍˶ᵔ ᵕ ᵔ˶₎ა♡",
+      "points": 38,
+      "progress": 10
+    },
+    "1226809363": {
+      "name": "грешная #one #fr",
+      "points": 28,
+      "progress": 10
+    },
+    "1292764717": {
+      "name": "︎ ︎︎ ︎︎ ︎︎︎ ︎ ︎︎ ︎︎ ︎︎︎ ︎w🍀",
+      "points": 36,
+      "progress": 10
+    },
+    "1294343901": {
+      "name": "𓍼",
+      "points": 0,
+      "progress": 1
+    },
+    "1309094674": {
+      "name": "ℓιℓι ℓιѕ🗿",
+      "points": 31,
+      "progress": 10
+    },
+    "1373553395": {
+      "name": "васё",
+      "points": 47,
+      "progress": 10
+    },
+    "1429013727": {
+      "name": "kerell",
+      "points": 38,
+      "progress": 10
+    },
+    "1586039395": {
+      "name": "Moon child🌌🍀",
+      "points": 41,
+      "progress": 10
+    },
+    "1638232670": {
+      "name": "1lyar",
+      "points": 44,
+      "progress": 10
+    },
+    "1674264144": {
+      "name": "anasteysha#joy#fstri#вэнс#IB#RP#япи#fso#hs#XX#ʍnv#by#мм#кшт#d#fr",
+      "points": 41,
+      "progress": 10
+    },
+    "1704330584": {
+      "name": "𝐏𝐨𝐥𝐢𝐢",
+      "points": 9,
+      "progress": 4
+    },
+    "1743781053": {
+      "name": "Сергій",
+      "points": 25,
+      "progress": 10
+    },
+    "1827111999": {
+      "name": "денис",
+      "points": 22,
+      "progress": 10
+    },
+    "1976724149": {
+      "name": "Тёмыч",
+      "points": 33,
+      "progress": 10
+    },
+    "2009598830": {
+      "name": "Wag!",
+      "points": 30,
+      "progress": 10
+    },
+    "2014791408": {
+      "name": "♟️#Lz#lexa#𝐷𝑜𝑟𝑜𝑟𝑜#krt#lv#кл#хак#kk#symp#fr",
+      "points": 34,
+      "progress": 10
+    },
+    "2059133176": {
+      "name": "Cross",
+      "points": 6,
+      "progress": 2
+    },
+    "2063616672": {
+      "name": "ᅠᅠᅠ ᅠᅠᅠ︎︎︎#starsw1r #кайф #хак #VnS #krt #чмош #асуся",
+      "points": 26,
+      "progress": 10
+    },
+    "5101433729": {
+      "name": "Maxim jr🥷🪄",
+      "points": 33,
+      "progress": 10
+    },
+    "5136530170": {
+      "name": "Ilya",
+      "points": 24,
+      "progress": 7
+    },
+    "5178646574": {
+      "name": "Artemchik",
+      "points": 17,
+      "progress": 10
+    },
+    "5203616338": {
+      "name": "꧁𝓐𝓷𝓭𝓻𝓮𝔂 ꧂",
+      "points": 26,
+      "progress": 10
+    },
+    "5233279684": {
+      "name": "[АS]",
+      "points": 30,
+      "progress": 10
+    },
+    "5259446969": {
+      "name": "𒀭۰ ۫.|[ 𝐀l̶t⫰ ⃟𝆹𝅥 ̶i𝐫 ]| ׄ𝆹 ۫◔𝆹𝅥~🖤🔲۰ ִ ּ ۫ …",
+      "points": 39,
+      "progress": 10
+    },
+    "5261800095": {
+      "name": "yueni",
+      "points": 27,
+      "progress": 10
+    },
+    "5307438724": {
+      "name": "Татьяна",
+      "points": 0,
+      "progress": 1
+    },
+    "5308140484": {
+      "name": "'",
+      "points": 30,
+      "progress": 10
+    },
+    "5313290712": {
+      "name": "Чумак",
+      "points": 39,
+      "progress": 10
+    },
+    "5327962033": {
+      "name": "полиночка🧉𐙚",
+      "points": 27,
+      "progress": 10
+    },
+    "5344421412": {
+      "name": "life",
+      "points": 28,
+      "progress": 10
+    },
+    "5350923949": {
+      "name": "ека",
+      "points": 23,
+      "progress": 10
+    },
+    "5392792770": {
+      "name": "Ashirg",
+      "points": 31,
+      "progress": 10
+    },
+    "5399341596": {
+      "name": "andreyka #44",
+      "points": 33,
+      "progress": 10
+    },
+    "5413351955": {
+      "name": "Zй #IB #япи #хак #by",
+      "points": 31,
+      "progress": 10
+    },
+    "5414130995": {
+      "name": "Тестировщик",
+      "points": 19,
+      "progress": 6
+    },
+    "5433718945": {
+      "name": "Валерия",
+      "points": 18,
+      "progress": 6
+    },
+    "5437954093": {
+      "name": "Илья",
+      "points": 27,
+      "progress": 10
+    },
+    "5489776180": {
+      "name": "Egorr😈",
+      "points": 27,
+      "progress": 10
+    },
+    "5491459426": {
+      "name": "︎ ︎ ︎ ︎ ᅠ ︎ ︎ ᅠ",
+      "points": 33,
+      "progress": 10
+    },
+    "5501254981": {
+      "name": "🎀",
+      "points": 19,
+      "progress": 10
+    },
+    "5539826440": {
+      "name": "Ulyashka ♡♡",
+      "points": 22,
+      "progress": 6
+    },
+    "5572718473": {
+      "name": "𝚂𝚒𝚖𝚎𝚘𝚗",
+      "points": 20,
+      "progress": 10
+    },
+    "5603719713": {
+      "name": "♛🩸ˏ۵༼†꙰𝔰𝔦𝔦𝔫𝔤𝔢𝔯༽†꙰۵ˎ🩸♛ #pm",
+      "points": 32,
+      "progress": 10
+    },
+    "5649206969": {
+      "name": "...",
+      "points": 7,
+      "progress": 2
+    },
+    "5658152906": {
+      "name": "𝕯𝖎𝖊 𝕭𝖎𝖙𝖈𝖍 𓆩⛧𓆪",
+      "points": 40,
+      "progress": 10
+    },
+    "5689896084": {
+      "name": "𝓝𝓴𝓪 🍁",
+      "points": 29,
+      "progress": 10
+    },
+    "5766509172": {
+      "name": "て • ɪsʀᴏɪʟᴏᴠᴀ",
+      "points": 22,
+      "progress": 10
+    },
+    "5814011396": {
+      "name": "shakhzooooooodd",
+      "points": 30,
+      "progress": 10
+    },
+    "5828550209": {
+      "name": "Паша",
+      "points": 20,
+      "progress": 10
+    },
+    "5868939493": {
+      "name": "артём♡",
+      "points": 43,
+      "progress": 10
+    },
+    "5918962044": {
+      "name": "𝙗𝙞𝙢𝙗𝙤𝙗𝙡𝙞𝙨𝙨",
+      "points": 28,
+      "progress": 8
+    },
+    "5923398955": {
+      "name": "NoBloody",
+      "points": 31,
+      "progress": 10
+    },
+    "5934897380": {
+      "name": "𝔖𝔢𝔯𝔞𝔭𝔥𝔦𝔪 [🩸⚙️]",
+      "points": 29,
+      "progress": 10
+    },
+    "5951984412": {
+      "name": "Григорий",
+      "points": 31,
+      "progress": 10
+    },
+    "5955472888": {
+      "name": "ева",
+      "points": 40,
+      "progress": 10
+    },
+    "6071606655": {
+      "set": "gamer",
+      "name": "ALI",
+      "points": 0,
+      "progress": 0
+    },
+    "6093544509": {
+      "name": "#qqМОНСТР",
+      "points": 32,
+      "progress": 10
+    },
+    "6112823702": {
+      "name": "ᕦ⁠༼⁠⁠ل͜⁠⁠༽⁠ᕤ",
+      "points": 34,
+      "progress": 10
+    },
+    "6214329005": {
+      "name": "𝘯𝘢𝘴𝘵𝘺𝘢𝘢210 #ОПГ #fost #Мими #чмош #аиш #линк",
+      "points": 36,
+      "progress": 10
+    },
+    "6217250759": {
+      "name": "Сожрал пасатижи",
+      "points": 28,
+      "progress": 10
+    },
+    "6233759034": {
+      "name": "ℕ𝕠ℕ𝕒𝕞𝕖",
+      "points": 31,
+      "progress": 10
+    },
+    "6235338710": {
+      "name": "Пиво🍺",
+      "points": 29,
+      "progress": 10
+    },
+    "6249100375": {
+      "name": "|probably",
+      "points": 22,
+      "progress": 10
+    },
+    "6328546495": {
+      "name": "Skittle",
+      "points": 25,
+      "progress": 10
+    },
+    "6398595976": {
+      "name": "нистя🫆",
+      "points": 23,
+      "progress": 10
+    },
+    "6434767665": {
+      "name": "ᴧюʍи🎀༘",
+      "points": 33,
+      "progress": 10
+    },
+    "6445570349": {
+      "set": "gamer",
+      "name": "Bulҽɳtiy",
+      "points": 0,
+      "progress": 0
+    },
+    "6454250569": {
+      "name": "💗lines)#вэнс#h2h#хак#mokky💗",
+      "points": 29,
+      "progress": 10
+    },
+    "6461622676": {
+      "name": "WraithKimono",
+      "points": 15,
+      "progress": 4
+    },
+    "6526530456": {
+      "name": "Karina",
+      "points": 40,
+      "progress": 10
+    },
+    "6614437576": {
+      "set": "bot",
+      "name": "✧Хлеббка с плесенью✧",
+      "points": 0,
+      "progress": 0
+    },
+    "6632586345": {
+      "name": "MARATIK",
+      "points": 28,
+      "progress": 10
+    },
+    "6638677805": {
+      "name": "🔹",
+      "points": 21,
+      "progress": 10
+    },
+    "6645166269": {
+      "name": "Иᥴᥙ᧘ᥙя",
+      "points": 33,
+      "progress": 10
+    },
+    "6671918605": {
+      "name": "12",
+      "points": 29,
+      "progress": 10
+    },
+    "6698106563": {
+      "name": "#by Ч1эл9як•☠︎︎ #IB #кл #𝖘𝖈𝖆𝖙 #sheps #h2h #лёнк #krt #trk #аиш🔦",
+      "points": 32,
+      "progress": 10
+    },
+    "6698921369": {
+      "name": "Swifti Join",
+      "points": 10,
+      "progress": 5
+    },
+    "6723497663": {
+      "name": "🍀несквик#by#swaga#",
+      "points": 25,
+      "progress": 10
+    },
+    "6782306475": {
+      "name": "𝙍𝙖𝙥𝙝𝙞𝙣𝙝𝙖",
+      "points": 37,
+      "progress": 10
+    },
+    "6787698762": {
+      "name": "vasilisaaaa🪽",
+      "points": 31,
+      "progress": 10
+    },
+    "6837214948": {
+      "name": "Сонька#Опг#киса",
+      "points": 25,
+      "progress": 10
+    },
+    "6888498163": {
+      "name": "𝕐𝕦𝕝𝕚𝕪𝕒",
+      "points": 33,
+      "progress": 10
+    },
+    "6985807678": {
+      "name": "тимка#опг #fost",
+      "points": 29,
+      "progress": 10
+    },
+    "7012631362": {
+      "name": "Daska🤗",
+      "points": 27,
+      "progress": 10
+    },
+    "7040901849": {
+      "name": "MALYMOPQ",
+      "points": 28,
+      "progress": 10
+    },
+    "7059316455": {
+      "name": "Егорка",
+      "points": 20,
+      "progress": 10
+    },
+    "7082257734": {
+      "name": "Лена🦦",
+      "points": 43,
+      "progress": 10
+    },
+    "7177688298": {
+      "name": "🎀",
+      "points": 16,
+      "progress": 10
+    },
+    "7261859278": {
+      "name": "غالب",
+      "points": 28,
+      "progress": 10
+    },
+    "7278063847": {
+      "name": "БеБрИк^⁠_⁠^",
+      "points": 36,
+      "progress": 10
+    },
+    "7297671224": {
+      "name": "𝒩𝑒𝓈𝓉𝒾",
+      "points": 27,
+      "progress": 10
+    },
+    "7298419654": {
+      "name": "макс",
+      "points": 37,
+      "progress": 10
+    },
+    "7327230079": {
+      "name": "aibazz🐾",
+      "points": 36,
+      "progress": 10
+    },
+    "7359925029": {
+      "name": ".",
+      "points": 40,
+      "progress": 10
+    },
+    "7374694716": {
+      "name": "𝒂𝒊𝒘𝒊𝒌𝒔 #𝑎𝑠𝑖 #𝔃𝓱 #𝒃𝒘𝒙",
+      "points": 5,
+      "progress": 2
+    },
+    "7374982433": {
+      "name": "Конопля🌱",
+      "points": 35,
+      "progress": 10
+    },
+    "7390226063": {
+      "name": "Okak#mokky#ринк#bnt#kk",
+      "points": 37,
+      "progress": 10
+    },
+    "7398943857": {
+      "name": "𝚂𝚝𝚎𝚙𝚑𝚊𝚗𝚒𝚊💘#krt#krk#ск#millkk#scw#trk#с",
+      "points": 15,
+      "progress": 6
+    },
+    "7441988500": {
+      "name": "𝖑𝖎𝖓𝖔𝖑𝖊𝖘",
+      "points": 18,
+      "progress": 10
+    },
+    "7480157958": {
+      "name": "Zevs",
+      "points": 30,
+      "progress": 10
+    },
+    "7540602890": {
+      "name": "𝘕𝘦𝘪𝘻𝘷𝘦𝘴𝘵𝘯𝘰𝘴𝘵.𝘤𝘰𝘮",
+      "points": 29,
+      "progress": 9
+    },
+    "7546061535": {
+      "name": "logokost",
+      "points": 37,
+      "progress": 10
+    },
+    "7639010637": {
+      "set": "gamer",
+      "name": "#anura#xs#sat#dcn#milf#аиш#krt#matter#Zh#вэнс#kk#I#fr#kl#𝙺𝙴𝚅𝙸𝙽",
+      "points": 0,
+      "progress": 0
+    },
+    "7653767488": {
+      "name": "элина",
+      "points": 4,
+      "progress": 2
+    },
+    "7664968070": {
+      "name": "suicides",
+      "points": 10,
+      "progress": 2
+    },
+    "7681275338": {
+      "set": "gamer",
+      "name": "𝐂à𝐫𝐫𝐢𝐧𝐠𝐭𝐨𝐧.",
+      "points": 0,
+      "progress": 0
+    },
+    "7684650705": {
+      "set": "bot",
+      "name": "врик",
+      "points": 0,
+      "progress": 0
+    },
+    "7703932279": {
+      "name": "Sergei",
+      "points": 22,
+      "progress": 10
+    },
+    "7730915971": {
+      "name": "Хзхз",
+      "points": 39,
+      "progress": 10
+    },
+    "7738822631": {
+      "name": "bober 🍀🧸",
+      "points": 3,
+      "progress": 3
+    },
+    "7803510428": {
+      "name": "Влад#fost#Опг",
+      "points": 41,
+      "progress": 10
+    },
+    "7809835132": {
+      "name": "Дебил Какойта🇰🇵",
+      "points": 25,
+      "progress": 10
+    },
+    "7876966586": {
+      "name": "Хиноки #xRihanna",
+      "points": 28,
+      "progress": 10
+    },
+    "7888395567": {
+      "set": "gamer",
+      "name": "🐊",
+      "points": 0,
+      "progress": 0
+    },
+    "8048786505": {
+      "name": "Mr.marmeladko",
+      "points": 19,
+      "progress": 10
+    },
+    "8063352602": {
+      "name": "Краб",
+      "points": 39,
+      "progress": 10
+    },
+    "8071529045": {
+      "name": "ExpR4ind-",
+      "points": 24,
+      "progress": 10
+    },
+    "8088331916": {
+      "name": "Виктор Цой",
+      "points": 30,
+      "progress": 10
+    },
+    "8097268597": {
+      "name": "هاهاهاهاهاهاهاهاها",
+      "points": 31,
+      "progress": 10
+    },
+    "8098460846": {
+      "name": "me𑄝w",
+      "points": 25,
+      "progress": 10
+    },
+    "8111139739": {
+      "name": "Dizgan",
+      "points": 27,
+      "progress": 10
+    },
+    "8128258558": {
+      "name": "Вова",
+      "points": 41,
+      "progress": 10
+    },
+    "8134058361": {
+      "name": "ㅤㅤㅤ",
+      "points": 36,
+      "progress": 10
+    },
+    "8144710866": {
+      "name": "Tarab",
+      "points": 37,
+      "progress": 10
+    },
+    "8210315113": {
+      "name": "𝑔𝒶𝓁𝒶𝓍𝓎",
+      "points": 25,
+      "progress": 10
+    },
+    "8217078679": {
+      "name": "Mr. V #кл3 #твм #૦κ૦",
+      "points": 39,
+      "progress": 10
+    },
+    "8328807279": {
+      "name": "Leo",
+      "points": 28,
+      "progress": 10
+    },
+    "8388944623": {
+      "name": "Миша",
+      "points": 18,
+      "progress": 7
+    },
+    "8427517647": {
+      "name": "tege",
+      "points": 21,
+      "progress": 10
+    }
 }

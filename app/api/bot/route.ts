@@ -2,6 +2,7 @@ import { config } from "@/app/config";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { Markup, Telegraf } from "telegraf";
+import { TelegramEmoji } from "telegraf/types";
 
 const bot = new Telegraf("8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE");
 
@@ -1730,6 +1731,19 @@ bot.on("message", async (ctx) => {
         }
         return 0;
       })();
+      let randomReacts = [];
+      const rand = Math.floor(Math.random() * 3)
+      switch (PlusDice) {
+        case 0 | 1 | 2:
+          randomReacts = ["🤮", "💩", "👎"] as const;
+          ctx.react(randomReacts[rand] as TelegramEmoji, true);
+        case 3 | 4:
+          randomReacts = ["👍", "⚡", "✍"] as const;
+          ctx.react(randomReacts[rand] as TelegramEmoji, true);
+        default:
+          randomReacts = ["🎉", "🏆", "😎"] as const;
+          ctx.react(randomReacts[rand] as TelegramEmoji, true);
+      }
       row.game.doneUsers[`${senderId}`].progress += 1;
       row.game.doneUsers[`${senderId}`].points += PlusDice;
       await ctx.reply(
