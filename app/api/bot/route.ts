@@ -1385,7 +1385,7 @@ bot.on("message", async (ctx) => {
         ctx.reply(JSON.stringify(top));
         return;
       } else if (msg.toLowerCase().startsWith("/points top")) {
-        const place = Number(msg.split("top")[1]);
+        const place = Number(msg.split("top")[1].split(" ")[0]);
         const top = Object.entries(row.game.doneUsers)
           .sort((a: any, b: any) => b[1].points - a[1].points)[place - 1];
         const value = Number(msg.split(" ")[2]);
