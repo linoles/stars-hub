@@ -529,7 +529,7 @@ const endGlobalGame = async (ctx: any) => {
     const sortedUsers = Object.entries(row?.game.doneUsers)
       .filter(([_, data]: any) => data?.progress >= row?.game.moves)
       .sort((a: any, b: any) => b[1].points - a[1].points)
-      .slice(0, 10)
+      .slice(0, 50)
       .map(
         ([user, data]: any, index) =>
           `${index + 1}. <b><a href="tg://user?id=${user}">${
@@ -1288,6 +1288,16 @@ bot.on("message", async (ctx) => {
                 `<a href="tg://user?id=${user}">${data.name}</a> (Очки: ${data.points})`
             )
             .join(", ");
+          const sortedUsers = Object.entries(row?.game.doneUsers)
+            .filter(([_, data]: any) => data?.progress >= row?.game.moves)
+            .sort((a: any, b: any) => b[1].points - a[1].points)
+            .slice(0, 50)
+            .map(
+              ([user, data]: any, index) =>
+                `${index + 1}. <b><a href="tg://user?id=${user}">${
+                  data.name
+                }</a></b>: ${data.points}`
+              )
           bot.telegram.sendMessage(
             row.game.chatId,
             `❌ Игра остановлена!\n🏆 Победители: ${winners}`,
@@ -1304,7 +1314,7 @@ bot.on("message", async (ctx) => {
             undefined,
             `${await getPostGameMessage(
               row
-            )}\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
+            )}\n\n${sortedUsers}\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
             {
               parse_mode: "HTML",
             }
