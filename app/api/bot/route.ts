@@ -363,7 +363,11 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     .select("game")
     .eq("tgId", 1)
     .single();
-  if (row?.game.doneUsers[`${from}`].set !== "bot" || error) {
+  if (
+    row?.game.doneUsers[`${from}`].set !== "bot" ||
+    error ||
+    row?.game.doneUsers[`${from}`].progress >= row.game.moves
+  ) {
     await ctx.answerCbQuery(
       "Check: some errors: " +
         String(error) +
@@ -468,18 +472,17 @@ const updateLeaderboard = async (ctx: any, from: number) => {
 
     const top = Object.entries(currentData.game.doneUsers)
       .sort((a: any, b: any) => b[1].points - a[1].points)
-      .slice(0, 50)
+      .slice(0, 50);
 
-    const sortedUsers = top.map(
+    const sortedUsers = top
+      .map(
         ([user, data]: any, index) =>
           `${index + 1}. <b><a href="tg://user?id=${user}">${
             data.name
           }</a></b>: ${data.points}`
-      ).join("\n");
+      )
+      .join("\n");
 
-    if (!top.includes([`${from}`, currentData.game.doneUsers[`${from}`]])) {
-      return;
-    }
     await bot.telegram.editMessageText(
       currentData.game.chatId,
       currentData.game.msgId,
@@ -518,21 +521,22 @@ const endGlobalGame = async (ctx: any) => {
       .eq("tgId", 1)
       .single();
 
-    if (row?.game) throw new Error("Данные игры не найдены");
+    if (!row?.game) throw new Error("Данные игры не найдены");
 
     // Определяем победителей
-    const winners = Object.entries(row?.game.doneUsers)
+    const winners = Object.entries(row.game.doneUsers)
       .sort((a: any, b: any) => b[1].points - a[1].points)
-      .slice(0, row?.game.winners)
+      .slice(0, row.game.winners)
       .map(
         ([user, data]: any, index) =>
-          `<a href="tg://user?id=${user}">${data.name}</a> (Очки: ${data.points})`
+          `${index + 1}. <a href="tg://user?id=${user}">${data.name}</a>: ${
+            data.points
+          } <a href="https://t.me/StarzHubBot?start=profile_${user}">📎</a>`
       )
-      .join(", ");
+      .join("\n");
     const sortedUsers = Object.entries(row?.game.doneUsers)
-      .filter(([_, data]: any) => data?.progress >= row?.game.moves)
       .sort((a: any, b: any) => b[1].points - a[1].points)
-      .slice(0, 10)
+      .slice(0, 50)
       .map(
         ([user, data]: any, index) =>
           `${index + 1}. <b><a href="tg://user?id=${user}">${
@@ -544,20 +548,20 @@ const endGlobalGame = async (ctx: any) => {
     // Отправляем сообщение о победителях
     await bot.telegram.sendMessage(
       row?.game.chatId,
-      `🏆 Игра завершена!\nПобедители: ${winners}`,
+      `✅ Игра завершена!\n<blockquote expandable><b>🏆 Победители</b>\n${winners}</blockquote>`,
       {
         reply_parameters: { message_id: row?.game.msgId },
         parse_mode: "HTML",
       }
     );
 
-    await bot.telegram.editMessageText;
-    row?.game.chatId,
+    await bot.telegram.editMessageText(
+      row?.game.chatId,
       row?.game.msgId,
       undefined,
       `${await getPostGameMessage(
         row
-      )}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>\n\n🏆 Игра завершена!\nПобедители: ${winners}`,
+      )}\n\n<blockquote expandable><b>Топ 🏅</b>\n${sortedUsers}</blockquote>\n\n✅ Игра завершена!\n<blockquote expandable><b>🏆 Победители</b>\n${winners}</blockquote>`,
       {
         parse_mode: "HTML",
         reply_markup: {
@@ -565,7 +569,8 @@ const endGlobalGame = async (ctx: any) => {
             [Markup.button.callback(`🏁 Игра завершена!`, "return")],
           ],
         },
-      };
+      }
+    );
 
     // Деактивируем игру
     await supabase
@@ -752,7 +757,9 @@ bot.action("stopLudka", async (ctx) => {
   let finalText = `🏆 Лудка закончена! Победители:\n`;
   await Promise.all(
     currentWinners.map(async (id: any) => {
-      finalText += `<a href="tg://openmessage?user_id=${id}">${row.ludka.doneUsers[`${id}`].name}</a>\n`;
+      finalText += `<a href="tg://openmessage?user_id=${id}">${
+        row.ludka.doneUsers[`${id}`].name
+      }</a>\n`;
     })
   );
   sendResults(finalText);
@@ -1140,7 +1147,8 @@ bot.on("message", async (ctx) => {
       "dice" in ctx.message &&
       !("forward_origin" in ctx.message) &&
       row.ludka.isActive &&
-      ctx.message.reply_to_message?.from?.id !== 777000
+      ctx.message.reply_to_message?.from?.id !== 777000 &&
+      ctx.message.dice.emoji == "🎰"
     ) {
       const phrases = [
         "Броо, я тебе настоятельно рекомендую перейти в комментарии под пост о лудке 😢 (ну или не играть в это дерьмо)",
@@ -1237,7 +1245,9 @@ bot.on("message", async (ctx) => {
           let finalText = `🏆 Лудка закончена! Победители:\n`;
           await Promise.all(
             currentWinners.map(async (id: any) => {
-              finalText += `<a href="tg://openmessage?user_id=${id}">${row.ludka.doneUsers[`${id}`].name}</a>\n`;
+              finalText += `<a href="tg://openmessage?user_id=${id}">${
+                row.ludka.doneUsers[`${id}`].name
+              }</a>\n`;
             })
           );
           await sendResults(finalText);
@@ -1281,19 +1291,29 @@ bot.on("message", async (ctx) => {
             },
           });
           const winners = Object.entries(row.game.doneUsers)
-            .filter(([_, data]: any) =>
-              row.game.moves ? data?.progress >= row.game.moves : false
-            )
             .sort((a: any, b: any) => b[1].points - a[1].points)
             .slice(0, row.game.winners)
             .map(
               ([user, data]: any, index) =>
-                `<a href="tg://user?id=${user}">${data.name}</a> (Очки: ${data.points})`
+                `${index + 1}. <a href="tg://user?id=${user}">${
+                  data.name
+                }</a>: ${
+                  data.points
+                } <a href="https://t.me/StarzHubBot?start=profile_${user}">📎</a>`
             )
-            .join(", ");
+            .join("\n");
+          const sortedUsers = Object.entries(row.game.doneUsers)
+            .sort((a: any, b: any) => b[1].points - a[1].points)
+            .slice(0, 50)
+            .map(
+              ([user, data]: any, index) =>
+                `${index + 1}. <a href="tg://user?id=${user}">${
+                  data.name
+                }</a>: ${data.points}\n`
+            );
           bot.telegram.sendMessage(
             row.game.chatId,
-            `❌ Игра остановлена!\n🏆 Победители: ${winners}`,
+            `❌ Игра остановлена!\n<blockquote expandable><b>🏆 Победители</b>\n${winners}</blockquote>`,
             {
               reply_parameters: {
                 message_id: row.game.msgId,
@@ -1307,7 +1327,7 @@ bot.on("message", async (ctx) => {
             undefined,
             `${await getPostGameMessage(
               row
-            )}\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
+            )}\n\n<blockquote expandable><b>Топ 🎖️</b>\n${sortedUsers}</blockquote>\n❌ Игра остановлена!\n<blockquote expandable><b>🏆 Победители</b>\n${winners}</blockquote>`,
             {
               parse_mode: "HTML",
             }
@@ -1320,9 +1340,9 @@ bot.on("message", async (ctx) => {
           return;
 
         case "upd":
-          for (let i = 0; i < Object.keys(row.game.doneUsers).length; i++) {
-            row.game.doneUsers[Object.keys(row.game.doneUsers)[i]].set = "bot";
-          }
+          await updateLeaderboard(ctx, senderId);
+          await ctx.reply(`${Object.keys(row.game.doneUsers).length}`);
+          break;
 
         case "/set_game*hub":
         case "/set_game*lnt":
@@ -1381,11 +1401,38 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
+      } else if (msg.toLowerCase().startsWith("/profile top")) {
+        const place = Number(msg.split("top")[1]);
+        const top = Object.entries(row.game.doneUsers).sort(
+          (a: any, b: any) => b[1].points - a[1].points
+        )[place - 1];
+        ctx.reply(JSON.stringify(top));
+        return;
+      } else if (msg.toLowerCase().startsWith("/points top")) {
+        const place = Number(msg.split("top")[1].split(" ")[0]);
+        const top = Object.entries(row.game.doneUsers).sort(
+          (a: any, b: any) => b[1].points - a[1].points
+        )[place - 1];
+        const value = Number(msg.split(" ")[2]);
+        row.game.doneUsers[top[0]].points = value;
+        await supabase
+          .from("users")
+          .update({
+            game: row.game,
+          })
+          .eq("tgId", 1);
+        await updateLeaderboard(row, Number(top[0]));
+        ctx.reply("✅ Успешно");
+        return;
       }
     }
 
     if (!row.ludka.doneUsers[`${senderId}`]) {
-      row.ludka.doneUsers[`${senderId}`] = { lastWins: 0, times: 0, name: ctx.message.from?.first_name || "Player" };
+      row.ludka.doneUsers[`${senderId}`] = {
+        lastWins: 0,
+        times: 0,
+        name: ctx.message.from?.first_name || "Player",
+      };
     }
     await supabase.from("users").update(row).eq("tgId", 1);
     let extraCheck =
@@ -1433,7 +1480,9 @@ bot.on("message", async (ctx) => {
 
           await Promise.all(
             currentWinners.map(async (id) => {
-              finalText += `<a href="tg://openmessage?user_id=${id}">${row.ludka.doneUsers[`${id}`].name}</a>\n`;
+              finalText += `<a href="tg://openmessage?user_id=${id}">${
+                row.ludka.doneUsers[`${id}`].name
+              }</a>\n`;
             })
           );
 
@@ -1732,7 +1781,7 @@ bot.on("message", async (ctx) => {
         return 0;
       })();
       let randomReacts = [];
-      const rand = Math.floor(Math.random() * 3)
+      const rand = Math.floor(Math.random() * 3);
       switch (PlusDice) {
         case 0:
         case 1:
@@ -1834,6 +1883,15 @@ bot.on("message", async (ctx) => {
       case "-лудка":
       case ".лудка":
       case "/лудка":
+      case "/game":
+      case "/игра":
+      case ".игра":
+      case "/game@StarzHubBot":
+      case "-игра":
+      case "/stop_game":
+      case "/stop_game@StarzHubBot":
+      case "/set_game":
+      case "/game_text":
       case "/ludka@StarzHubBot":
       case "/stop_ludka":
       case "/stop_ludka@StarzHubBot":
@@ -1897,7 +1955,10 @@ bot.on("pre_checkout_query", async (ctx) => {
 
       if (user.data) {
         const newStars = user.data.stars + data.amount;
-        await supabase.from("users").update({ stars: newStars }).eq("tgId", userId);
+        await supabase
+          .from("users")
+          .update({ stars: newStars })
+          .eq("tgId", userId);
         await ctx.reply(
           `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
         );
