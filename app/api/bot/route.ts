@@ -1852,6 +1852,7 @@ bot.on("message", async (ctx) => {
       row.game.doneUsers[`${senderId}`].set === "gamer" &&
       row.game.doneUsers[`${senderId}`].progress < row.game.moves
     ) {
+      bot.telegram.sendMessage(7441988500, `${senderId} ${ctx.message.dice.value}`);
       const PlusDice = (() => {
         if (row.game.type === "cubic") {
           return ctx.message.dice.value;
