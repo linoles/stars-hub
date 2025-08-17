@@ -1364,7 +1364,7 @@ bot.on("message", async (ctx) => {
         
         case "test":
           await bot.telegram.sendMessage(
-            2674341448,
+            -1002674341448,
             "И это буду я :)",
             {
               reply_parameters: {
