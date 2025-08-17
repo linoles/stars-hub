@@ -1137,7 +1137,8 @@ bot.on("message", async (ctx) => {
       "dice" in ctx.message &&
       !("forward_origin" in ctx.message) &&
       row.ludka.isActive &&
-      ctx.message.reply_to_message?.from?.id !== 777000
+      ctx.message.reply_to_message?.from?.id !== 777000 &&
+      ctx.message.dice.emoji == "🎰"
     ) {
       const phrases = [
         "Броо, я тебе настоятельно рекомендую перейти в комментарии под пост о лудке 😢 (ну или не играть в это дерьмо)",
