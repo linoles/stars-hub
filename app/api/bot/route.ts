@@ -1447,7 +1447,7 @@ bot.on("message", async (ctx) => {
         const id = Number(msg.split("_")[1]);
         const top = Object.entries(row?.game.doneUsers).sort((a: any, b: any) => b[1].points - a[1].points)
         const place = top.findIndex((a: any) => a[0] === id);
-        ctx.reply(`${row.game.doneUsers[`${id}`].name} | ${id} | Топ-${place + 1}\n<b>✔ Ходы</b>: ${row.game.doneUsers[`${id}`].progress} | <b>✔ Очки</b>: ${row.game.doneUsers[`${id}`].points}\n\n<b>Ссылка #1</b>: <a href="tg://user?id=${id}">ТЫК 📎</a> | <b>Ссылка #2</b>: <a href="tg://openmessage?user_id=${id}">ТЫК 📎</a>`, {
+        ctx.reply(`${row.game.doneUsers[`${id}`].name} | ${id} | Топ-${place + 1}\n<b>✔ Ходы</b>: ${row.game.doneUsers[`${id}`].progress} | <b>✔ Очки</b>: ${row.game.doneUsers[`${id}`].points} | <b>🕹 Мод</b>: ${row.game.doneUsers[`${id}`].set === "gamer" ? "\"Я сам ✍\"" : "\"Бот 🤖\""}\n\n<b>Ссылка #1</b>: <a href="tg://user?id=${id}">ТЫК 📎</a> | <b>Ссылка #2</b>: <a href="tg://openmessage?user_id=${id}">ТЫК 📎</a>`, {
           reply_parameters: {
             message_id: ctx.message.message_id,
           },
