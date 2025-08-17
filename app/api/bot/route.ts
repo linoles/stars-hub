@@ -589,7 +589,6 @@ const endGlobalGame = async (ctx: any) => {
         game: {
           ...row?.game,
           isActive: false,
-          doneUsers: {},
           setupStage: 0,
         },
       })
@@ -826,7 +825,7 @@ bot.action("startGame", async (ctx) => {
     .eq("tgId", 1)
     .single();
   row.game.isActive = true;
-  row.game.setupStage = 0;
+  row.game.doneUsers = {};
   const postText = await getPostGameMessage(row);
   const msg = await bot.telegram.sendMessage(row.game.chatId, postText, {
     parse_mode: "HTML",
@@ -1358,7 +1357,6 @@ bot.on("message", async (ctx) => {
             }
           );
           row.game.isActive = false;
-          row.game.doneUsers = {};
           row.game.setupStage = 0;
           row.game.msgId = 0;
           await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
