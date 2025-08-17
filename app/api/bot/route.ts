@@ -1307,7 +1307,7 @@ bot.on("message", async (ctx) => {
                   data.points
                 } <a href="https://t.me/StarzHubBot?start=profile_${user}">📎</a>`
             )
-            .join(", ");
+            .join("\n");
           const sortedUsers = Object.entries(row?.game.doneUsers)
             .filter(([_, data]: any) => data?.progress >= row?.game.moves)
             .sort((a: any, b: any) => b[1].points - a[1].points)
@@ -1316,8 +1316,9 @@ bot.on("message", async (ctx) => {
               ([user, data]: any, index) =>
                 `${index + 1}. <b><a href="tg://user?id=${user}">${
                   data.name
-                }</a></b>: ${data.points}\n`
-            );
+                }</a></b>: ${data.points}`
+            )
+            .join("\n");
           bot.telegram.sendMessage(
             row.game.chatId,
             `❌ Игра остановлена!\n<blockquote expandable><b>🏆 Победители</b>\n${winners}</blockquote>`,
