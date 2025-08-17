@@ -826,6 +826,7 @@ bot.action("startGame", async (ctx) => {
     .single();
   row.game.isActive = true;
   row.game.doneUsers = {};
+  row.game.setupStage = 4;
   const postText = await getPostGameMessage(row);
   const msg = await bot.telegram.sendMessage(row.game.chatId, postText, {
     parse_mode: "HTML",
@@ -1871,23 +1872,36 @@ bot.on("message", async (ctx) => {
       })();
       let randomReacts = [];
       const rand = Math.floor(Math.random() * 3);
-      switch (PlusDice) {
-        case 0:
-        case 1:
-        case 2:
-          randomReacts = ["🤮", "💩", "👎"] as const;
-          ctx.react(randomReacts[rand] as TelegramEmoji, true);
-          break;
-        case 3:
-        case 4:
-          randomReacts = ["👍", "⚡", "✍"] as const;
-          ctx.react(randomReacts[rand] as TelegramEmoji, true);
-          break;
-        case 5:
-        case 6:
-          randomReacts = ["🎉", "🏆", "😎"] as const;
-          ctx.react(randomReacts[rand] as TelegramEmoji, true);
-          break;
+      if (row.game.type === "cubic" || row.game.type === "darts" || row.game.type === "bowling") {
+        switch (PlusDice) {
+          case 0:
+          case 1:
+          case 2:
+            randomReacts = ["🤮", "💩", "👎"] as const;
+            ctx.react(randomReacts[rand] as TelegramEmoji, true);
+            break;
+          case 3:
+          case 4:
+            randomReacts = ["👍", "⚡", "✍"] as const;
+            ctx.react(randomReacts[rand] as TelegramEmoji, true);
+            break;
+          case 5:
+          case 6:
+            randomReacts = ["🎉", "🏆", "😎"] as const;
+            ctx.react(randomReacts[rand] as TelegramEmoji, true);
+            break;
+        }
+      } else {
+        switch (PlusDice) {
+          case 0:
+            randomReacts = ["🤮", "💩", "👎"] as const;
+            ctx.react(randomReacts[rand] as TelegramEmoji, true);
+            break;
+          case 1:
+            randomReacts = ["🎉", "🏆", "😎"] as const;
+            ctx.react(randomReacts[rand] as TelegramEmoji, true);
+            break;
+        }
       }
       row.game.doneUsers[`${senderId}`].progress += 1;
       row.game.doneUsers[`${senderId}`].points += PlusDice;
