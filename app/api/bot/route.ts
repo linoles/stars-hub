@@ -515,7 +515,7 @@ const endGlobalGame = async (ctx: any) => {
       .eq("tgId", 1)
       .single();
 
-    if (row?.game) throw new Error("Данные игры не найдены");
+    if (!row?.game) throw new Error("Данные игры не найдены");
 
     // Определяем победителей
     const winners = Object.entries(row?.game.doneUsers)
