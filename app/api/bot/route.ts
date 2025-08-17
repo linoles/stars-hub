@@ -1438,9 +1438,17 @@ bot.on("message", async (ctx) => {
         return;
       } else if (msg.toLowerCase().startsWith("/start profile_")) {
         const id = Number(msg.split("_")[1]);
-        const top = Object.entries(row?.game.doneUsers).sort((a: any, b: any) => b[1].points - a[1].points).map((a: any) => a[0]);
-        const place = top.indexOf(id.toString());
-        ctx.reply(`${(row.game.doneUsers[`${id}`]?.name ?? (await bot.telegram.getChatMember(-1002506008123, id))?.user?.first_name) ?? "Имя: ❌"} | ${id} | Топ-${place + 1} | ${(await bot.telegram.getChatMember(-1002506008123, id))?.user?.username ? `@${(await bot.telegram.getChatMember(-1002506008123, id))?.user?.username}` : "Тег: ❌"}\n<b>✔ Ходы</b>: ${row.game.doneUsers[`${id}`]?.progress ?? 0} | <b>✔ Очки</b>: ${row.game.doneUsers[`${id}`]?.points ?? 0} | <b>🕹 Мод</b>: ${row.game.doneUsers[`${id}`]?.set === "gamer" ? "\"Я сам ✍\"" : row.game.doneUsers[`${id}`]?.set === "bot" ? row.game.doneUsers[`${id}`]?.set : "❌"}\n\n<b>Ссылка #1</b>: <a href="tg://user?id=${id}">ТЫК 📎</a> | <b>Ссылка #2</b>: <a href="tg://openmessage?user_id=${id}">ТЫК 📎</a>`, {
+        const top = Object.entries(row?.game.doneUsers).sort((a: any, b: any) => b[1].points - a[1].points);
+        const similarProfiles = top.filter((a: any) => {
+          if (a[1].name.length <= 2) return false;
+          for (let i = 0; i < a[1].name.length - 2; i++) {
+            const chars = row.game.doneUsers[`${id}`].name.split();
+            if (chars.includes(a[1].name[i]) && chars.includes(a[1].name[i + 1]) && chars.includes(a[1].name[i + 2])) return true;
+          }
+          return false;
+        }).map((user: any) => `<a href="https://t.me/StarzHubBot?start=profile_${user[0]}">${user[1].name}</a>: ${user[1].points} <a href="tg://openmessage?user_id=${user[0]}">(ТГ)</a>`).join("\n");
+        const place = top.map((a: any) => a[0]).indexOf(id.toString());
+        ctx.reply(`${(row.game.doneUsers[`${id}`]?.name ?? (await bot.telegram.getChatMember(-1002506008123, id))?.user?.first_name) ?? "Имя: ❌"} | ${id} | Топ-${place + 1} | ${(await bot.telegram.getChatMember(-1002506008123, id))?.user?.username ? `@${(await bot.telegram.getChatMember(-1002506008123, id))?.user?.username}` : "Тег: ❌"}\n<b>✔ Ходы</b>: ${row.game.doneUsers[`${id}`]?.progress ?? 0} | <b>✔ Очки</b>: ${row.game.doneUsers[`${id}`]?.points ?? 0} | <b>🕹 Мод</b>: ${row.game.doneUsers[`${id}`]?.set === "gamer" ? "\"Я сам ✍\"" : row.game.doneUsers[`${id}`]?.set === "bot" ? "\"Бот 🤖\"" : "❌"}\n\n<b>Ссылка #1</b>: <a href="tg://user?id=${id}">ТЫК 📎</a> | <b>Ссылка #2</b>: <a href="tg://openmessage?user_id=${id}">ТЫК 📎</a>\n\n<blockquote expandable><b>👤 Схожие профили</b>:\n${similarProfiles}</blockquote>`, {
           reply_parameters: {
             message_id: ctx.message.message_id,
           },
