@@ -1443,10 +1443,19 @@ bot.on("message", async (ctx) => {
         await updateLeaderboard(row, Number(top[0]));
         ctx.reply("✅ Успешно");
         return;
+      } else if (msg.toLowerCase().startsWith("/start profile ")) {
+        const id = Number(msg.split(" ")[2]);
+        ctx.reply(`${row.game.doneUsers[`${id}`].name} | ${id}\n<b>✔ Ходы</b>: ${row.game.doneUsers[`${id}`].progress} | <b>✔ Очки</b>: ${row.game.doneUsers[`${id}`].points}\n<b>📎 Ссылка #1</b>: <a href="tg://user?id=${id}">ТЫК</a> | <b>📎 Ссылка #2</b>: <a href="tg://openmessage?user_id=${id}">ТЫК</a>`, {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+          parse_mode: "HTML"
+        });
+        return;
       }
     }
 
-    if (!row.ludka.doneUsers[`${senderId}`]) {
+    if (!row.ludka.doneUsers[`${senderId}`] && row.ludka.isActive) {
       row.ludka.doneUsers[`${senderId}`] = {
         lastWins: 0,
         times: 0,
