@@ -477,9 +477,11 @@ const updateLeaderboard = async (ctx: any, from: number) => {
     const sortedUsers = top
       .map(
         ([user, data]: any, index) =>
-          `<a href="https://t.me/StarzHubBot?start=profile_${user}">${index + 1}. </a><b><a href="tg://user?id=${user}">${
-            data.name
-          }</a></b>: ${data.points}`
+          `<a href="https://t.me/StarzHubBot?start=profile_${user}">${
+            index + 1
+          }. </a><b><a href="tg://user?id=${user}">${data.name}</a></b>: ${
+            data.points
+          }`
       )
       .join("\n");
 
@@ -539,9 +541,11 @@ const endGlobalGame = async (ctx: any) => {
       .slice(0, 50)
       .map(
         ([user, data]: any, index) =>
-          `<a href="https://t.me/StarzHubBot?start=profile_${user}">${index + 1}. </a><b><a href="tg://user?id=${user}">${
-            data.name
-          }</a></b>: ${data.points}`
+          `<a href="https://t.me/StarzHubBot?start=profile_${user}">${
+            index + 1
+          }. </a><b><a href="tg://user?id=${user}">${data.name}</a></b>: ${
+            data.points
+          }`
       )
       .join("\n");
 
@@ -1314,7 +1318,9 @@ bot.on("message", async (ctx) => {
             .slice(0, 50)
             .map(
               ([user, data]: any, index) =>
-                `<a href="https://t.me/StarzHubBot?start=profile_${user}">${index + 1}. </a><b><a href="tg://user?id=${user}">${
+                `<a href="https://t.me/StarzHubBot?start=profile_${user}">${
+                  index + 1
+                }. </a><b><a href="tg://user?id=${user}">${
                   data.name
                 }</a></b>: ${data.points}`
             )
@@ -1343,8 +1349,8 @@ bot.on("message", async (ctx) => {
               parse_mode: "HTML",
               reply_markup: {
                 inline_keyboard: [
-                  [Markup.button.callback(`🏁 Игра завершена!`, "return")]
-                ]
+                  [Markup.button.callback(`🏁 Игра завершена!`, "return")],
+                ],
               },
               link_preview_options: {
                 is_disabled: true,
@@ -1438,22 +1444,62 @@ bot.on("message", async (ctx) => {
         return;
       } else if (msg.toLowerCase().startsWith("/start profile_")) {
         const id = Number(msg.split("_")[1]);
-        const top = Object.entries(row?.game.doneUsers).sort((a: any, b: any) => b[1].points - a[1].points);
-        const similarProfiles = top.filter((a: any) => {
-          if (a[1].name.length <= 2) return false;
-          for (let i = 0; i < a[1].name.length - 2; i++) {
-            const chars = row.game.doneUsers[`${id}`].name.split();
-            if (chars.includes(a[1].name[i]) && chars.includes(a[1].name[i + 1]) && chars.includes(a[1].name[i + 2])) return true;
-          }
-          return false;
-        }).map((user: any) => `<a href="https://t.me/StarzHubBot?start=profile_${user[0]}">${user[1].name}</a>: ${user[1].points} <a href="tg://openmessage?user_id=${user[0]}">(ТГ)</a>`).join("\n");
+        const top = Object.entries(row?.game.doneUsers).sort(
+          (a: any, b: any) => b[1].points - a[1].points
+        );
+        const similarProfiles = top
+          .filter((a: any) => {
+            if (a[1].name.length <= 2) return false;
+            const firstUserChars = row.game.doneUsers[`${id}`].name.split("");
+            for (let i = 0; i < a[1].name.length - 2; i++) {
+              const secondUserChars = a[1].name.split("");
+              if (
+                firstUserChars.includes(secondUserChars[i]) &&
+                firstUserChars.includes(secondUserChars[i + 1]) &&
+                firstUserChars.includes(secondUserChars[i + 2])
+              )
+                return true;
+            }
+            return false;
+          })
+          .map(
+            (user: any) =>
+              `<a href="https://t.me/StarzHubBot?start=profile_${user[0]}">${user[1].name}</a>: ${user[1].points} <a href="tg://openmessage?user_id=${user[0]}">(ТГ)</a>`
+          )
+          .join("\n");
         const place = top.map((a: any) => a[0]).indexOf(id.toString());
-        ctx.reply(`${(row.game.doneUsers[`${id}`]?.name ?? (await bot.telegram.getChatMember(-1002506008123, id))?.user?.first_name) ?? "Имя: ❌"} | ${id} | Топ-${place + 1} | ${(await bot.telegram.getChatMember(-1002506008123, id))?.user?.username ? `@${(await bot.telegram.getChatMember(-1002506008123, id))?.user?.username}` : "Тег: ❌"}\n<b>✔ Ходы</b>: ${row.game.doneUsers[`${id}`]?.progress ?? 0} | <b>✔ Очки</b>: ${row.game.doneUsers[`${id}`]?.points ?? 0} | <b>🕹 Мод</b>: ${row.game.doneUsers[`${id}`]?.set === "gamer" ? "\"Я сам ✍\"" : row.game.doneUsers[`${id}`]?.set === "bot" ? "\"Бот 🤖\"" : "❌"}\n\n<b>Ссылка #1</b>: <a href="tg://user?id=${id}">ТЫК 📎</a> | <b>Ссылка #2</b>: <a href="tg://openmessage?user_id=${id}">ТЫК 📎</a>\n\n<blockquote expandable><b>👤 Схожие профили</b>:\n${similarProfiles}</blockquote>`, {
-          reply_parameters: {
-            message_id: ctx.message.message_id,
-          },
-          parse_mode: "HTML"
-        });
+        ctx.reply(
+          `${
+            row.game.doneUsers[`${id}`]?.name ??
+            (await bot.telegram.getChatMember(-1002506008123, id))?.user
+              ?.first_name ??
+            "Имя: ❌"
+          } | ${id} | Топ-${place + 1} | ${
+            (await bot.telegram.getChatMember(-1002506008123, id))?.user
+              ?.username
+              ? `@${
+                  (await bot.telegram.getChatMember(-1002506008123, id))?.user
+                    ?.username
+                }`
+              : "Тег: ❌"
+          }\n<b>✔ Ходы</b>: ${
+            row.game.doneUsers[`${id}`]?.progress ?? 0
+          } | <b>✔ Очки</b>: ${
+            row.game.doneUsers[`${id}`]?.points ?? 0
+          } | <b>🕹 Мод</b>: ${
+            row.game.doneUsers[`${id}`]?.set === "gamer"
+              ? '"Я сам ✍"'
+              : row.game.doneUsers[`${id}`]?.set === "bot"
+              ? '"Бот 🤖"'
+              : "❌"
+          }\n\n<b>Ссылка #1</b>: <a href="tg://user?id=${id}">ТЫК 📎</a> | <b>Ссылка #2</b>: <a href="tg://openmessage?user_id=${id}">ТЫК 📎</a>\n\n<blockquote expandable><b>👤 Схожие профили</b>:\n${similarProfiles}</blockquote>`,
+          {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+            parse_mode: "HTML",
+          }
+        );
         return;
       }
     }
