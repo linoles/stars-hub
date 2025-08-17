@@ -1363,9 +1363,7 @@ bot.on("message", async (ctx) => {
           return;
 
         case "upd":
-          await bot.telegram.deleteMessage(-1002506008123, 7818)
-          await bot.telegram.deleteMessage(-1002506008123, 7819)
-          await bot.telegram.deleteMessage(-1002506008123, 7820)
+          await bot.telegram.deleteMessage(-1002506008123, 7821)
           break;
 
         case "/set_game*hub":
