@@ -1420,13 +1420,6 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/profile top")) {
-        const place = Number(msg.split("top")[1]);
-        const top = Object.entries(row.game.doneUsers).sort(
-          (a: any, b: any) => b[1].points - a[1].points
-        )[place - 1];
-        ctx.reply(JSON.stringify(top));
-        return;
       } else if (msg.toLowerCase().startsWith("/points top")) {
         const place = Number(msg.split("top")[1].split(" ")[0]);
         const top = Object.entries(row.game.doneUsers).sort(
@@ -1445,9 +1438,9 @@ bot.on("message", async (ctx) => {
         return;
       } else if (msg.toLowerCase().startsWith("/start profile_")) {
         const id = Number(msg.split("_")[1]);
-        const top = Object.entries(row?.game.doneUsers).sort((a: any, b: any) => b[1].points - a[1].points)
-        const place = top.findIndex((a: any) => a[0] === id);
-        ctx.reply(`${row.game.doneUsers[`${id}`].name} | ${id} | Топ-${place + 1}\n<b>✔ Ходы</b>: ${row.game.doneUsers[`${id}`].progress} | <b>✔ Очки</b>: ${row.game.doneUsers[`${id}`].points} | <b>🕹 Мод</b>: ${row.game.doneUsers[`${id}`].set === "gamer" ? "\"Я сам ✍\"" : "\"Бот 🤖\""}\n\n<b>Ссылка #1</b>: <a href="tg://user?id=${id}">ТЫК 📎</a> | <b>Ссылка #2</b>: <a href="tg://openmessage?user_id=${id}">ТЫК 📎</a>`, {
+        const top = Object.entries(row?.game.doneUsers).sort((a: any, b: any) => b[1].points - a[1].points).map((a: any) => a[0]);
+        const place = top.indexOf(id.toString());
+        ctx.reply(`${(row.game.doneUsers[`${id}`]?.name ?? (await bot.telegram.getChatMember(-1002506008123, id))?.user?.first_name) ?? "Имя: ❌"} | ${id} | Топ-${place + 1} | ${(await bot.telegram.getChatMember(-1002506008123, id))?.user?.username ? `@${(await bot.telegram.getChatMember(-1002506008123, id))?.user?.username}` : "Тег: ❌"}\n<b>✔ Ходы</b>: ${row.game.doneUsers[`${id}`]?.progress ?? 0} | <b>✔ Очки</b>: ${row.game.doneUsers[`${id}`]?.points ?? 0} | <b>🕹 Мод</b>: ${row.game.doneUsers[`${id}`]?.set === "gamer" ? "\"Я сам ✍\"" : row.game.doneUsers[`${id}`]?.set === "bot" ? row.game.doneUsers[`${id}`]?.set : "❌"}\n\n<b>Ссылка #1</b>: <a href="tg://user?id=${id}">ТЫК 📎</a> | <b>Ссылка #2</b>: <a href="tg://openmessage?user_id=${id}">ТЫК 📎</a>`, {
           reply_parameters: {
             message_id: ctx.message.message_id,
           },
