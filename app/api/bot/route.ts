@@ -523,8 +523,10 @@ const endGlobalGame = async (ctx: any) => {
       .eq("tgId", 1)
       .single();
 
+      
     if (!row?.game) throw new Error("Данные игры не найдены");
-
+      
+    if (!row.game.isActive) return;
     // Определяем победителей
     const winners = Object.entries(row.game.doneUsers)
       .sort((a: any, b: any) => b[1].points - a[1].points)
