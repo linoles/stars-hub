@@ -1296,7 +1296,7 @@ bot.on("message", async (ctx) => {
               ([user, data]: any, index) =>
                 `${index + 1}. <b><a href="tg://user?id=${user}">${
                   data.name
-                }</a></b>: ${data.points}`
+                }</a></b>: ${data.points}\n`
               )
           bot.telegram.sendMessage(
             row.game.chatId,
@@ -1314,7 +1314,7 @@ bot.on("message", async (ctx) => {
             undefined,
             `${await getPostGameMessage(
               row
-            )}\n\n${sortedUsers}\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
+            )}\n\n<blockquote expandable><b>Топ 🎖️</b>\n${sortedUsers}</blockquote>\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
             {
               parse_mode: "HTML",
             }
