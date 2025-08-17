@@ -363,7 +363,11 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     .select("game")
     .eq("tgId", 1)
     .single();
-  if (row?.game.doneUsers[`${from}`].set !== "bot" || error || row?.game.doneUsers[`${from}`].progress >= row.game.moves) {
+  if (
+    row?.game.doneUsers[`${from}`].set !== "bot" ||
+    error ||
+    row?.game.doneUsers[`${from}`].progress >= row.game.moves
+  ) {
     await ctx.answerCbQuery(
       "Check: some errors: " +
         String(error) +
@@ -548,6 +552,9 @@ const endGlobalGame = async (ctx: any) => {
       {
         reply_parameters: { message_id: row?.game.msgId },
         parse_mode: "HTML",
+        link_preview_options: {
+          is_disabled: true,
+        },
       }
     );
 
@@ -564,6 +571,9 @@ const endGlobalGame = async (ctx: any) => {
           inline_keyboard: [
             [Markup.button.callback(`🏁 Игра завершена!`, "return")],
           ],
+        },
+        link_preview_options: {
+          is_disabled: true,
         },
       }
     );
@@ -1307,7 +1317,7 @@ bot.on("message", async (ctx) => {
                 `${index + 1}. <b><a href="tg://user?id=${user}">${
                   data.name
                 }</a></b>: ${data.points}\n`
-              )
+            );
           bot.telegram.sendMessage(
             row.game.chatId,
             `❌ Игра остановлена!\n<blockquote expandable><b>🏆 Победители</b>\n${winners}</blockquote>`,
@@ -1316,6 +1326,9 @@ bot.on("message", async (ctx) => {
                 message_id: row.game.msgId,
               },
               parse_mode: "HTML",
+              link_preview_options: {
+                is_disabled: true,
+              },
             }
           );
           bot.telegram.editMessageText(
@@ -1327,6 +1340,14 @@ bot.on("message", async (ctx) => {
             )}\n\n<blockquote expandable><b>Топ 🎖️</b>\n${sortedUsers}</blockquote>\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
             {
               parse_mode: "HTML",
+              reply_markup: {
+                inline_keyboard: [
+                  [Markup.button.callback(`🏁 Игра завершена!`, "return")]
+                ]
+              },
+              link_preview_options: {
+                is_disabled: true,
+              },
             }
           );
           row.game.isActive = false;
@@ -1400,20 +1421,22 @@ bot.on("message", async (ctx) => {
         return;
       } else if (msg.toLowerCase().startsWith("/profile top")) {
         const place = Number(msg.split("top")[1]);
-        const top = Object.entries(row.game.doneUsers)
-          .sort((a: any, b: any) => b[1].points - a[1].points)[place - 1];
+        const top = Object.entries(row.game.doneUsers).sort(
+          (a: any, b: any) => b[1].points - a[1].points
+        )[place - 1];
         ctx.reply(JSON.stringify(top));
         return;
       } else if (msg.toLowerCase().startsWith("/points top")) {
         const place = Number(msg.split("top")[1].split(" ")[0]);
-        const top = Object.entries(row.game.doneUsers)
-          .sort((a: any, b: any) => b[1].points - a[1].points)[place - 1];
+        const top = Object.entries(row.game.doneUsers).sort(
+          (a: any, b: any) => b[1].points - a[1].points
+        )[place - 1];
         const value = Number(msg.split(" ")[2]);
         row.game.doneUsers[top[0]].points = value;
         await supabase
           .from("users")
           .update({
-            game: row.game
+            game: row.game,
           })
           .eq("tgId", 1);
         await updateLeaderboard(row, Number(top[0]));
