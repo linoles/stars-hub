@@ -477,7 +477,7 @@ const updateLeaderboard = async (ctx: any, from: number) => {
     const sortedUsers = top
       .map(
         ([user, data]: any, index) =>
-          `${index + 1}. <b><a href="tg://user?id=${user}">${
+          `<a href="https://t.me/StarzHubBot?start=profile_${user}">${index + 1}. </a><b><a href="tg://user?id=${user}">${
             data.name
           }</a></b>: ${data.points}`
       )
@@ -539,7 +539,7 @@ const endGlobalGame = async (ctx: any) => {
       .slice(0, 50)
       .map(
         ([user, data]: any, index) =>
-          `${index + 1}. <b><a href="tg://user?id=${user}">${
+          `<a href="https://t.me/StarzHubBot?start=profile_${user}">${index + 1}. </a><b><a href="tg://user?id=${user}">${
             data.name
           }</a></b>: ${data.points}`
       )
@@ -1314,7 +1314,7 @@ bot.on("message", async (ctx) => {
             .slice(0, 50)
             .map(
               ([user, data]: any, index) =>
-                `${index + 1}. <b><a href="tg://user?id=${user}">${
+                `<a href="https://t.me/StarzHubBot?start=profile_${user}">${index + 1}. </a><b><a href="tg://user?id=${user}">${
                   data.name
                 }</a></b>: ${data.points}`
             )
