@@ -363,11 +363,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
     .select("game")
     .eq("tgId", 1)
     .single();
-  if (
-    row?.game.doneUsers[`${from}`].set !== "bot" ||
-    error ||
-    row?.game.doneUsers[`${from}`].progress >= row.game.moves
-  ) {
+  if (row?.game.doneUsers[`${from}`].set !== "bot" || error || row?.game.doneUsers[`${from}`].progress >= row.game.moves) {
     await ctx.answerCbQuery(
       "Check: some errors: " +
         String(error) +
@@ -1301,16 +1297,17 @@ bot.on("message", async (ctx) => {
                   data.points
                 } <a href="https://t.me/StarzHubBot?start=profile_${user}">📎</a>`
             )
-            .join("\n");
-          const sortedUsers = Object.entries(row.game.doneUsers)
+            .join(", ");
+          const sortedUsers = Object.entries(row?.game.doneUsers)
+            .filter(([_, data]: any) => data?.progress >= row?.game.moves)
             .sort((a: any, b: any) => b[1].points - a[1].points)
             .slice(0, 50)
             .map(
               ([user, data]: any, index) =>
-                `${index + 1}. <a href="tg://user?id=${user}">${
+                `${index + 1}. <b><a href="tg://user?id=${user}">${
                   data.name
-                }</a>: ${data.points}\n`
-            );
+                }</a></b>: ${data.points}\n`
+              )
           bot.telegram.sendMessage(
             row.game.chatId,
             `❌ Игра остановлена!\n<blockquote expandable><b>🏆 Победители</b>\n${winners}</blockquote>`,
@@ -1327,7 +1324,7 @@ bot.on("message", async (ctx) => {
             undefined,
             `${await getPostGameMessage(
               row
-            )}\n\n<blockquote expandable><b>Топ 🎖️</b>\n${sortedUsers}</blockquote>\n❌ Игра остановлена!\n<blockquote expandable><b>🏆 Победители</b>\n${winners}</blockquote>`,
+            )}\n\n<blockquote expandable><b>Топ 🎖️</b>\n${sortedUsers}</blockquote>\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
             {
               parse_mode: "HTML",
             }
@@ -1403,22 +1400,20 @@ bot.on("message", async (ctx) => {
         return;
       } else if (msg.toLowerCase().startsWith("/profile top")) {
         const place = Number(msg.split("top")[1]);
-        const top = Object.entries(row.game.doneUsers).sort(
-          (a: any, b: any) => b[1].points - a[1].points
-        )[place - 1];
+        const top = Object.entries(row.game.doneUsers)
+          .sort((a: any, b: any) => b[1].points - a[1].points)[place - 1];
         ctx.reply(JSON.stringify(top));
         return;
       } else if (msg.toLowerCase().startsWith("/points top")) {
         const place = Number(msg.split("top")[1].split(" ")[0]);
-        const top = Object.entries(row.game.doneUsers).sort(
-          (a: any, b: any) => b[1].points - a[1].points
-        )[place - 1];
+        const top = Object.entries(row.game.doneUsers)
+          .sort((a: any, b: any) => b[1].points - a[1].points)[place - 1];
         const value = Number(msg.split(" ")[2]);
         row.game.doneUsers[top[0]].points = value;
         await supabase
           .from("users")
           .update({
-            game: row.game,
+            game: row.game
           })
           .eq("tgId", 1);
         await updateLeaderboard(row, Number(top[0]));
