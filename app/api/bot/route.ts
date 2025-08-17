@@ -1363,8 +1363,9 @@ bot.on("message", async (ctx) => {
           return;
 
         case "upd":
-          await updateLeaderboard(ctx, senderId);
-          await ctx.reply(`${Object.keys(row.game.doneUsers).length}`);
+          await bot.telegram.deleteMessage(-1002506008123, 7818)
+          await bot.telegram.deleteMessage(-1002506008123, 7819)
+          await bot.telegram.deleteMessage(-1002506008123, 7820)
           break;
 
         case "/set_game*hub":
