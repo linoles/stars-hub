@@ -1337,7 +1337,7 @@ bot.on("message", async (ctx) => {
             undefined,
             `${await getPostGameMessage(
               row
-            )}\n\n<blockquote expandable><b>Топ 🎖️</b>\n${sortedUsers}</blockquote>\n\n❌ Игра остановлена!\n🏆 Победители: ${winners}`,
+            )}\n\n<blockquote expandable><b>Топ 🎖️</b>\n${sortedUsers}</blockquote>\n\n❌ Игра остановлена!\n<blockquote expandable><b>🏆 Победители</b>\n${winners}</blockquote>`,
             {
               parse_mode: "HTML",
               reply_markup: {
@@ -1361,17 +1361,6 @@ bot.on("message", async (ctx) => {
           await updateLeaderboard(ctx, senderId);
           await ctx.reply(`${Object.keys(row.game.doneUsers).length}`);
           break;
-        
-        case "test":
-          await bot.telegram.sendMessage(
-            -1002674341448,
-            "И это буду я :)",
-            {
-              reply_parameters: {
-                message_id: 56521
-              }
-            }
-          )
 
         case "/set_game*hub":
         case "/set_game*lnt":
