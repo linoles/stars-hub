@@ -1449,6 +1449,7 @@ bot.on("message", async (ctx) => {
         );
         const similarProfiles = top
           .filter((a: any) => {
+            if (a[0] === id.toString()) return false;
             if (a[1].name.length <= 2) return false;
             const firstUserChars = row.game.doneUsers[`${id}`].name.split("");
             for (let i = 0; i < a[1].name.length - 2; i++) {
@@ -1498,6 +1499,9 @@ bot.on("message", async (ctx) => {
               message_id: ctx.message.message_id,
             },
             parse_mode: "HTML",
+            link_preview_options: {
+              is_disabled: true,
+            },
           }
         );
         return;
