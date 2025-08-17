@@ -1363,7 +1363,8 @@ bot.on("message", async (ctx) => {
           return;
 
         case "upd":
-          await bot.telegram.deleteMessage(-1002506008123, 7821)
+          await updateLeaderboard(ctx, senderId);
+          await ctx.reply(`${Object.keys(row.game.doneUsers).length}`);
           break;
 
         case "/set_game*hub":
@@ -1501,6 +1502,16 @@ bot.on("message", async (ctx) => {
             },
           }
         );
+        return;
+      } else if (msg.toLowerCase().startsWith("/delete")) {
+        const chatId = Number(msg.split(" ")[1]);
+        const msgId = Number(msg.split(" ")[2]);
+        bot.telegram.deleteMessage(chatId, msgId);
+        ctx.reply("✅ Успешно", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          }
+        });
         return;
       }
     }
