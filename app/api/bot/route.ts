@@ -219,8 +219,7 @@ const getHludkaButtons = async () => {
       Markup.button.callback("➖", "hminus=🍋"),
       Markup.button.callback("➖", "hminus=🍇"),
       Markup.button.callback("➖", "hminus=BAR"),
-    ],
-    [Markup.button.callback("Остановить лудку 🛑", "hstopLudka")],
+    ]
   ]);
 };
 
