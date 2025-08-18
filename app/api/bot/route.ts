@@ -1717,7 +1717,7 @@ bot.on("message", async (ctx) => {
         case ".хлудка":
         case "/hludka@StarzHubBot":
           try {
-            ctx.reply("(await getHludkaMessage())", {
+            ctx.reply((await getHludkaMessage()), {
               reply_markup: (await getHludkaButtons()).reply_markup,
               parse_mode: "HTML",
               reply_parameters: {
