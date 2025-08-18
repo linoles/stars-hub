@@ -202,24 +202,6 @@ const getHludkaButtons = async () => {
       Markup.button.callback("🍇", "return"),
       Markup.button.callback("BAR", "return"),
     ],
-    [
-      Markup.button.callback("➕", "hplus=7️⃣"),
-      Markup.button.callback("➕", "hplus=🍋"),
-      Markup.button.callback("➕", "hplus=🍇"),
-      Markup.button.callback("➕", "hplus=BAR"),
-    ],
-    [
-      Markup.button.callback(`🎫 ${row.hludka.tickets["7️⃣"]}`, "return"),
-      Markup.button.callback(`🎫 ${row.hludka.tickets["🍋"]}`, "return"),
-      Markup.button.callback(`🎫 ${row.hludka.tickets["🍇"]}`, "return"),
-      Markup.button.callback(`🎫 ${row.hludka.tickets["BAR"]}`, "return"),
-    ],
-    [
-      Markup.button.callback("➖", "hminus=7️⃣"),
-      Markup.button.callback("➖", "hminus=🍋"),
-      Markup.button.callback("➖", "hminus=🍇"),
-      Markup.button.callback("➖", "hminus=BAR"),
-    ]
   ]);
 };
 
