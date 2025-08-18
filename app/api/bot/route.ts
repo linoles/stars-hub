@@ -26,7 +26,7 @@ declare global {
   }
 }
 
-const levenshteinDistance = ((a: string, b: string) => {
+const levenshteinDistance = (a: string, b: string) => {
   const matrix: number[][] = Array(b.length + 1)
     .fill(null)
     .map(() => Array(a.length + 1).fill(null));
@@ -38,7 +38,7 @@ const levenshteinDistance = ((a: string, b: string) => {
   for (let j = 0; j <= b.length; j++) {
     matrix[j][0] = j;
   }
-  
+
   for (let j = 1; j <= b.length; j++) {
     for (let i = 1; i <= a.length; i++) {
       const substitutionCost = a[i - 1] === b[j - 1] ? 0 : 1;
@@ -46,60 +46,75 @@ const levenshteinDistance = ((a: string, b: string) => {
         matrix[j][i - 1] + 1, // delete
         matrix[j - 1][i] + 1, // insert
         matrix[j - 1][i - 1] + substitutionCost // substitute
-      )
+      );
     }
   }
 
   return matrix[b.length][a.length];
-});
+};
 
-const levenshteinSearch = ((
+const levenshteinSearch = (
   targetName: string,
-  profiles: { id: number, name: string, points: number }[],
+  profiles: { id: number; name: string; points: number }[],
   maxDistance = 2
-): { id: number, name: string, points: number, x: number }[] => {
-  return profiles.filter(
-    (profile) =>
-      levenshteinDistance(targetName.toLowerCase(), profile.name.toLowerCase()) <= maxDistance
-  ).map(profile => ({ ...profile, x: 0 }));
-});
+): { id: number; name: string; points: number; x: number }[] => {
+  return profiles
+    .filter(
+      (profile) =>
+        levenshteinDistance(
+          targetName.toLowerCase(),
+          profile.name.toLowerCase()
+        ) <= maxDistance
+    )
+    .map((profile) => ({ ...profile, x: 0 }));
+};
 
-const getNGrams = ((str: string, n: number): string[] => {
+const getNGrams = (str: string, n: number): string[] => {
   const nGrams: string[] = [];
-  for(let i = 0; i <= str.length - n; i++) {
+  for (let i = 0; i <= str.length - n; i++) {
     nGrams.push(str.slice(i, i + n));
   }
   return nGrams;
-});
+};
 
 const nGramsSearch = (
   targetName: string,
-  profiles: { id: number, name: string, points: number }[],
+  profiles: { id: number; name: string; points: number }[],
   n = 2,
   minCommon = 2
-): { id: number, name: string, points: number, x: number }[] => {
+): { id: number; name: string; points: number; x: number }[] => {
   const targetNGrams = getNGrams(targetName.toLowerCase(), n);
-  return profiles.filter((profile) => {
-    const profileNGrams = getNGrams(profile.name.toLowerCase(), n);
-    const commonNGrams = targetNGrams.filter((nGram) => profileNGrams.includes(nGram));
-    return commonNGrams.length >= minCommon;
-  }).map(profile => ({ ...profile, x: 0 }));
-}
+  return profiles
+    .filter((profile) => {
+      const profileNGrams = getNGrams(profile.name.toLowerCase(), n);
+      const commonNGrams = targetNGrams.filter((nGram) =>
+        profileNGrams.includes(nGram)
+      );
+      return commonNGrams.length >= minCommon;
+    })
+    .map((profile) => ({ ...profile, x: 0 }));
+};
 
 const substringSearch = (
   targetName: string,
-  profiles: { id: number, name: string, points: number }[]
-): { id: number, name: string, points: number, x: number }[] => {
-  return profiles.filter((profile) => 
-    profile.name.toLowerCase().includes(targetName.toLowerCase())
-  ).map(profile => ({ ...profile, x: 0 }));
-}
+  profiles: { id: number; name: string; points: number }[]
+): { id: number; name: string; points: number; x: number }[] => {
+  return profiles
+    .filter((profile) =>
+      profile.name.toLowerCase().includes(targetName.toLowerCase())
+    )
+    .map((profile) => ({ ...profile, x: 0 }));
+};
 
-const globalSearch = ((
+const globalSearch = (
   targetName: string,
-  profiles: { id: number, name: string, points: number, x: number }[]
-): { id: number, name: string, points: number }[] => {
-  const results: { id: number, name: string, points: number, x: number }[][] = [levenshteinSearch(targetName.toLowerCase(), profiles), nGramsSearch(targetName.toLowerCase(), profiles), substringSearch(targetName.toLowerCase(), profiles)];
+  profiles: { id: number; name: string; points: number; x: number }[]
+): { id: number; name: string; points: number }[] => {
+  const results: { id: number; name: string; points: number; x: number }[][] = [
+    levenshteinSearch(targetName.toLowerCase(), profiles),
+    nGramsSearch(targetName.toLowerCase(), profiles),
+    substringSearch(targetName.toLowerCase(), profiles),
+  ];
   let x: any = {};
   results.forEach((result) => {
     result.forEach((profile) => {
@@ -109,15 +124,15 @@ const globalSearch = ((
       x[profile.id] = (!x[profile.id] ? 0 : x[profile.id]) + 1;
     });
   });
-  return profiles.map((profile) => (
-    {
+  return profiles
+    .map((profile) => ({
       id: profile.id,
       name: profile.name,
       points: profile.points,
-      x: x[profile.id]
-    }
-  )).sort((a, b) => a.x - b.x);
-});
+      x: x[profile.id],
+    }))
+    .sort((a, b) => a.x - b.x);
+};
 
 const getLudkaButtons = async () => {
   const { data: row, error } = await supabase
@@ -179,10 +194,7 @@ const getHludkaButtons = async () => {
     [Markup.button.callback("Текущие настройки ⚡", "hshowSettings")],
     [
       Markup.button.callback("➖", "hminuswinners"),
-      Markup.button.callback(
-        `${row.hludka.winners} 🏆`,
-        "return"
-      ),
+      Markup.button.callback(`${row.hludka.winners} 🏆`, "return"),
       Markup.button.callback("➕", "hpluswinners"),
     ],
     [
@@ -198,10 +210,10 @@ const getHludkaButtons = async () => {
       Markup.button.callback("➕", "hplus=BAR"),
     ],
     [
-      Markup.button.callback(`${row.hludka.tickets["7️⃣"]}`, "return"),
-      Markup.button.callback(`${row.hludka.tickets["🍋"]}`, "return"),
-      Markup.button.callback(`${row.hludka.tickets["🍇"]}`, "return"),
-      Markup.button.callback(`${row.hludka.tickets["BAR"]}`, "return"),
+      Markup.button.callback(`🎫 ${row.hludka.tickets["7️⃣"]}`, "return"),
+      Markup.button.callback(`🎫 ${row.hludka.tickets["🍋"]}`, "return"),
+      Markup.button.callback(`🎫 ${row.hludka.tickets["🍇"]}`, "return"),
+      Markup.button.callback(`🎫 ${row.hludka.tickets["BAR"]}`, "return"),
     ],
     [
       Markup.button.callback("➖", "hminus=7️⃣"),
@@ -219,8 +231,12 @@ const getHludkaMessage = async () => {
     .select("*")
     .eq("tgId", 1)
     .single();
-  return `✅ Лудка по билетам успешно запущена! 🎫\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>🎊 Победители:</i> ${row.hludka.winners}\n<i>Начисления (за билеты):</i>\n${Object.keys(row.hludka.tickets).map((emoji: any) => `${emoji}: ${row.hludka.tickets[emoji]}`).join("\n\t")}\n\nВыберите настройки лудки кнопками ниже! ⚙`;
-}
+  return `✅ Лудка по билетам успешно запущена! 🎫\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>🎊 Победители:</i> ${
+    row.hludka.winners
+  }\n<i>Начисления (за билеты):</i>\n${Object.entries(row.hludka.tickets)
+    .map((emoji: any, count: any) => `${emoji}: ${count}`)
+    .join("\n\t")}\n\nВыберите настройки лудки кнопками ниже! ⚙`;
+};
 
 const getGameButtons = async (row: any) => {
   switch (row.game.setupStage) {
@@ -973,7 +989,9 @@ bot.action("hstopLudka", async (ctx) => {
       hludka: row.hludka,
     })
     .eq("tgId", 1);
-  const currentWinners = Object.entries(row.hludka.doneUsers).sort((a: any, b: any) => b[1].points - a[1].points).slice(0, row.hludka.winners);
+  const currentWinners = Object.entries(row.hludka.doneUsers)
+    .sort((a: any, b: any) => b[1].points - a[1].points)
+    .slice(0, row.hludka.winners);
   let finalText = `🏆 Лудка по билетам закончена! Победители:\n`;
   await Promise.all(
     currentWinners.map(async (id: any) => {
@@ -1553,7 +1571,9 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
 
 bot.on("message", async (ctx) => {
   try {
-    const chats = [-1002608961312, -1002560347854, -1002674341448, -1002688586546];
+    const chats = [
+      -1002608961312, -1002560347854, -1002674341448, -1002688586546,
+    ];
     if (
       !chats.includes(ctx.message.chat.id) &&
       ctx.message.chat.id !== ctx.message.from.id
@@ -1705,11 +1725,14 @@ bot.on("message", async (ctx) => {
               },
             });
           } catch (error: any) {
-            ctx.reply("❌ " + error.message || error.stack || JSON.stringify(error), {
-              reply_parameters: {
-                message_id: ctx.message.message_id,
-              },
-            })
+            ctx.reply(
+              "❌ " + error.message || error.stack || JSON.stringify(error),
+              {
+                reply_parameters: {
+                  message_id: ctx.message.message_id,
+                },
+              }
+            );
           }
           ctx.replyWithDice({
             emoji: "🎰",
@@ -1739,7 +1762,7 @@ bot.on("message", async (ctx) => {
             })
             .eq("tgId", 1);
           return;
-        
+
         case "/game":
         case "/игра":
         case ".игра":
@@ -1862,9 +1885,12 @@ bot.on("message", async (ctx) => {
               : channel1 === "lnt"
               ? -1002551457192
               : -1002606260123;
-          await supabase.from("users").update({ hludka: row.hludka }).eq("tgId", 1);
+          await supabase
+            .from("users")
+            .update({ hludka: row.hludka })
+            .eq("tgId", 1);
           return;
-      
+
         case "/stop_hludka":
         case "-хлудка":
         case "/stop_hludka@StarzHubBot":
@@ -1874,7 +1900,10 @@ bot.on("message", async (ctx) => {
             },
           });
           row.hludka.isActive = false;
-          await supabase.from("users").update({ hludka: row.hludka }).eq("tgId", 1);
+          await supabase
+            .from("users")
+            .update({ hludka: row.hludka })
+            .eq("tgId", 1);
           return;
       }
       if (msg.startsWith("/game_text ")) {
@@ -1938,17 +1967,31 @@ bot.on("message", async (ctx) => {
           (a: any, b: any) => b[1].points - a[1].points
         );
         const place = top.map((a: any) => a[0]).indexOf(id.toString());
-        const earlyData: { id: number; name: string; points: number; x: number }[] = Object.values(row.game.doneUsers)
+        const earlyData: {
+          id: number;
+          name: string;
+          points: number;
+          x: number;
+        }[] = Object.values(row.game.doneUsers)
           .filter((us: any) => us !== undefined)
           .map((us: any, index: number) => ({
-            "id": Number(Object.keys(row.game.doneUsers)[index]),
-            "name": us.name ?? "Имя: ❌",
-            "points": us.points,
+            id: Number(Object.keys(row.game.doneUsers)[index]),
+            name: us.name ?? "Имя: ❌",
+            points: us.points,
             x: 0,
           }));
-        const similarProfiles = globalSearch(row.game.doneUsers[`${id}`]?.name ?? (await bot.telegram.getChatMember(-1002506008123, id))?.user?.first_name ?? "Имя: ❌", earlyData )
+        const similarProfiles = globalSearch(
+          row.game.doneUsers[`${id}`]?.name ??
+            (await bot.telegram.getChatMember(-1002506008123, id))?.user
+              ?.first_name ??
+            "Имя: ❌",
+          earlyData
+        )
           .filter((user: any) => user[1] !== undefined)
-          .map((user: any) => `<a href="https://t.me/StarzHubBot?start=profile_${user[0]}">${user[1].name}</a>: ${user[1].x}x <a href="tg://openmessage?user_id=${user[0]}">(ТГ)</a>`)
+          .map(
+            (user: any) =>
+              `<a href="https://t.me/StarzHubBot?start=profile_${user[0]}">${user[1].name}</a>: ${user[1].x}x <a href="tg://openmessage?user_id=${user[0]}">(ТГ)</a>`
+          )
           .join("\n");
         ctx.reply(
           `${
