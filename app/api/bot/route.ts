@@ -168,6 +168,60 @@ const getLudkaMessage = async () => {
   return `✅ Лудка успешно запущена!\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>Цель:</i> ${row.ludka.neededComb}${row.ludka.neededComb}${row.ludka.neededComb} 🎰\n<i>🎊 Победители:</i> ${row.ludka.winners}\n<i>Надо выбить (раз):</i> ${row.ludka.requiredTimes} 🗝\n<i>💪 Надо выбить (подряд):</i> ${row.ludka.requiredRow}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙\n\n<blockquote expandable><b>Описание настроек ❕</b>\n<i>7️⃣, 🍋, 🍇, BAR:</i> Установка цели лудки\n<i>🏆:</i> Максимальное количество победителей\n<i>🔢:</i> Нужное для победы количество выигрышных комбинаций\n<i>💯:</i> Нужное для победы количество выигрышных комбинаций <b>подряд</b></blockquote>`;
 };
 
+const getHludkaButtons = async () => {
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+
+  return Markup.inlineKeyboard([
+    [Markup.button.callback("Текущие настройки ⚡", "hshowSettings")],
+    [
+      Markup.button.callback("➖", "hminuswinners"),
+      Markup.button.callback(
+        `${row.ludka.winners} 🏆`,
+        "return"
+      ),
+      Markup.button.callback("➕", "hpluswinners"),
+    ],
+    [
+      Markup.button.callback("7️⃣", "return"),
+      Markup.button.callback("🍋", "return"),
+      Markup.button.callback("🍇", "return"),
+      Markup.button.callback("BAR", "return"),
+    ],
+    [
+      Markup.button.callback("➕", "hplus=7️⃣"),
+      Markup.button.callback("➕", "hplus=🍋"),
+      Markup.button.callback("➕", "hplus=🍇"),
+      Markup.button.callback("➕", "hplus=BAR"),
+    ],
+    [
+      Markup.button.callback(`${row.hludka.tickets["7️⃣"]}`, "return"),
+      Markup.button.callback(`${row.hludka.tickets["🍋"]}`, "return"),
+      Markup.button.callback(`${row.hludka.tickets["🍇"]}`, "return"),
+      Markup.button.callback(`${row.hludka.tickets["BAR"]}`, "return"),
+    ],
+    [
+      Markup.button.callback("➖", "hminus=7️⃣"),
+      Markup.button.callback("➖", "hminus=🍋"),
+      Markup.button.callback("➖", "hminus=🍇"),
+      Markup.button.callback("➖", "hminus=BAR"),
+    ],
+    [Markup.button.callback("Остановить лудку 🛑", "hstopLudka")],
+  ]);
+};
+
+const getHludkaMessage = async () => {
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  return `✅ Лудка по билетам успешно запущена! 🎫\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>🎊 Победители:</i> ${row.hludka.winners}\n<i>Начисления (за билеты):</i>\n${Object.keys(row.hludka.tickets).map((emoji: any) => `${emoji}: ${row.hludka.tickets[emoji]}`).join("\n\t")}\n\nВыберите настройки лудки кнопками ниже! ⚙`;
+}
+
 const getGameButtons = async (row: any) => {
   switch (row.game.setupStage) {
     case 0:
@@ -842,6 +896,14 @@ bot.action("showSettings", async (ctx) => {
   ctx.answerCbQuery("✅ Текущие настройки успешно отображены!");
 });
 
+bot.action("hshowSettings", async (ctx) => {
+  ctx.editMessageText(await getHludkaMessage(), {
+    parse_mode: "HTML",
+    reply_markup: (await getHludkaButtons()).reply_markup,
+  });
+  ctx.answerCbQuery("✅ Текущие настройки успешно отображены!");
+});
+
 bot.action("stopLudka", async (ctx) => {
   const admins = [7441988500, 6233759034, 7177688298];
   if (!admins.includes(ctx.callbackQuery.from.id)) {
@@ -889,6 +951,52 @@ bot.action("stopLudka", async (ctx) => {
   });
 });
 
+bot.action("hstopLudka", async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  row.hludka.isActive = false;
+  row.hludka.doneUsers = {};
+  await supabase
+    .from("users")
+    .update({
+      hludka: row.hludka,
+    })
+    .eq("tgId", 1);
+  const currentWinners = Object.entries(row.hludka.doneUsers).sort((a: any, b: any) => b[1].points - a[1].points).slice(0, row.hludka.winners);
+  let finalText = `🏆 Лудка по билетам закончена! Победители:\n`;
+  await Promise.all(
+    currentWinners.map(async (id: any) => {
+      finalText += `<a href="tg://openmessage?user_id=${id}">${
+        row.hludka.doneUsers[`${id}`].name
+      }</a>\n`;
+    })
+  );
+  sendResults(finalText);
+  ctx.editMessageText("📛 Лудка закончена!", {
+    parse_mode: "HTML",
+    reply_markup: {
+      inline_keyboard: [
+        [Markup.button.callback("✅ Включить лудку", "hstartLudka")],
+      ],
+    },
+  });
+  ctx.answerCbQuery("✅ Лудка по билетам успешно остановлена!", {
+    show_alert: false,
+    cache_time: 0,
+  });
+});
+
 bot.action("startLudka", async (ctx) => {
   const admins = [7441988500, 6233759034, 7177688298];
   if (!admins.includes(ctx.callbackQuery.from.id)) {
@@ -916,6 +1024,38 @@ bot.action("startLudka", async (ctx) => {
     reply_markup: (await getLudkaButtons()).reply_markup,
   });
   ctx.answerCbQuery("✅ Лудка успешно запущена!", {
+    show_alert: false,
+    cache_time: 0,
+  });
+});
+
+bot.action("startLudka", async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  row.hludka.isActive = true;
+  await supabase
+    .from("users")
+    .update({
+      hludka: row.hludka,
+    })
+    .eq("tgId", 1);
+  ctx.editMessageText(await getHludkaMessage(), {
+    parse_mode: "HTML",
+    reply_markup: (await getHludkaButtons()).reply_markup,
+  });
+  ctx.answerCbQuery("✅ Лудка по билетам успешно запущена!", {
     show_alert: false,
     cache_time: 0,
   });
@@ -1107,6 +1247,89 @@ bot.action(/^show(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
   );
 });
 
+bot.action("hpluswinners", async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  if (error) {
+    ctx.answerCbQuery("❌ Ошибка обновления настройки", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  row.hludka.winners += 1;
+  await supabase
+    .from("users")
+    .update({
+      hludka: row.hludka,
+    })
+    .eq("tgId", 1);
+  ctx.answerCbQuery(
+    `✅ Настройка успешно обновлена на: ${row.hludka.winners}`,
+    {
+      show_alert: false,
+      cache_time: 0,
+    }
+  );
+  ctx.editMessageReplyMarkup((await getHludkaButtons()).reply_markup);
+});
+
+bot.action("hminuswinners", async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  if (error) {
+    ctx.answerCbQuery("❌ Ошибка обновления настройки", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  if (row.hludka.winners <= 10) {
+    ctx.answerCbQuery("❌ Настройка не может быть меньше 0", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  row.hludka.winners -= 1;
+  await supabase
+    .from("users")
+    .update({
+      hludka: row.hludka,
+    })
+    .eq("tgId", 1);
+  ctx.answerCbQuery(
+    `✅ Настройка успешно обновлена на: ${row.hludka.winners}`,
+    {
+      show_alert: false,
+      cache_time: 0,
+    }
+  );
+  ctx.editMessageReplyMarkup((await getHludkaButtons()).reply_markup);
+});
+
 bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
   const admins = [7441988500, 6233759034, 7177688298];
   if (!admins.includes(ctx.callbackQuery.from.id)) {
@@ -1154,6 +1377,93 @@ bot.action(/^plus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
     }
   );
   ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
+});
+
+bot.action(/^hplus=(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  if (error) {
+    ctx.answerCbQuery("❌ Ошибка обновления настройки", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  row.hludka.tickets[ctx.match[0].slice(6)] += 1;
+  await supabase
+    .from("users")
+    .update({
+      hludka: row.hludka,
+    })
+    .eq("tgId", 1);
+  ctx.answerCbQuery(
+    `✅ Настройка успешно обновлена на: ${
+      row.hludka.tickets[ctx.match[0].slice(6)]
+    }`,
+    {
+      show_alert: false,
+      cache_time: 0,
+    }
+  );
+  ctx.editMessageReplyMarkup((await getHludkaButtons()).reply_markup);
+});
+
+bot.action(/^hminus=(?:7️⃣|🍋|🍇|BAR)$/, async (ctx) => {
+  const admins = [7441988500, 6233759034, 7177688298];
+  if (!admins.includes(ctx.callbackQuery.from.id)) {
+    ctx.answerCbQuery("❌ У вас нет прав!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  if (error) {
+    ctx.answerCbQuery("❌ Ошибка обновления настройки", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  if (row.hludka.tickets[ctx.match[0].slice(7)] <= 0) {
+    ctx.answerCbQuery("❌ Настройка не может быть меньше 0", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  }
+  row.hludka.tickets[ctx.match[0].slice(7)] -= 1;
+  await supabase
+    .from("users")
+    .update({
+      hludka: row.hludka,
+    })
+    .eq("tgId", 1);
+  ctx.answerCbQuery(
+    `✅ Настройка успешно обновлена на: ${
+      row.hludka.tickets[ctx.match[0].slice(7)]
+    }`,
+    {
+      show_alert: false,
+      cache_time: 0,
+    }
+  );
+  ctx.editMessageReplyMarkup((await getHludkaButtons()).reply_markup);
 });
 
 bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
@@ -1382,6 +1692,46 @@ bot.on("message", async (ctx) => {
             .eq("tgId", 1);
           return;
 
+        case "/hludka":
+        case "/хлудка":
+        case ".хлудка":
+        case "/hludka@StarzHubBot":
+          ctx.reply(await getHludkaMessage(), {
+            reply_markup: (await getHludkaButtons()).reply_markup,
+            parse_mode: "HTML",
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          ctx.replyWithDice({
+            emoji: "🎰",
+            reply_parameters: {
+              message_id: ctx.message?.message_id,
+            },
+          });
+          let hmsgId = row.ludka.msgId;
+          let hchatId = row.ludka.chatId;
+          if (
+            "reply_to_message" in ctx.message &&
+            ctx.message.reply_to_message?.sender_chat?.type === "channel" &&
+            "forward_origin" in ctx.message.reply_to_message &&
+            ctx.message.reply_to_message.forward_origin !== undefined &&
+            "message_id" in ctx.message.reply_to_message.forward_origin
+          ) {
+            hmsgId = ctx.message.reply_to_message.forward_origin?.message_id;
+            hchatId = ctx.message.reply_to_message.sender_chat.id;
+          }
+          row.hludka.msgId = await hmsgId;
+          row.hludka.chatId = await hchatId;
+          row.hludka.isActive = true;
+          await supabase
+            .from("users")
+            .update({
+              hludka: row.hludka,
+            })
+            .eq("tgId", 1);
+          return;
+        
         case "/game":
         case "/игра":
         case ".игра":
@@ -1487,6 +1837,36 @@ bot.on("message", async (ctx) => {
               ? -1002551457192
               : -1002606260123;
           await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+          return;
+
+        case "/set_hludka*hub":
+        case "/set_hludka*lnt":
+        case "/set_hludka*test":
+          ctx.reply("Успешно ✅", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          const channel1 = msg.split("*")[1];
+          row.hludka.chatId =
+            channel1 === "hub"
+              ? -1002506008123
+              : channel1 === "lnt"
+              ? -1002551457192
+              : -1002606260123;
+          await supabase.from("users").update({ hludka: row.hludka }).eq("tgId", 1);
+          return;
+      
+        case "/stop_hludka":
+        case "-хлудка":
+        case "/stop_hludka@StarzHubBot":
+          ctx.reply("❌ Игра успешно остановлена!", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          row.hludka.isActive = false;
+          await supabase.from("users").update({ hludka: row.hludka }).eq("tgId", 1);
           return;
       }
       if (msg.startsWith("/game_text ")) {
