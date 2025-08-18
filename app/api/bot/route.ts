@@ -1234,7 +1234,7 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
 
 bot.on("message", async (ctx) => {
   try {
-    const chats = [-1002608961312, -1002560347854, -1002674341448];
+    const chats = [-1002608961312, -1002560347854, -1002674341448, -1002688586546];
     if (
       !chats.includes(ctx.message.chat.id) &&
       ctx.message.chat.id !== ctx.message.from.id
@@ -1994,6 +1994,10 @@ bot.on("message", async (ctx) => {
       }
       row.game.doneUsers[`${senderId}`].progress += 1;
       row.game.doneUsers[`${senderId}`].points += PlusDice;
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
       await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
       await ctx.reply(
         `🐾 Вы получили +${PlusDice} очк${
