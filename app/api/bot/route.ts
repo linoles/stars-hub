@@ -1541,8 +1541,18 @@ bot.on("message", async (ctx) => {
           (a: any, b: any) => b[1].points - a[1].points
         );
         const place = top.map((a: any) => a[0]).indexOf(id.toString());
-        const earlyData: { id: number; name: string; points: number; x: number }[] = Object.values(row.game.doneUsers).map((us: any, index: number) => ({ "id": Number(Object.keys(row.game.doneUsers)[index]), "name": us.name ?? "Имя: ❌", "points": us.points, x: 0 }));
-        const similarProfiles = globalSearch(row.game.doneUsers[`${id}`]?.name ?? (await bot.telegram.getChatMember(-1002506008123, id))?.user?.first_name ?? "Имя: ❌", earlyData ).map((user: any) => `<a href="https://t.me/StarzHubBot?start=profile_${user[0]}">${user[1].name}</a>: ${user[1].x}x <a href="tg://openmessage?user_id=${user[0]}">(ТГ)</a>`).join("\n");
+        const earlyData: { id: number; name: string; points: number; x: number }[] = Object.values(row.game.doneUsers)
+          .filter((us: any) => us !== undefined)
+          .map((us: any, index: number) => ({
+            "id": Number(Object.keys(row.game.doneUsers)[index]),
+            "name": us.name ?? "Имя: ❌",
+            "points": us.points,
+            x: 0,
+          }));
+        const similarProfiles = globalSearch(row.game.doneUsers[`${id}`]?.name ?? (await bot.telegram.getChatMember(-1002506008123, id))?.user?.first_name ?? "Имя: ❌", earlyData )
+          .filter((user: any) => user[1] !== undefined)
+          .map((user: any) => `<a href="https://t.me/StarzHubBot?start=profile_${user[0]}">${user[1].name}</a>: ${user[1].x}x <a href="tg://openmessage?user_id=${user[0]}">(ТГ)</a>`)
+          .join("\n");
         ctx.reply(
           `${
             row.game.doneUsers[`${id}`]?.name ??
