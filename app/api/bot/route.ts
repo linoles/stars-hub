@@ -2490,10 +2490,11 @@ bot.on("message", async (ctx) => {
       await supabase.from("users").update({ hludka: row.hludka }).eq("tgId", 1);
       const randomReacts = ["🏆", "🎉", "💪", "⚡", "✍", "😎", "👍"] as const;
       ctx.react(randomReacts[Math.floor(Math.random() * randomReacts.length)] as TelegramEmoji, true);
-      ctx.reply(`🎉 Ура! Вы выбили ${comb}${comb}${comb}!\n<b>Вам выдано билетов:</b> +${tickets} 🎫\n<b>🕹 Ваши билеты:</b> ${row.hludka.doneUsers[`${senderId}`]}`, {
+      ctx.reply(`🎉 Ура! Вы выбили ${comb}${comb}${comb}!\n<b>Вам выдано билетов:</b> +${tickets} 🎫\n<b>🕹 Ваши билеты:</b> ${row.hludka.doneUsers[`${senderId}`].tickets}`, {
         reply_parameters: {
           message_id: ctx.message.message_id,
         },
+        parse_mode: "HTML",
       });
     }
 
