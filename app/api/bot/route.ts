@@ -523,9 +523,8 @@ const endGlobalGame = async (ctx: any) => {
       .eq("tgId", 1)
       .single();
 
-      
     if (!row?.game) throw new Error("Данные игры не найдены");
-      
+
     if (!row.game.isActive) return;
     // Определяем победителей
     const winners = Object.entries(row.game.doneUsers)
@@ -1448,28 +1447,35 @@ bot.on("message", async (ctx) => {
         const top = Object.entries(row?.game.doneUsers).sort(
           (a: any, b: any) => b[1].points - a[1].points
         );
-        const similarProfiles = top
-          .filter((a: any) => {
-            if (a[0] === id.toString()) return false;
-            if (a[1].name.length <= 2) return false;
-            const firstUserChars = row.game.doneUsers[`${id}`].name.split("");
-            for (let i = 0; i < a[1].name.length - 2; i++) {
-              const secondUserChars = a[1].name.split("");
-              if (
-                firstUserChars.includes(secondUserChars[i]) &&
-                firstUserChars.includes(secondUserChars[i + 1]) &&
-                firstUserChars.includes(secondUserChars[i + 2])
-              )
-                return true;
-            }
-            return false;
-          })
-          .map(
-            (user: any) =>
-              `<a href="https://t.me/StarzHubBot?start=profile_${user[0]}">${user[1].name}</a>: ${user[1].points} <a href="tg://openmessage?user_id=${user[0]}">(ТГ)</a>`
-          )
-          .join("\n");
         const place = top.map((a: any) => a[0]).indexOf(id.toString());
+        const similarProfiles = (() => {
+          if (place !== -1) {
+            return top
+              .filter((a: any) => {
+                if (a[0] === id.toString()) return false;
+                if (a[1].name.length <= 2) return false;
+                const firstUserChars =
+                  row.game.doneUsers[`${id}`].name.split("");
+                for (let i = 0; i < a[1].name.length - 2; i++) {
+                  const secondUserChars = a[1].name.split("");
+                  if (
+                    firstUserChars.includes(secondUserChars[i]) &&
+                    firstUserChars.includes(secondUserChars[i + 1]) &&
+                    firstUserChars.includes(secondUserChars[i + 2])
+                  )
+                    return true;
+                }
+                return false;
+              })
+              .map(
+                (user: any) =>
+                  `<a href="https://t.me/StarzHubBot?start=profile_${user[0]}">${user[1].name}</a>: ${user[1].points} <a href="tg://openmessage?user_id=${user[0]}">(ТГ)</a>`
+              )
+              .join("\n");
+          } else {
+            return "❌";
+          }
+        })();
         ctx.reply(
           `${
             row.game.doneUsers[`${id}`]?.name ??
@@ -1513,7 +1519,7 @@ bot.on("message", async (ctx) => {
         ctx.reply("✅ Успешно", {
           reply_parameters: {
             message_id: ctx.message.message_id,
-          }
+          },
         });
         return;
       }
@@ -1854,7 +1860,6 @@ bot.on("message", async (ctx) => {
       row.game.doneUsers[`${senderId}`].set === "gamer" &&
       row.game.doneUsers[`${senderId}`].progress < row.game.moves
     ) {
-      bot.telegram.sendMessage(7441988500, `${senderId} ${ctx.message.dice.value}`);
       const PlusDice = (() => {
         if (row.game.type === "cubic") {
           return ctx.message.dice.value;
@@ -1875,34 +1880,38 @@ bot.on("message", async (ctx) => {
       })();
       let randomReacts = [];
       const rand = Math.floor(Math.random() * 3);
-      if (row.game.type === "cubic" || row.game.type === "darts" || row.game.type === "bowling") {
+      if (
+        row.game.type === "cubic" ||
+        row.game.type === "darts" ||
+        row.game.type === "bowling"
+      ) {
         switch (PlusDice) {
           case 0:
           case 1:
           case 2:
             randomReacts = ["🤮", "💩", "👎"] as const;
-            ctx.react(randomReacts[rand] as TelegramEmoji, true);
+            await ctx.react(randomReacts[rand] as TelegramEmoji, true);
             break;
           case 3:
           case 4:
             randomReacts = ["👍", "⚡", "✍"] as const;
-            ctx.react(randomReacts[rand] as TelegramEmoji, true);
+            await ctx.react(randomReacts[rand] as TelegramEmoji, true);
             break;
           case 5:
           case 6:
             randomReacts = ["🎉", "🏆", "😎"] as const;
-            ctx.react(randomReacts[rand] as TelegramEmoji, true);
+            await ctx.react(randomReacts[rand] as TelegramEmoji, true);
             break;
         }
       } else {
         switch (PlusDice) {
           case 0:
             randomReacts = ["🤮", "💩", "👎"] as const;
-            ctx.react(randomReacts[rand] as TelegramEmoji, true);
+            await ctx.react(randomReacts[rand] as TelegramEmoji, true);
             break;
           case 1:
             randomReacts = ["🎉", "🏆", "😎"] as const;
-            ctx.react(randomReacts[rand] as TelegramEmoji, true);
+            await ctx.react(randomReacts[rand] as TelegramEmoji, true);
             break;
         }
       }
@@ -1921,7 +1930,10 @@ bot.on("message", async (ctx) => {
         }
       );
       await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
-      if (row.game.doneUsers[`${senderId}`].progress >= row.game.moves) {
+      if (
+        row.game.doneUsers[`${senderId}`].progress >= row.game.moves &&
+        row.game.isActive
+      ) {
         await ctx.reply(
           `🎉 Игра завершена! Ваш результат: ${
             row.game.doneUsers[`${senderId}`].points
