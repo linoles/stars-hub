@@ -1696,13 +1696,21 @@ bot.on("message", async (ctx) => {
         case "/хлудка":
         case ".хлудка":
         case "/hludka@StarzHubBot":
-          ctx.reply(await getHludkaMessage(), {
-            reply_markup: (await getHludkaButtons()).reply_markup,
-            parse_mode: "HTML",
-            reply_parameters: {
-              message_id: ctx.message.message_id,
-            },
-          });
+          try {
+            ctx.reply((await getHludkaMessage()), {
+              reply_markup: (await getHludkaButtons()).reply_markup,
+              parse_mode: "HTML",
+              reply_parameters: {
+                message_id: ctx.message.message_id,
+              },
+            });
+          } catch (error: any) {
+            ctx.reply("❌ " + error.message || error.stack || JSON.stringify(error), {
+              reply_parameters: {
+                message_id: ctx.message.message_id,
+              },
+            })
+          }
           ctx.replyWithDice({
             emoji: "🎰",
             reply_parameters: {
