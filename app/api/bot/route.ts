@@ -1730,13 +1730,22 @@ bot.on("message", async (ctx) => {
         case ".хлудка":
         case "/hludka@StarzHubBot":
           try {
-            ctx.reply(await getHludkaMessage2(), {
-              reply_markup: (await getHludkaButtons()).reply_markup,
-              parse_mode: "HTML",
-              reply_parameters: {
-                message_id: ctx.message.message_id,
-              },
-            });
+            ctx.reply(
+              `✅ Лудка по билетам успешно запущена! 🎫\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>🎊 Победители:</i> ${
+                row.hludka.winners
+              }\n<i>Начисления (за билеты):</i>\n${Object.entries(
+                row.hludka.tickets
+              )
+                .map((emoji: any, count: any) => `${emoji}: ${count}`)
+                .join("\n\t")}\n\nВыберите настройки лудки кнопками ниже! ⚙`,
+              {
+                reply_markup: (await getHludkaButtons()).reply_markup,
+                parse_mode: "HTML",
+                reply_parameters: {
+                  message_id: ctx.message.message_id,
+                },
+              }
+            );
           } catch (error: any) {
             ctx.reply(
               "❌ " + error.message || error.stack || JSON.stringify(error),
