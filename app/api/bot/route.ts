@@ -2049,6 +2049,12 @@ bot.on("message", async (ctx) => {
         name: ctx.message.from?.first_name || "Player",
       };
     }
+    if (!row.hludka.doneUsers[`${senderId}`] && row.hludka.isActive) {
+      row.hludka.doneUsers[`${senderId}`] = {
+        tickets: 0,
+        name: ctx.message.from?.first_name || "Player",
+      };
+    }
     await supabase.from("users").update(row).eq("tgId", 1);
     let extraCheck =
       (await row.ludka.doneUsers[`${senderId}`].lastWins) + 1 >=
@@ -2470,6 +2476,25 @@ bot.on("message", async (ctx) => {
       if (Object.entries(row?.game.doneUsers).length >= row?.game.space) {
         await endGlobalGame(ctx);
       }
+    } else if (
+      row.hludka.isActive &&
+      senderId !== ctx.message.chat.id &&
+      "reply_to_message" in ctx.message &&
+      ctx.message.reply_to_message?.from?.id === 777000 &&
+      "dice" in ctx.message &&
+      [1, 22, 43, 64].includes(ctx.message.dice.value)
+    ) {
+      const comb = ctx.message.dice.value == 64 ? "7️⃣" : ctx.message.dice.value == 43 ? "🍋" : ctx.message.dice.value == 21 ? "🍇" : "BAR"
+      const tickets = row.hludka.tickets[comb];
+      row.hludka.doneUsers[`${senderId}`].tickets += tickets;
+      await supabase.from("users").update({ hludka: row.hludka }).eq("tgId", 1);
+      const randomReacts = ["🏆", "🎉", "💪", "⚡", "✍", "😎", "👍"] as const;
+      ctx.react(randomReacts[Math.floor(Math.random() * randomReacts.length)] as TelegramEmoji, true);
+      ctx.reply(`🎉 Ура! Вы выбили ${comb}${comb}${comb}!\n<b>Вам выдано билетов:</b> +${tickets} 🎫\n<b>🕹 Ваши билеты:</b> ${row.hludka.doneUsers[`${senderId}`]}`, {
+        reply_parameters: {
+          message_id: ctx.message.message_id,
+        },
+      });
     }
 
     switch (msg) {
