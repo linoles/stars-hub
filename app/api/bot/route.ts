@@ -1324,7 +1324,7 @@ bot.action("hminuswinners", async (ctx) => {
     });
     return;
   }
-  if (row.hludka.winners <= 10) {
+  if (row.hludka.winners <= 0) {
     ctx.answerCbQuery("❌ Настройка не может быть меньше 0", {
       show_alert: true,
       cache_time: 0,
