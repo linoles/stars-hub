@@ -180,7 +180,7 @@ const getHludkaButtons = async () => {
     [
       Markup.button.callback("➖", "hminuswinners"),
       Markup.button.callback(
-        `${row.ludka.winners} 🏆`,
+        `${row.hludka.winners} 🏆`,
         "return"
       ),
       Markup.button.callback("➕", "hpluswinners"),
@@ -1697,13 +1697,7 @@ bot.on("message", async (ctx) => {
         case ".хлудка":
         case "/hludka@StarzHubBot":
           try {
-            ctx.reply((await getHludkaMessage()), {
-              reply_markup: (await getHludkaButtons()).reply_markup,
-              parse_mode: "HTML",
-              reply_parameters: {
-                message_id: ctx.message.message_id,
-              },
-            });
+            ctx.reply("test");
           } catch (error: any) {
             ctx.reply("❌ " + error.message || error.stack || JSON.stringify(error), {
               reply_parameters: {
