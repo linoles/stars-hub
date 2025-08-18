@@ -191,17 +191,7 @@ const getHludkaButtons = async () => {
     .single();
 
   return Markup.inlineKeyboard([
-    [
-      Markup.button.callback("➖", "hminuswinners"),
-      Markup.button.callback(`${row.hludka.winners} 🏆`, "return"),
-      Markup.button.callback("➕", "hpluswinners"),
-    ],
-    [
-      Markup.button.callback("7️⃣", "return"),
-      Markup.button.callback("🍋", "return"),
-      Markup.button.callback("🍇", "return"),
-      Markup.button.callback("BAR", "return"),
-    ],
+    
   ]);
 };
 
