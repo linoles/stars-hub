@@ -233,8 +233,8 @@ const getHludkaMessage = async () => {
     .single();
   return `✅ Лудка по билетам успешно запущена! 🎫\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>🎊 Победители:</i> ${
     row.hludka.winners
-  }\n<i>Начисления (за билеты):</i>\n${Object.entries(row.hludka.tickets)
-    .map((emoji: any, count: any) => `${emoji}: ${count}`)
+  }\n<i>Начисления (за билеты):</i>\n\t${Object.entries(row.hludka.tickets)
+    .map((emoji: any, count: any) => `${emoji[0]}: ${count}`)
     .join("\n\t")}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙`;
 };
 
