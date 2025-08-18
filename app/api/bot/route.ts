@@ -226,11 +226,16 @@ const getHludkaButtons = async () => {
 };
 
 const getHludkaMessage = async () => {
-  try {
-    return `✅ Лудка по билетам успешно запущена! 🎫\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>🎊 Победители:</i> }\n<i>Начисления (за билеты):</i>\n\n\nВыберите настройки лудки кнопками ниже! ⚙`;
-  } catch (error: any) {
-    return "❌ " + error.message;
-  }
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  return `✅ Лудка по билетам успешно запущена! 🎫\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>🎊 Победители:</i> ${
+    row.hludka.winners
+  }\n<i>Начисления (за билеты):</i>\n${Object.entries(row.hludka.tickets)
+    .map((emoji: any, count: any) => `${emoji}: ${count}`)
+    .join("\n\t")}\n\nВыберите настройки лудки кнопками ниже! ⚙`;
 };
 
 const getGameButtons = async (row: any) => {
@@ -1712,7 +1717,7 @@ bot.on("message", async (ctx) => {
         case ".хлудка":
         case "/hludka@StarzHubBot":
           try {
-            ctx.reply((await getHludkaMessage()), {
+            ctx.reply(await getHludkaMessage(), {
               reply_markup: (await getHludkaButtons()).reply_markup,
               parse_mode: "HTML",
               reply_parameters: {
