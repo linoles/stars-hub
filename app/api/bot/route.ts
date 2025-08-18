@@ -191,7 +191,37 @@ const getHludkaButtons = async () => {
     .single();
 
   return Markup.inlineKeyboard([
-    
+    [Markup.button.callback("Текущие настройки ⚡", "hshowSettings")],
+    [
+      Markup.button.callback("➖", "hminuswinners"),
+      Markup.button.callback(`${row.hludka.winners} 🏆`, "return"),
+      Markup.button.callback("➕", "hpluswinners"),
+    ],
+    [
+      Markup.button.callback("7️⃣", "return"),
+      Markup.button.callback("🍋", "return"),
+      Markup.button.callback("🍇", "return"),
+      Markup.button.callback("BAR", "return"),
+    ],
+    [
+      Markup.button.callback("➕", "hplus=7️⃣"),
+      Markup.button.callback("➕", "hplus=🍋"),
+      Markup.button.callback("➕", "hplus=🍇"),
+      Markup.button.callback("➕", "hplus=BAR"),
+    ],
+    [
+      Markup.button.callback(`🎫 ${row.hludka.tickets["7️⃣"]}`, "return"),
+      Markup.button.callback(`🎫 ${row.hludka.tickets["🍋"]}`, "return"),
+      Markup.button.callback(`🎫 ${row.hludka.tickets["🍇"]}`, "return"),
+      Markup.button.callback(`🎫 ${row.hludka.tickets["BAR"]}`, "return"),
+    ],
+    [
+      Markup.button.callback("➖", "hminus=7️⃣"),
+      Markup.button.callback("➖", "hminus=🍋"),
+      Markup.button.callback("➖", "hminus=🍇"),
+      Markup.button.callback("➖", "hminus=BAR"),
+    ],
+    [Markup.button.callback("Остановить лудку 🛑", "hstopLudka")],
   ]);
 };
 
@@ -205,7 +235,7 @@ const getHludkaMessage = async () => {
     row.hludka.winners
   }\n<i>Начисления (за билеты):</i>\n${Object.entries(row.hludka.tickets)
     .map((emoji: any, count: any) => `${emoji}: ${count}`)
-    .join("\n\t")}\n\nВыберите настройки лудки кнопками ниже! ⚙`;
+    .join("\n\t")}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙`;
 };
 
 const getGameButtons = async (row: any) => {
