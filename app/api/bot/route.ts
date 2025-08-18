@@ -533,6 +533,11 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
 
     // Проверка завершения
     if (row.game.doneUsers[`${from}`].progress >= row.game.moves) {
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
       await finishGame(ctx, from);
     } else {
       // Кнопка для следующего хода
@@ -544,6 +549,10 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
         },
       });
       row.game.doneUsers[`${from}`].startMessageId = msg.message_id;
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
       await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
     }
   } catch (error) {
