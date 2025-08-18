@@ -227,11 +227,6 @@ const getHludkaButtons = async () => {
 
 const getHludkaMessage = async () => {
   try {
-    const { data: row, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("tgId", 1)
-      .single();
     return `✅ Лудка по билетам успешно запущена! 🎫\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>🎊 Победители:</i> }\n<i>Начисления (за билеты):</i>\n\n\nВыберите настройки лудки кнопками ниже! ⚙`;
   } catch (error: any) {
     return "❌ " + error.message;
