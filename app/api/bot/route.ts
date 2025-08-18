@@ -1047,7 +1047,7 @@ bot.action("startLudka", async (ctx) => {
   });
 });
 
-bot.action("startLudka", async (ctx) => {
+bot.action("hstartLudka", async (ctx) => {
   const admins = [7441988500, 6233759034, 7177688298];
   if (!admins.includes(ctx.callbackQuery.from.id)) {
     ctx.answerCbQuery("❌ У вас нет прав!", {
