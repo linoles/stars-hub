@@ -1994,6 +1994,7 @@ bot.on("message", async (ctx) => {
       }
       row.game.doneUsers[`${senderId}`].progress += 1;
       row.game.doneUsers[`${senderId}`].points += PlusDice;
+      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
       await ctx.reply(
         `🐾 Вы получили +${PlusDice} очк${
           PlusDice === 1 ? "о" : [2, 3, 4].includes(PlusDice) ? "а" : "ов"
@@ -2006,7 +2007,6 @@ bot.on("message", async (ctx) => {
           },
         }
       );
-      await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
       if (
         row.game.doneUsers[`${senderId}`].progress >= row.game.moves &&
         row.game.isActive
@@ -2122,6 +2122,8 @@ bot.on("message", async (ctx) => {
         ctx.reply("❌ Ошибка при попытки пополнения баланса.");
       }
     }
+
+    await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
   } catch (error) {
     if (error instanceof Error) {
       bot.telegram.sendMessage(
