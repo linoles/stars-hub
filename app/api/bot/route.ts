@@ -1612,15 +1612,24 @@ bot.on("message", async (ctx) => {
       await bot.telegram.leaveChat(ctx.message.chat.id);
       return;
     }
+
+
+    const msg = (ctx as Context).message.text;
+    const senderId = ctx.message.from.id;
+    const senderName = `${ctx.message.from.first_name ?? ""}${
+      ctx.message.from.first_name && ctx.message.from.last_name ? " " : ""
+    }${ctx.message.from.last_name ?? ""}`;
     const { data: row, error } = await supabase
       .from("users")
       .select("*")
       .eq("tgId", 1)
       .single();
+
+
     if (
       "dice" in ctx.message &&
       !("forward_origin" in ctx.message) &&
-      row.ludka.isActive &&
+      (row.ludka.isActive || row.hludka.isActive) &&
       ctx.message.reply_to_message?.from?.id !== 777000 &&
       ctx.message.dice.emoji == "🎰"
     ) {
@@ -1650,14 +1659,17 @@ bot.on("message", async (ctx) => {
         },
       });
       return;
+    } 
+    if (
+      row.hludka.isActive &&
+      row.hludka.endIn[0] === "time" &&
+      Date.parse(row.hludka.endIn[1]) <= Date.now()
+    ) {
+      ctx.reply("test");
     }
-    const msg = (ctx as Context).message.text;
-    const senderId = ctx.message.from.id;
-    const senderName = `${ctx.message.from.first_name ?? ""}${
-      ctx.message.from.first_name && ctx.message.from.last_name ? " " : ""
-    }${ctx.message.from.last_name ?? ""}`;
-    const admins = [7441988500, 6233759034, 7177688298];
 
+    
+    const admins = [7441988500, 6233759034, 7177688298];
     if (admins.includes(senderId) && msg) {
       switch (msg) {
         case "/ludka":
@@ -2149,6 +2161,7 @@ bot.on("message", async (ctx) => {
         return;
       }
     }
+
 
     if (!row.ludka.doneUsers[`${senderId}`] && row.ludka.isActive) {
       row.ludka.doneUsers[`${senderId}`] = {
