@@ -2024,6 +2024,7 @@ bot.on("message", async (ctx) => {
         case "upd":
           await updateLeaderboard(ctx, senderId);
           await ctx.reply(`${Object.keys(row.game.doneUsers).length}`);
+          await ctx.editMessageReplyMarkup((await getLoteryButtons()).reply_markup);
           break;
 
         case "/set_game*hub":
