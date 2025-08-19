@@ -420,6 +420,37 @@ const sendResults = async (finalText: string) => {
   }
 };
 
+const hsendResults = async (finalText: string) => {
+  try {
+    bot.telegram.sendMessage(7441988500, finalText, {
+      parse_mode: "HTML",
+    }); /* !! */
+    const { data: row, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("tgId", 1)
+      .single();
+    if (row.hludka.chatId == -1002506008123) {
+      bot.telegram.sendMessage(6233759034, finalText, {
+        parse_mode: "HTML",
+      });
+    }
+    await bot.telegram.sendMessage(row.hludka.chatId, finalText, {
+      parse_mode: "HTML",
+      reply_parameters: {
+        message_id: row.hludka.msgId,
+      },
+    });
+  } catch (error: any) {
+    bot.telegram.sendMessage(
+      7441988500,
+      `Error occurred while processing message:\n${
+        error.stack || error.message
+      }`
+    );
+  }
+};
+
 const getStartGameMessage = async (row: any, from: number) => {
   const set = row.game.doneUsers[`${from}`].set;
   const emoji =
@@ -981,14 +1012,6 @@ bot.action("hstopLudka", async (ctx) => {
     .select("*")
     .eq("tgId", 1)
     .single();
-  row.hludka.isActive = false;
-  row.hludka.doneUsers = {};
-  await supabase
-    .from("users")
-    .update({
-      hludka: row.hludka,
-    })
-    .eq("tgId", 1);
   const currentWinners = Object.entries(row.hludka.doneUsers)
     .sort((a: any, b: any) => b[1].points - a[1].points)
     .slice(0, row.hludka.winners);
@@ -1000,7 +1023,15 @@ bot.action("hstopLudka", async (ctx) => {
       }</a>\n`;
     })
   );
-  sendResults(finalText);
+  await hsendResults(finalText);
+  row.hludka.isActive = false;
+  row.hludka.doneUsers = {};
+  await supabase
+    .from("users")
+    .update({
+      hludka: row.hludka,
+    })
+    .eq("tgId", 1);
   ctx.editMessageText("📛 Лудка закончена!", {
     parse_mode: "HTML",
     reply_markup: {
@@ -2484,18 +2515,64 @@ bot.on("message", async (ctx) => {
       "dice" in ctx.message &&
       [1, 22, 43, 64].includes(ctx.message.dice.value)
     ) {
-      const comb = ctx.message.dice.value == 64 ? "7️⃣" : ctx.message.dice.value == 43 ? "🍋" : ctx.message.dice.value == 21 ? "🍇" : "BAR"
+      const comb =
+        ctx.message.dice.value == 64
+          ? "7️⃣"
+          : ctx.message.dice.value === 43
+          ? "🍋"
+          : ctx.message.dice.value === 22
+          ? "🍇"
+          : "BAR";
       const tickets = row.hludka.tickets[comb];
       row.hludka.doneUsers[`${senderId}`].tickets += tickets;
+      let allTickets = 0;
+      Object.entries(row.hludka.doneUsers).forEach((arr: any) => {
+        allTickets += arr[1].tickets;
+      });
       await supabase.from("users").update({ hludka: row.hludka }).eq("tgId", 1);
       const randomReacts = ["🏆", "🎉", "💪", "⚡", "✍", "😎", "👍"] as const;
-      ctx.react(randomReacts[Math.floor(Math.random() * randomReacts.length)] as TelegramEmoji, true);
-      ctx.reply(`🎉 Ура! Вы выбили ${comb}${comb}${comb}!\n<b>Вам выдано билетов:</b> +${tickets} 🎫\n<b>🕹 Ваши билеты:</b> ${row.hludka.doneUsers[`${senderId}`].tickets}`, {
-        reply_parameters: {
-          message_id: ctx.message.message_id,
-        },
-        parse_mode: "HTML",
-      });
+      ctx.react(
+        randomReacts[
+          Math.floor(Math.random() * randomReacts.length)
+        ] as TelegramEmoji,
+        true
+      );
+      ctx.reply(
+        `🎉 Ура! Вы выбили ${comb}${comb}${comb}!\n<b>Вам выдано билетов:</b> +${tickets} 🎫\n<b>🕹 Ваши билеты:</b> ${
+          row.hludka.doneUsers[`${senderId}`].tickets
+        }\n\n<b>⚡ Всего билетов:</b> ${allTickets}`,
+        {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+          parse_mode: "HTML",
+        }
+      );
+      if (
+        row.hludka.endIn[0] === "tickets" &&
+        allTickets >= row.hludka.endIn[1]
+      ) {
+        const currentWinners = Object.entries(row.hludka.doneUsers)
+          .sort((a: any, b: any) => b[1].points - a[1].points)
+          .slice(0, row.hludka.winners);
+        let finalText = `🏆 Лудка по билетам закончена! Победители:\n`;
+        await Promise.all(
+          currentWinners.map(async (id: any) => {
+            finalText += `<a href="tg://openmessage?user_id=${id}">${
+              row.hludka.doneUsers[`${id}`].name
+            }</a>\n`;
+          })
+        );
+        await hsendResults(finalText);
+        row.hludka.isActive = false;
+        row.hludka.doneUsers = {};
+        await supabase
+          .from("users")
+          .update({
+            hludka: row.hludka,
+          })
+          .eq("tgId", 1);
+      }
     }
 
     switch (msg) {
