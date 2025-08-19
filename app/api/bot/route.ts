@@ -746,6 +746,7 @@ bot.action(/ticket=(.+)/, async (ctx) => {
       });
       row.lotery.doneTickets[num].from = { "id": ctx.callbackQuery.from.id };
       await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
+      await ctx.editMessageReplyMarkup((await getLoteryButtons()).reply_markup);
       return;
     }
     ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n🎉 И он оказался выигрышным!`, {
@@ -755,6 +756,8 @@ bot.action(/ticket=(.+)/, async (ctx) => {
     lsendResults(`🎉 У нас есть победитель! И это <a href="tg://user?id=${ctx.callbackQuery.from.id}">${ctx.callbackQuery.from.first_name} (${ctx.callbackQuery.from.id})</a> 🏆`);
     row.lotery.doneTickets[num].from = ctx.callbackQuery.from;
     await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
+    await ctx.editMessageReplyMarkup((await getLoteryButtons()).reply_markup);
+    return
   }
 });
 
