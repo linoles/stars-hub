@@ -719,7 +719,7 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
   }
 });
 
-bot.action(/ticket=(.+)/, async (ctx) => {
+bot.action(/lotery=(.+)/, async (ctx) => {
   const num = ctx.match[1];
   const { data: row, error } = await supabase
     .from("users")
