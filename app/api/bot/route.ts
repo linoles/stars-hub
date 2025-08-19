@@ -2087,9 +2087,12 @@ bot.on("message", async (ctx) => {
       };
     }
     await supabase.from("users").update(row).eq("tgId", 1);
-    let extraCheck =
-      (await row.ludka.doneUsers[`${senderId}`].lastWins) + 1 >=
-      row.ludka.requiredRow;
+    let extraCheck = false;
+    if (row.ludka.doneUsers[`${senderId}`]) {
+      extraCheck =
+        (await row.ludka.doneUsers[`${senderId}`].lastWins) + 1 >=
+        row.ludka.requiredRow;
+    }
     const neededValue =
       row.ludka.neededComb === "7️⃣"
         ? 64
