@@ -1660,7 +1660,6 @@ bot.on("message", async (ctx) => {
     }
 
     if (row.hludka.isActive && row.hludka.endIn[0] === "time") {
-
       const date = new Date(row.hludka.endIn[1]);
       const timestamp = Date.UTC(
         date.getUTCFullYear(),
@@ -1671,14 +1670,25 @@ bot.on("message", async (ctx) => {
         date.getUTCSeconds(),
         date.getUTCMilliseconds()
       );
-      if (
-        timestamp <= Date.now()
-      ) {
-        ctx.reply(
-          `test ${Date.now()} ${timestamp} ${
-            timestamp <= Date.now()
-          }`
+      if (timestamp <= Date.now()) {
+        const sortedWinners = Object.entries(row.hludka.doneUsers).sort(
+          (a: any, b: any) => b[1].tickets - a[1].tickets
         );
+        const hcurrentWinners = sortedWinners.slice(0, row.hludka.winners);
+        let hfinalText = `🏆 Лудка по билетам закончена! Победители:\n`;
+        for (const id of hcurrentWinners as any) {
+          hfinalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>\n`;
+        }
+        hsendResults(hfinalText);
+        row.hludka.isActive = false;
+        row.hludka.doneUsers = {};
+        await supabase
+          .from("users")
+          .update({
+            hludka: row.hludka,
+          })
+          .eq("tgId", 1);
+        return;
       }
     }
 
@@ -2165,9 +2175,9 @@ bot.on("message", async (ctx) => {
         });
         return;
       } else if (msg.toLowerCase().startsWith("/time ")) {
-        const time = msg.split(" ")[1];
+        const time = msg.split(" ")[1] + "+03:00";
         row.hludka.endIn[0] = "time";
-        row.hludka.endIn[1] = (new Date(time)).getTime();
+        row.hludka.endIn[1] = new Date(time).getTime();
         await supabase
           .from("users")
           .update({ hludka: row.hludka })
