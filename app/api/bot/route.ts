@@ -2542,6 +2542,7 @@ bot.on("message", async (ctx) => {
         allTickets += arr[1].tickets;
       });
       await supabase.from("users").update({ hludka: row.hludka }).eq("tgId", 1);
+      const htop = Object.entries(row.hludka.doneUsers).filter((arr: any) => arr[1].tickets > 0).sort((a: any, b: any) => b[1].tickets - a[1].tickets).map((arr: any, index: number) => `${index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index}.`} <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${arr[1].tickets} 🎫`).join("\n");
       const randomReacts = ["🏆", "🎉", "💪", "⚡", "✍", "😎", "👍"] as const;
       ctx.react(
         randomReacts[
@@ -2552,7 +2553,7 @@ bot.on("message", async (ctx) => {
       ctx.reply(
         `🎉 Ура! Вы выбили ${comb}${comb}${comb}!\n<b>Вам выдано билетов:</b> +${tickets} 🎫\n<b>🕹 Ваши билеты:</b> ${
           row.hludka.doneUsers[`${senderId}`].tickets
-        }\n\n<b>⚡ Всего билетов:</b> ${allTickets}`,
+        }\n\n<b>⚡ Всего билетов:</b> ${allTickets}\n<blockquote expandable><b>🏆 ТОП</b>\n${htop}</blockquote>`,
         {
           reply_parameters: {
             message_id: ctx.message.message_id,
