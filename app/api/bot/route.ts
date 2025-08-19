@@ -2125,6 +2125,28 @@ bot.on("message", async (ctx) => {
             message_id: msgId,
           },
         });
+      } else if (msg.toLowerCase().startsWith("/tickets ")) {
+        const tickets = Number(msg.split(" ")[1]);
+        row.hludka.endIn[0] = "tickets";
+        row.hludka.endIn[1] = tickets;
+        await supabase.from("users").update({ "hludka": row.hludka }).eq("tgId", 1);
+        ctx.reply("✅ Успешно", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
+      } else if (msg.toLowerCase().startsWith("/time ")) {
+        const time = msg.split(" ")[1];
+        row.hludka.endIn[0] = "time";
+        row.hludka.endIn[1] = new Date(Date.parse(time));
+        await supabase.from("users").update({ "hludka": row.hludka }).eq("tgId", 1);
+        ctx.reply("✅ Успешно", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
       }
     }
 
