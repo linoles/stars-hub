@@ -241,7 +241,7 @@ const getLoteryButtons = async () => {
         acc[acc.length - 1].push(
           Markup.button.callback(
             val.from === null ? "🎫" : val.win === true ? "🎉" : "❌",
-            `lotery=${val.from}`
+            `lotery=${idx}`
           )
         );
         return acc;
