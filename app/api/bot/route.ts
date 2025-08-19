@@ -225,6 +225,32 @@ const getHludkaButtons = async () => {
   ]);
 };
 
+const getLoteryButtons = async () => {
+  const {data: row, error} = await supabase.from("users").select("*").eq("tgId", 1).single();
+  const buttons = Array(row.lotery.tickets).fill({
+    from: null,
+    win: false
+  });
+  buttons[Math.floor(Math.random() * buttons.length)].win = true;
+  return Markup.inlineKeyboard(
+    buttons.reduce(
+      (acc, val, idx) => {
+        if (idx % 8 === 0) {
+          acc.push([]);
+        }
+        acc[acc.length - 1].push(
+          Markup.button.callback(
+            val.win ? "🎉" : val.from === null ? "❌" : "🎫",
+            `lotery=${val.from}`
+          )
+        );
+        return acc;
+      },
+      [[]]
+    )
+  );
+}
+
 const getHludkaMessage = async () => {
   const { data: row, error } = await supabase
     .from("users")
@@ -1957,6 +1983,27 @@ bot.on("message", async (ctx) => {
             .eq("tgId", 1);
           return;
 
+        case "/set_hludka*hub":
+        case "/set_hludka*lnt":
+        case "/set_hludka*test":
+          ctx.reply("Успешно ✅", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          const channel2 = msg.split("*")[1];
+          row.hludka.chatId =
+            channel2 === "hub"
+              ? -1002506008123
+              : channel2 === "lnt"
+              ? -1002551457192
+              : -1002606260123;
+          await supabase
+            .from("users")
+            .update({ hludka: row.hludka })
+            .eq("tgId", 1);
+          return;
+
         case "/hludka_top":
         case "/top":
         case "/hludka_top@StarzHubBot":
@@ -2014,6 +2061,32 @@ bot.on("message", async (ctx) => {
             .from("users")
             .update({
               hludka: row.hludka,
+            })
+            .eq("tgId", 1);
+          return;
+      
+        case "/lotery":
+        case "/lotery@StarzHubBot":
+        case "/лотерея":
+          await ctx.reply("✅ Лотерея успешно активирована!", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          const msg1 = await bot.telegram.sendMessage(
+            row.hludka.chatId,
+            `🎫 Начало лотереи!\n<blockquote>${row.lotery.text}</blockquote>`,
+            {
+              parse_mode: "HTML",
+              reply_markup: (await getLoteryButtons()).reply_markup,
+            }
+          );
+          row.lotery.messageId = msg1.message_id;
+          row.lotery.isActive = true;
+          await supabase
+            .from("users")
+            .update({
+              lotery: row.lotery,
             })
             .eq("tgId", 1);
           return;
@@ -2182,6 +2255,25 @@ bot.on("message", async (ctx) => {
           .from("users")
           .update({ hludka: row.hludka })
           .eq("tgId", 1);
+        ctx.reply("✅ Успешно", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
+      } else if (msg.toLowerCase().startsWith("/lotery_text ")) {
+        row.lotery.text = msg.slice(13);
+        await supabase.from("users").update({ ludka: row.lotery }).eq("tgId", 1);
+        ctx.reply("✅ Успешно", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
+      } else if (msg.toLowerCase().startsWith("билеты ")) {
+        const newState = Number(msg.split(" ")[1]);
+        row.lotery.tickets = newState;
+        await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
         ctx.reply("✅ Успешно", {
           reply_parameters: {
             message_id: ctx.message.message_id,
