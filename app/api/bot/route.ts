@@ -477,6 +477,37 @@ const hsendResults = async (finalText: string) => {
   }
 };
 
+const lsendResults = async (finalText: string) => {
+  try {
+    bot.telegram.sendMessage(7441988500, finalText, {
+      parse_mode: "HTML",
+    }); /* !! */
+    const { data: row, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("tgId", 1)
+      .single();
+    if (row.lotery.chatId == -1002506008123) {
+      bot.telegram.sendMessage(6233759034, finalText, {
+        parse_mode: "HTML",
+      });
+    }
+    await bot.telegram.sendMessage(row.lotery.chatId, finalText, {
+      parse_mode: "HTML",
+      reply_parameters: {
+        message_id: row.lotery.msgId,
+      },
+    });
+  } catch (error: any) {
+    bot.telegram.sendMessage(
+      7441988500,
+      `Error occurred while processing message:\n${
+        error.stack || error.message
+      }`
+    );
+  }
+};
+
 const getStartGameMessage = async (row: any, from: number) => {
   const set = row.game.doneUsers[`${from}`].set;
   const emoji =
@@ -685,6 +716,45 @@ bot.action(/start_game_(\d+)/, async (ctx) => {
   } catch (error) {
     console.error("Ошибка:", error);
     await bot.telegram.sendMessage(7441988500, "Произошла ошибка: " + error);
+  }
+});
+
+bot.action(/ticket=(.+)/, async (ctx) => {
+  const num = ctx.match[1];
+  const { data: row, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("tgId", 1)
+    .single();
+  const user = row.lotery.doneTickets.find((u: any) => u.from?.id === ctx.callbackQuery.from.id);
+  const ticket = row.lotery.doneTickets[num];
+  if (user) {
+    ctx.answerCbQuery("❌ Вы уже вытянули свой билет!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+  } else if (ticket.from !== null) {
+    ctx.answerCbQuery("❌ Билет уже вытянули!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+  } else {
+    if (!ticket.win) {
+      ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n❌ Но он не оказался выигрышным!`, {
+        show_alert: true,
+        cache_time: 0,
+      });
+      row.lotery.doneTickets[num].from = { "id": ctx.callbackQuery.from.id };
+      await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
+      return;
+    }
+    ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n🎉 И он оказался выигрышным!`, {
+      show_alert: true,
+      cache_time: 0,
+    });
+    lsendResults(`🎉 У нас есть победитель! И это <a href="tg://user?id=${ctx.callbackQuery.from.id}">${ctx.callbackQuery.from.first_name} (${ctx.callbackQuery.from.id})</a> 🏆`);
+    row.lotery.doneTickets[num].from = ctx.callbackQuery.from;
+    await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
   }
 });
 
@@ -2078,6 +2148,7 @@ bot.on("message", async (ctx) => {
             from: null,
             win: false,
           });
+          buttons[Math.floor(Math.random() * buttons.length)] = { from: null, win: true };
           row.lotery.doneTickets = buttons;
           await supabase
             .from("users")
