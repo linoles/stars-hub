@@ -1663,9 +1663,9 @@ bot.on("message", async (ctx) => {
     if (
       row.hludka.isActive &&
       row.hludka.endIn[0] === "time" &&
-      (new Date(row.hludka.endIn[1])).getTime() <= Date.now()
+      +new Date(row.hludka.endIn[1]) <= Date.now()
     ) {
-      ctx.reply(`test ${Date.now()} ${(new Date(row.hludka.endIn[1])).getTime()} ${(new Date(row.hludka.endIn[1])).getTime() <= Date.now()}`);
+      ctx.reply(`test ${Date.now()} ${+new Date(row.hludka.endIn[1])} ${+new Date(row.hludka.endIn[1]) <= Date.now()}`);
     }
 
     
