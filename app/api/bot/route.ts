@@ -2555,6 +2555,7 @@ bot.on("message", async (ctx) => {
         row.hludka.endIn[0] === "tickets" &&
         allTickets >= row.hludka.endIn[1]
       ) {
+        ctx.reply("test");
         const currentWinners = Object.entries(row.hludka.doneUsers)
           .sort((a: any, b: any) => b[1].points - a[1].points)
           .slice(0, row.hludka.winners);
