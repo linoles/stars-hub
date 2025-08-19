@@ -240,7 +240,7 @@ const getLoteryButtons = async () => {
         }
         acc[acc.length - 1].push(
           Markup.button.callback(
-            val.from !== null ? "🎫" : val.win === true ? "🎉" : "❌",
+            val.from === null ? "🎫" : val.win === true ? "🎉" : "❌",
             `lotery=${val.from}`
           )
         );
@@ -2078,7 +2078,6 @@ bot.on("message", async (ctx) => {
             from: null,
             win: false,
           });
-          buttons[Math.floor(Math.random() * buttons.length)].win = true;
           row.lotery.doneTickets = buttons;
           await supabase
             .from("users")
@@ -2093,6 +2092,10 @@ bot.on("message", async (ctx) => {
             }
           );
           row.lotery.messageId = msg1.message_id;
+          await supabase
+            .from("users")
+            .update({ lotery: row.lotery })
+            .eq("tgId", 1);
           return;
       }
       if (msg.startsWith("/game_text ")) {
