@@ -1660,6 +1660,7 @@ bot.on("message", async (ctx) => {
     }
 
     if (row.hludka.isActive && row.hludka.endIn[0] === "time") {
+
       const date = new Date(row.hludka.endIn[1]);
       const timestamp = Date.UTC(
         date.getUTCFullYear(),
@@ -1670,8 +1671,14 @@ bot.on("message", async (ctx) => {
         date.getUTCSeconds(),
         date.getUTCMilliseconds()
       );
-      if (timestamp <= Date.now()) {
-        ctx.reply(`test ${Date.now()} ${timestamp} ${timestamp <= Date.now()}`);
+      if (
+        timestamp <= Date.now()
+      ) {
+        ctx.reply(
+          `test ${Date.now()} ${timestamp} ${
+            timestamp <= Date.now()
+          }`
+        );
       }
     }
 
@@ -2159,18 +2166,8 @@ bot.on("message", async (ctx) => {
         return;
       } else if (msg.toLowerCase().startsWith("/time ")) {
         const time = msg.split(" ")[1];
-        const date = new Date(time);
-        const timestamp = Date.UTC(
-          date.getUTCFullYear(),
-          date.getUTCMonth(),
-          date.getUTCDate(),
-          date.getUTCHours(),
-          date.getUTCMinutes(),
-          date.getUTCSeconds(),
-          date.getUTCMilliseconds()
-        );
         row.hludka.endIn[0] = "time";
-        row.hludka.endIn[1] = timestamp;
+        row.hludka.endIn[1] = (new Date(time)).getTime();
         await supabase
           .from("users")
           .update({ hludka: row.hludka })
