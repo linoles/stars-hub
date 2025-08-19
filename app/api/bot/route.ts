@@ -1924,6 +1924,8 @@ bot.on("message", async (ctx) => {
 
         case "/hludka_top":
         case "/top":
+        case "/hludka_top@StarzHubBot":
+        case "/top@StarzHubBot":
         case "/топ":
           const htop = Object.entries(row.hludka.doneUsers)
         .filter((arr: any) => arr[1].tickets > 0)
