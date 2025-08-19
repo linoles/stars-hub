@@ -1663,7 +1663,7 @@ bot.on("message", async (ctx) => {
     if (
       row.hludka.isActive &&
       row.hludka.endIn[0] === "time" &&
-      Date.parse(row.hludka.endIn[1]) <= Date.now()
+      (new Date(row.hludka.endIn[1])).getTime() <= Date.now()
     ) {
       ctx.reply(`test ${Date.now()} ${Date.parse(row.hludka.endIn[1])} ${Date.parse(row.hludka.endIn[1]) <= Date.now()}`);
     }
