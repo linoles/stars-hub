@@ -2065,9 +2065,9 @@ bot.on("message", async (ctx) => {
             .eq("tgId", 1);
           return;
 
-        case "/set_hludka*hub":
-        case "/set_hludka*lnt":
-        case "/set_hludka*test":
+        case "/set_lotery*hub":
+        case "/set_lotery*lnt":
+        case "/set_lotery*test":
           ctx.reply("Успешно ✅", {
             reply_parameters: {
               message_id: ctx.message.message_id,
