@@ -1613,7 +1613,6 @@ bot.on("message", async (ctx) => {
       return;
     }
 
-
     const msg = (ctx as Context).message.text;
     const senderId = ctx.message.from.id;
     const senderName = `${ctx.message.from.first_name ?? ""}${
@@ -1624,7 +1623,6 @@ bot.on("message", async (ctx) => {
       .select("*")
       .eq("tgId", 1)
       .single();
-
 
     if (
       "dice" in ctx.message &&
@@ -1659,16 +1657,31 @@ bot.on("message", async (ctx) => {
         },
       });
       return;
-    } 
-    if (
-      row.hludka.isActive &&
-      row.hludka.endIn[0] === "time" &&
-      +new Date(row.hludka.endIn[1]) <= Date.now()
-    ) {
-      ctx.reply(`test ${Date.now()} ${+new Date(row.hludka.endIn[1])} ${+new Date(row.hludka.endIn[1]) <= Date.now()}`);
     }
 
-    
+    if (row.hludka.isActive && row.hludka.endIn[0] === "time") {
+
+      const date = new Date(row.hludka.endIn[1]);
+      const timestamp = Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        date.getUTCHours(),
+        date.getUTCMinutes(),
+        date.getUTCSeconds(),
+        date.getUTCMilliseconds()
+      );
+      if (
+        timestamp <= Date.now()
+      ) {
+        ctx.reply(
+          `test ${Date.now()} ${timestamp} ${
+            timestamp <= Date.now()
+          }`
+        );
+      }
+    }
+
     const admins = [7441988500, 6233759034, 7177688298];
     if (admins.includes(senderId) && msg) {
       switch (msg) {
@@ -2141,7 +2154,10 @@ bot.on("message", async (ctx) => {
         const tickets = Number(msg.split(" ")[1]);
         row.hludka.endIn[0] = "tickets";
         row.hludka.endIn[1] = tickets;
-        await supabase.from("users").update({ "hludka": row.hludka }).eq("tgId", 1);
+        await supabase
+          .from("users")
+          .update({ hludka: row.hludka })
+          .eq("tgId", 1);
         ctx.reply("✅ Успешно", {
           reply_parameters: {
             message_id: ctx.message.message_id,
@@ -2152,7 +2168,10 @@ bot.on("message", async (ctx) => {
         const time = msg.split(" ")[1];
         row.hludka.endIn[0] = "time";
         row.hludka.endIn[1] = new Date(Date.parse(time));
-        await supabase.from("users").update({ "hludka": row.hludka }).eq("tgId", 1);
+        await supabase
+          .from("users")
+          .update({ hludka: row.hludka })
+          .eq("tgId", 1);
         ctx.reply("✅ Успешно", {
           reply_parameters: {
             message_id: ctx.message.message_id,
@@ -2161,7 +2180,6 @@ bot.on("message", async (ctx) => {
         return;
       }
     }
-
 
     if (!row.ludka.doneUsers[`${senderId}`] && row.ludka.isActive) {
       row.ludka.doneUsers[`${senderId}`] = {
