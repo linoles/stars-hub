@@ -1928,28 +1928,33 @@ bot.on("message", async (ctx) => {
         case "/top@StarzHubBot":
         case "/топ":
           const htop = Object.entries(row.hludka.doneUsers)
-        .filter((arr: any) => arr[1].tickets > 0)
-        .sort((a: any, b: any) => b[1].tickets - a[1].tickets)
-        .map(
-          (arr: any, index: number) =>
-            `${
-              index === 0
-                ? "🥇"
-                : index === 1
-                ? "🥈"
-                : index === 2
-                ? "🥉"
-                : `${index}.`
-            } <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${
-              arr[1].tickets
-            } 🎫`
-        ).join("\n");
-        ctx.reply("<blockquote expandable><b>🏆 ТОП</b>\n" + htop + "</blockquote>", {
-          parse_mode: "HTML",
-          reply_parameters: {
-            message_id: ctx.message.message_id,
-          }
-        });
+            .filter((arr: any) => arr[1].tickets > 0)
+            .sort((a: any, b: any) => b[1].tickets - a[1].tickets)
+            .map(
+              (arr: any, index: number) =>
+                `${
+                  index === 0
+                    ? "🥇"
+                    : index === 1
+                    ? "🥈"
+                    : index === 2
+                    ? "🥉"
+                    : `${index}.`
+                } <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${
+                  arr[1].tickets
+                } 🎫`
+            )
+            .join("\n");
+          ctx.reply(
+            "<blockquote expandable><b>🏆 ТОП</b>\n" + htop + "</blockquote>",
+            {
+              parse_mode: "HTML",
+              reply_parameters: {
+                message_id: ctx.message.message_id,
+              },
+            }
+          );
+          return;
 
         case "/stop_hludka":
         case "-хлудка":
@@ -1959,10 +1964,22 @@ bot.on("message", async (ctx) => {
               message_id: ctx.message.message_id,
             },
           });
+          const sortedWinners = Object.entries(row.hludka.doneUsers).sort(
+            (a: any, b: any) => b[1].tickets - a[1].tickets
+          );
+          const hcurrentWinners = sortedWinners.slice(0, row.hludka.winners);
+          let hfinalText = `🏆 Лудка по билетам закончена! Победители:\n`;
+          for (const id of hcurrentWinners as any) {
+            hfinalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>\n`;
+          }
+          hsendResults(hfinalText);
           row.hludka.isActive = false;
+          row.hludka.doneUsers = {};
           await supabase
             .from("users")
-            .update({ hludka: row.hludka })
+            .update({
+              hludka: row.hludka,
+            })
             .eq("tgId", 1);
           return;
       }
