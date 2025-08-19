@@ -234,7 +234,7 @@ const getHludkaMessage = async () => {
   return `✅ Лудка по билетам успешно запущена! 🎫\n<blockquote expandable><b>🔗 Текущие настройки:</b>\n<i>🎊 Победители:</i> ${
     row.hludka.winners
   }\n<i>Начисления (за билеты):</i>\n\t${Object.entries(row.hludka.tickets)
-    .map((emoji: any, count: any) => `${emoji[0]}: ${count}`)
+    .map((emoji: any) => `${emoji[0]}: ${emoji[1]}`)
     .join("\n\t")}</blockquote>\n\nВыберите настройки лудки кнопками ниже! ⚙`;
 };
 
@@ -2555,19 +2555,22 @@ bot.on("message", async (ctx) => {
         row.hludka.endIn[0] === "tickets" &&
         allTickets >= row.hludka.endIn[1]
       ) {
-        ctx.reply("test");
+        ctx.reply("test1");
         const currentWinners = Object.entries(row.hludka.doneUsers)
           .sort((a: any, b: any) => b[1].points - a[1].points)
           .slice(0, row.hludka.winners);
+        ctx.reply("test2");
         let finalText = `🏆 Лудка по билетам закончена! Победители:\n`;
         await Promise.all(
           currentWinners.map(async (id: any) => {
             finalText += `<a href="tg://openmessage?user_id=${id}">${
               row.hludka.doneUsers[`${id}`].name
             }</a>\n`;
-          })
+          }).join("")
         );
-        await hsendResults(finalText);
+        ctx.reply("test3");
+        hsendResults(finalText);
+        ctx.reply("test4");
         row.hludka.isActive = false;
         row.hludka.doneUsers = {};
         await supabase
