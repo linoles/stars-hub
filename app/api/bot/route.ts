@@ -1020,7 +1020,7 @@ bot.action("hstopLudka", async (ctx) => {
     currentWinners.map(async (id: any) => {
       finalText += `<a href="tg://openmessage?user_id=${id}">${
         row.hludka.doneUsers[`${id}`].name
-      }</a>\n`;
+      }</a>: ${row.hludka.doneUsers[`${id}`].tickets} 🎫\n`;
     })
   );
   await hsendResults(finalText);
@@ -1677,7 +1677,7 @@ bot.on("message", async (ctx) => {
         const hcurrentWinners = sortedWinners.slice(0, row.hludka.winners);
         let hfinalText = `🏆 Лудка по билетам закончена! Победители:\n`;
         for (const id of hcurrentWinners as any) {
-          hfinalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>\n`;
+          hfinalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>: ${id[1].tickets} 🎫\n`;
         }
         hsendResults(hfinalText);
         row.hludka.isActive = false;
@@ -2005,7 +2005,7 @@ bot.on("message", async (ctx) => {
           const hcurrentWinners = sortedWinners.slice(0, row.hludka.winners);
           let hfinalText = `🏆 Лудка по билетам закончена! Победители:\n`;
           for (const id of hcurrentWinners as any) {
-            hfinalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>\n`;
+            hfinalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>: ${id[1].tickets} 🎫\n`;
           }
           hsendResults(hfinalText);
           row.hludka.isActive = false;
@@ -2697,7 +2697,7 @@ bot.on("message", async (ctx) => {
         const currentWinners = sortedWinners.slice(0, row.hludka.winners);
         let finalText = `🏆 Лудка по билетам закончена! Победители:\n`;
         for (const id of currentWinners as any) {
-          finalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>\n`;
+          finalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>: ${id[1].tickets} 🎫\n`;
         }
         hsendResults(finalText);
         row.hludka.isActive = false;
