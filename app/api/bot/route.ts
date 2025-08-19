@@ -2072,7 +2072,7 @@ bot.on("message", async (ctx) => {
         return;
       } else if (msg.toLowerCase().startsWith("/reply ")) {
         const chatId = Number(msg.split(" ")[1]);
-        const msgId = Number(msg.split(" ")[2]);
+        const msgId = Number(msg.split(" ")[2].split("_")[0]);
         const text = msg.split("_")[1];
         bot.telegram.sendMessage(chatId, text, {
           reply_parameters: {
