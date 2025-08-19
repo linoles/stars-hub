@@ -2272,7 +2272,7 @@ bot.on("message", async (ctx) => {
         row.lotery.text = msg.slice(13);
         await supabase
           .from("users")
-          .update({ ludka: row.lotery })
+          .update({ lotery: row.lotery })
           .eq("tgId", 1);
         ctx.reply("✅ Успешно", {
           reply_parameters: {
