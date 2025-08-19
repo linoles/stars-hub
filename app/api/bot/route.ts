@@ -1922,6 +1922,33 @@ bot.on("message", async (ctx) => {
             .eq("tgId", 1);
           return;
 
+        case "/hludka_top":
+        case "/top":
+        case "/топ":
+          const htop = Object.entries(row.hludka.doneUsers)
+        .filter((arr: any) => arr[1].tickets > 0)
+        .sort((a: any, b: any) => b[1].tickets - a[1].tickets)
+        .map(
+          (arr: any, index: number) =>
+            `${
+              index === 0
+                ? "🥇"
+                : index === 1
+                ? "🥈"
+                : index === 2
+                ? "🥉"
+                : `${index}.`
+            } <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${
+              arr[1].tickets
+            } 🎫`
+        ).join("\n");
+        ctx.reply("<blockquote expandable><b>🏆 ТОП</b>\n" + htop + "</blockquote>", {
+          parse_mode: "HTML",
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          }
+        });
+
         case "/stop_hludka":
         case "-хлудка":
         case "/stop_hludka@StarzHubBot":
@@ -2542,7 +2569,24 @@ bot.on("message", async (ctx) => {
         allTickets += arr[1].tickets;
       });
       await supabase.from("users").update({ hludka: row.hludka }).eq("tgId", 1);
-      const htop = Object.entries(row.hludka.doneUsers).filter((arr: any) => arr[1].tickets > 0).sort((a: any, b: any) => b[1].tickets - a[1].tickets).map((arr: any, index: number) => `${index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index}.`} <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${arr[1].tickets} 🎫`).join("\n");
+      const htop = Object.entries(row.hludka.doneUsers)
+        .filter((arr: any) => arr[1].tickets > 0)
+        .sort((a: any, b: any) => b[1].tickets - a[1].tickets)
+        .map(
+          (arr: any, index: number) =>
+            `${
+              index === 0
+                ? "🥇"
+                : index === 1
+                ? "🥈"
+                : index === 2
+                ? "🥉"
+                : `${index}.`
+            } <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${
+              arr[1].tickets
+            } 🎫`
+        )
+        .join("\n");
       const randomReacts = ["🏆", "🎉", "💪", "⚡", "✍", "😎", "👍"] as const;
       ctx.react(
         randomReacts[
@@ -2571,9 +2615,7 @@ bot.on("message", async (ctx) => {
         const currentWinners = sortedWinners.slice(0, row.hludka.winners);
         let finalText = `🏆 Лудка по билетам закончена! Победители:\n`;
         for (const id of currentWinners as any) {
-          finalText += `<a href="tg://openmessage?user_id=${id[0]}">${
-            id[1].name
-          }</a>\n`;
+          finalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>\n`;
         }
         hsendResults(finalText);
         row.hludka.isActive = false;
