@@ -728,16 +728,24 @@ bot.action(/ticket=(.+)/, async (ctx) => {
     .single();
   const user = row.lotery.doneTickets.find((u: any) => u.from?.id === ctx.callbackQuery.from.id);
   const ticket = row.lotery.doneTickets[num];
-  if (user) {
+  if (!row.lotery.isActive) {
+    ctx.answerCbQuery("❌ Лотерея не активна!", {
+      show_alert: true,
+      cache_time: 0,
+    });
+    return;
+  } else if (user) {
     ctx.answerCbQuery("❌ Вы уже вытянули свой билет!", {
       show_alert: true,
       cache_time: 0,
     });
+    return;
   } else if (ticket.from !== null) {
     ctx.answerCbQuery("❌ Билет уже вытянули!", {
       show_alert: true,
       cache_time: 0,
     });
+    return;
   } else {
     if (!ticket.win) {
       ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n❌ Но он не оказался выигрышным!`, {
@@ -755,9 +763,10 @@ bot.action(/ticket=(.+)/, async (ctx) => {
     });
     lsendResults(`🎉 У нас есть победитель! И это <a href="tg://user?id=${ctx.callbackQuery.from.id}">${ctx.callbackQuery.from.first_name} (${ctx.callbackQuery.from.id})</a> 🏆`);
     row.lotery.doneTickets[num].from = ctx.callbackQuery.from;
+    row.lotery.isActive = false;
     await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
     await ctx.editMessageReplyMarkup((await getLoteryButtons()).reply_markup);
-    return
+    return;
   }
 });
 
