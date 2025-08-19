@@ -1665,7 +1665,7 @@ bot.on("message", async (ctx) => {
       row.hludka.endIn[0] === "time" &&
       Date.parse(row.hludka.endIn[1]) <= Date.now()
     ) {
-      ctx.reply("test");
+      ctx.reply(`test ${Date.now()} ${Date.parse(row.hludka.endIn[1])} ${Date.parse(row.hludka.endIn[1]) <= Date.now()}`);
     }
 
     
