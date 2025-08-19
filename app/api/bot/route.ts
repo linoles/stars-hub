@@ -1015,7 +1015,7 @@ bot.action("hstopLudka", async (ctx) => {
   const currentWinners = Object.entries(row.hludka.doneUsers)
     .sort((a: any, b: any) => b[1].points - a[1].points)
     .slice(0, row.hludka.winners);
-  let finalText = `🏆 Лудка по билетам закончена! Победители:\n`;
+  let finalText = `🏆 Лудка по билетам закончена!\n<blockquote expandable>Победители:\n`;
   await Promise.all(
     currentWinners.map(async (id: any) => {
       finalText += `<a href="tg://openmessage?user_id=${id}">${
@@ -1023,7 +1023,7 @@ bot.action("hstopLudka", async (ctx) => {
       }</a>: ${row.hludka.doneUsers[`${id}`].tickets} 🎫\n`;
     })
   );
-  await hsendResults(finalText);
+  await hsendResults(finalText + "</blockquote>");
   row.hludka.isActive = false;
   row.hludka.doneUsers = {};
   await supabase
@@ -1675,11 +1675,11 @@ bot.on("message", async (ctx) => {
           (a: any, b: any) => b[1].tickets - a[1].tickets
         );
         const hcurrentWinners = sortedWinners.slice(0, row.hludka.winners);
-        let hfinalText = `🏆 Лудка по билетам закончена! Победители:\n`;
+        let hfinalText = `🏆 Лудка по билетам закончена!\n<blockquote expandable>Победители:\n`;
         for (const id of hcurrentWinners as any) {
           hfinalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>: ${id[1].tickets} 🎫\n`;
         }
-        hsendResults(hfinalText);
+        hsendResults(hfinalText + "</blockquote>");
         row.hludka.isActive = false;
         row.hludka.doneUsers = {};
         await supabase
@@ -2003,11 +2003,11 @@ bot.on("message", async (ctx) => {
             (a: any, b: any) => b[1].tickets - a[1].tickets
           );
           const hcurrentWinners = sortedWinners.slice(0, row.hludka.winners);
-          let hfinalText = `🏆 Лудка по билетам закончена! Победители:\n`;
+          let hfinalText = `🏆 Лудка по билетам закончена!\n<blockquote expandable>Победители:\n`;
           for (const id of hcurrentWinners as any) {
             hfinalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>: ${id[1].tickets} 🎫\n`;
           }
-          hsendResults(hfinalText);
+          hsendResults(hfinalText + "</blockquote>");
           row.hludka.isActive = false;
           row.hludka.doneUsers = {};
           await supabase
@@ -2695,11 +2695,11 @@ bot.on("message", async (ctx) => {
           (a: any, b: any) => b[1].tickets - a[1].tickets
         );
         const currentWinners = sortedWinners.slice(0, row.hludka.winners);
-        let finalText = `🏆 Лудка по билетам закончена! Победители:\n`;
+        let finalText = `🏆 Лудка по билетам закончена!\n<blockquote expandable>Победители:\n`;
         for (const id of currentWinners as any) {
           finalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>: ${id[1].tickets} 🎫\n`;
         }
-        hsendResults(finalText);
+        hsendResults(finalText + "</blockquote>");
         row.hludka.isActive = false;
         row.hludka.doneUsers = {};
         await supabase
