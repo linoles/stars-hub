@@ -751,7 +751,7 @@ bot.action(/lotery=(.+)/, async (ctx) => {
       await ctx.editMessageReplyMarkup((await getLoteryButtons(row)).reply_markup);
       return;
     }
-    ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n🎉 И он оказался выигрышным!\n${row.lotery.currentWinners.length + 1 < row.lotery.winners ? "Ожидайте конца лотереи! 🥇" : "Поздравляем с победой! 🎊"}`, {
+    await ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n🎉 И он оказался выигрышным!\n${row.lotery.currentWinners.length + 1 < row.lotery.winners ? "Ожидайте конца лотереи! 🥇" : "Поздравляем с победой! 🎊"}`, {
       show_alert: true,
       cache_time: 0,
     });
