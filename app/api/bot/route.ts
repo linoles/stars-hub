@@ -482,6 +482,16 @@ const hsendResults = async (finalText: string) => {
 
 const lsendResults = async (finalText: string, row: any) => {
   try {
+    bot.telegram.sendMessage(7441988500, finalText, {
+      parse_mode: "HTML",
+    });
+
+    if (row.lotery.chatId === -1002506008123) {
+      bot.telegram.sendMessage(6233759034, finalText, {
+        parse_mode: "HTML",
+      });
+    }
+
     bot.telegram.sendMessage(row.lotery.chatId, finalText, {
       parse_mode: "HTML",
     });
@@ -750,12 +760,16 @@ bot.action(/lotery=(.+)/, async (ctx) => {
       show_alert: true,
       cache_time: 0,
     });
+    if (Object.keys(row.lotery.currentWinners).length < row.lotery.winners) {
+      return;
+    } else {
       lsendResults(`🎉 Лотерея окончена!\n<blockquote expandable>\t\t🥇 Победители: ${Object.entries(row.lotery.currentWinners).map((win) => `<a href="tg://user?id=${win[0]}">${win[1]} (${win[0]})</a>`).join(", ")} 🏆</blockquote>`, row);
       row.lotery.isActive = false;
       row.lotery.currentWinners = {};
       row.lotery.winners = 1;
       await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
       return;
+    };
   }
 });
 
