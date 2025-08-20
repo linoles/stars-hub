@@ -225,25 +225,20 @@ const getHludkaButtons = async () => {
   ]);
 };
 
-const getLoteryButtons = async (row: any) => {
-  bot.telegram.sendMessage(7441988500, JSON.stringify(row.lotery.doneTickets));
+const getLoteryButtons = (row: any) => {
   return Markup.inlineKeyboard(
-    row.lotery.doneTickets.reduce(
-      async (acc: any, val: any, idx: any) => {
-        bot.telegram.sendMessage(7441988500, JSON.stringify(val) + `${idx} ${(await acc)}`);
-        if (idx % 8 === 0) {
-          (await acc).push([]);
-        }
-        (await acc)[(await acc).length - 1].push(
-          Markup.button.callback(
-            !val.from?.id || val.from?.id == null ? "🎫" : val.win ? "🎉" : "❌",
-            `lotery=${idx}`
-          )
-        );
-        return (await acc);
-      },
-      [[]]
-    )
+    row.lotery.doneTickets.reduce((acc: any, val: any, idx: any) => {
+      if (idx % 8 === 0) {
+        acc.push([]);
+      }
+      acc[acc.length - 1].push(
+        Markup.button.callback(
+          !val.from?.id || val.from?.id == null ? "🎫" : val.win ? "🎉" : "❌",
+          `lotery=${idx}`
+        )
+      );
+      return acc;
+    }, [[]])
   );
 };
 
