@@ -497,9 +497,6 @@ const lsendResults = async (finalText: string) => {
 
     await bot.telegram.sendMessage(row.lotery.chatId, finalText, {
       parse_mode: "HTML",
-      reply_parameters: {
-        message_id: row.lotery.msgId,
-      },
     });
   } catch (error: any) {
     await bot.telegram.sendMessage(
