@@ -2161,6 +2161,7 @@ bot.on("message", async (ctx) => {
           return;
 
         case "/clava":
+        case "/clava@StarzHubBot":
           ctx.reply("✅ Успешно добавлена!", {
             reply_parameters: {
               message_id: ctx.message.message_id,
