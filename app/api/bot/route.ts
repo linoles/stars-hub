@@ -238,7 +238,7 @@ const getLoteryButtons = async () => {
         if (idx % 8 === 0) {
           acc.push([]);
         }
-        bot.telegram.sendMessage(7441988500, `${JSON.stringify(val.from)}\n\n${!val.from?.id || val.from?.id == null}`);
+        await bot.telegram.sendMessage(7441988500, `${JSON.stringify(val.from)}\n\n${!val.from?.id || val.from?.id == null}`);
         acc[acc.length - 1].push(
           Markup.button.callback(
             !val.from?.id || val.from?.id == null ? "🎫" : val.win ? "🎉" : "❌",
