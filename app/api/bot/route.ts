@@ -482,16 +482,6 @@ const hsendResults = async (finalText: string) => {
 
 const lsendResults = async (finalText: string, row: any) => {
   try {
-    bot.telegram.sendMessage(7441988500, finalText, {
-      parse_mode: "HTML",
-    });
-
-    if (row.lotery.chatId === -1002506008123) {
-      bot.telegram.sendMessage(6233759034, finalText, {
-        parse_mode: "HTML",
-      });
-    }
-
     bot.telegram.sendMessage(row.lotery.chatId, finalText, {
       parse_mode: "HTML",
     });
