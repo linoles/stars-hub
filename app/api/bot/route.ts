@@ -2102,7 +2102,7 @@ bot.on("message", async (ctx) => {
                     ? "🥈"
                     : index === 2
                     ? "🥉"
-                    : `${index}.`
+                    : `${index + 1}.`
                 } <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${
                   arr[1].tickets
                 } 🎫`
@@ -2872,7 +2872,7 @@ bot.on("message", async (ctx) => {
                 ? "🥈"
                 : index === 2
                 ? "🥉"
-                : `${index}.`
+                : `${index + 1}.`
             } <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${
               arr[1].tickets
             } 🎫`
