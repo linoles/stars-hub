@@ -760,15 +760,20 @@ bot.action(/lotery=(.+)/, async (ctx) => {
       await ctx.editMessageReplyMarkup((await getLoteryButtons()).reply_markup);
       return;
     }
-    ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n🎉 И он оказался выигрышным!`, {
+    ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n🎉 И он оказался выигрышным!\n${row.lotery.currentWinners.length + 1 < row.lotery.winners ? "Ожидайте конца лотереи! 🥇" : "Поздравляем с победой! 🎊"}`, {
       show_alert: true,
       cache_time: 0,
     });
-    lsendResults(`🎉 У нас есть победитель! И это <a href="tg://user?id=${ctx.callbackQuery.from.id}">${ctx.callbackQuery.from.first_name} (${ctx.callbackQuery.from.id})</a> 🏆`);
+    row.lotery.currentWinners[`${ctx.callbackQuery.from.id}`] = ctx.callbackQuery.from.first_name
     row.lotery.doneTickets[num].from = { "id": ctx.callbackQuery.from.id };
-    row.lotery.isActive = false;
     await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
     await ctx.editMessageReplyMarkup((await getLoteryButtons()).reply_markup);
+    if (row.lotery.currentWinners.length + 1 < row.lotery.winners) return;
+    lsendResults(`🎉 Лотерея окончена!\n<blockquote expandable>\t\t🥇 Победители: ${Object.entries(row.lotery.currentWinners).map((win) => `<a href="tg://user?id=${win[0]}">${win[1]} (${win[0]})</a>`).join(", ")} 🏆`);
+    row.lotery.isActive = false;
+    row.lotery.currentWinners = {};
+    row.lotery.winners = 1;
+    await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
     return;
   }
 });
@@ -2027,7 +2032,6 @@ bot.on("message", async (ctx) => {
         case "upd":
           await updateLeaderboard(ctx, senderId);
           await ctx.reply(`${Object.keys(row.game.doneUsers).length}`);
-          await ctx.editMessageReplyMarkup((await getLoteryButtons()).reply_markup);
           break;
 
         case "/set_game*hub":
@@ -2370,6 +2374,19 @@ bot.on("message", async (ctx) => {
       } else if (msg.toLowerCase().startsWith("билеты ")) {
         const newState = Number(msg.split(" ")[1]);
         row.lotery.tickets = newState;
+        await supabase
+          .from("users")
+          .update({ lotery: row.lotery })
+          .eq("tgId", 1);
+        ctx.reply("✅ Успешно", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
+      } else if (msg.toLowerCase().startsWith("/lotery_winners ")) {
+        const newState = Number(msg.split(" ")[1]);
+        row.lotery.winners = newState;
         await supabase
           .from("users")
           .update({ lotery: row.lotery })
