@@ -2173,21 +2173,22 @@ bot.on("message", async (ctx) => {
           await supabase
             .from("users")
             .update({ lotery: row.lotery })
-            .eq("tgId", 1);
-          const msg1 = await bot.telegram.sendMessage(
-            row.hludka.chatId,
-            `🎫 Начало лотереи!\n<blockquote>${row.lotery.text}</blockquote>`,
-            {
-              parse_mode: "HTML",
-              reply_markup: (await getLoteryButtons()).reply_markup,
-            }
-          );
-          row.lotery.messageId = msg1.message_id;
-          await supabase
-            .from("users")
-            .update({ lotery: row.lotery })
-            .eq("tgId", 1);
-          return;
+            .eq("tgId", 1).then(async () => {
+              const msg1 = await bot.telegram.sendMessage(
+                row.hludka.chatId,
+                `🎫 Начало лотереи!\n<blockquote>${row.lotery.text}</blockquote>`,
+                {
+                  parse_mode: "HTML",
+                  reply_markup: (await getLoteryButtons()).reply_markup,
+                }
+              );
+              row.lotery.messageId = msg1.message_id;
+              await supabase
+                .from("users")
+                .update({ lotery: row.lotery })
+                .eq("tgId", 1);
+              return;
+            });
       }
       if (msg.startsWith("/game_text ")) {
         row.game.text = msg.slice(11);
