@@ -470,22 +470,31 @@ const hsendResults = async (finalText: string) => {
 
 const lsendResults = async (finalText: string) => {
   try {
-    bot.telegram.sendMessage(7441988500, finalText, {
-      parse_mode: "HTML",
-    }); /* !! */
+    // Сначала получаем актуальные данные
     const { data: row, error } = await supabase
       .from("users")
       .select("*")
       .eq("tgId", 1)
       .single();
+
+    if (error) {
+      throw error;
+    }
+
+    // Отправляем все сообщения с await
+    await bot.telegram.sendMessage(7441988500, finalText, {
+      parse_mode: "HTML",
+    });
+
     if (row.lotery.chatId == -1002506008123) {
-      bot.telegram.sendMessage(6233759034, finalText, {
+      await bot.telegram.sendMessage(6233759034, finalText, {
         parse_mode: "HTML",
         reply_parameters: {
           message_id: row.lotery.msgId,
         }
       });
     }
+
     await bot.telegram.sendMessage(row.lotery.chatId, finalText, {
       parse_mode: "HTML",
       reply_parameters: {
@@ -493,11 +502,9 @@ const lsendResults = async (finalText: string) => {
       },
     });
   } catch (error: any) {
-    bot.telegram.sendMessage(
+    await bot.telegram.sendMessage(
       7441988500,
-      `Error occurred while processing message:\n${
-        error.stack || error.message
-      }`
+      `Error occurred while sending results:\n${error.stack || error.message}`
     );
   }
 };
