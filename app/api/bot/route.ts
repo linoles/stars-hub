@@ -235,10 +235,12 @@ const getLoteryButtons = (row: any) => {
       arr[`${i}${j}`] = i * j;
     }
   }
-  bot.telegram.sendMessage(7441988500, JSON.stringify(arr));
+  const difs = Object.values(arr).map((number: any) => Math.abs(number - row.lotery.tickets));
+  const minDif = Math.min(...difs);
+  const num = Number(Object.keys(arr).find((key: any) => arr[key] === difs.indexOf(minDif))?.split("")[0]) || 8;
   return Markup.inlineKeyboard(
     row.lotery.doneTickets.reduce((acc: any, val: any, idx: any) => {
-      if (idx % 8 === 0) {
+      if (idx % num === 0) {
         acc.push([]);
       }
       acc[acc.length - 1].push(
