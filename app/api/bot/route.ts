@@ -226,17 +226,17 @@ const getHludkaButtons = async () => {
 };
 
 const getLoteryButtons = (row: any) => {
+  const arr: any = {};
+  for (let i = 1; i <= 8; i++) {
+    for (let j = 1; j <= 8; j++) {
+      arr[`${i}${j}`] = i * j;
+      while (Object.values(arr).find((value: any) => value === i * j) !== undefined) {
+        delete arr[Object.keys(arr).find((key: any) => arr[key] === i * j) || 1000];
+      }
+    }
+  }
   return Markup.inlineKeyboard(
     row.lotery.doneTickets.reduce((acc: any, val: any, idx: any) => {
-      const arr: any = {};
-      for (let i = 1; i <= 8; i++) {
-        for (let j = 1; j <= 8; j++) {
-          arr[`${i}${j}`] = i * j;
-          while (Object.values(arr).find((value: any) => value === i * j) !== undefined) {
-            delete arr[Object.keys(arr).find((key: any) => arr[key] === i * j) || 1000];
-          }
-        }
-      }
       bot.telegram.sendMessage(7441988500, JSON.stringify(arr));
       if (idx % 8 === 0) {
         acc.push([]);
