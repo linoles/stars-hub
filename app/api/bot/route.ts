@@ -751,15 +751,15 @@ bot.action(/lotery=(.+)/, async (ctx) => {
       await ctx.editMessageReplyMarkup((await getLoteryButtons(row)).reply_markup);
       return;
     }
-    await ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n🎉 И он оказался выигрышным!\n${Object.keys(row.lotery.currentWinners).length + 1 < row.lotery.winners ? "Ожидайте конца лотереи! 🥇" : "Поздравляем с победой! 🎊"}`, {
-      show_alert: true,
-      cache_time: 0,
-    });
     row.lotery.currentWinners[`${ctx.callbackQuery.from.id}`] = ctx.callbackQuery.from.first_name
     row.lotery.doneTickets[num].from = { "id": ctx.callbackQuery.from.id };
     await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
     await ctx.editMessageReplyMarkup(getLoteryButtons(row).reply_markup);
-    if (Object.keys(row.lotery.currentWinners).length + 1 < row.lotery.winners) {
+    await ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n🎉 И он оказался выигрышным!\n${Object.keys(row.lotery.currentWinners).length < row.lotery.winners ? "Ожидайте конца лотереи! 🥇" : "Поздравляем с победой! 🎊"}`, {
+      show_alert: true,
+      cache_time: 0,
+    });
+    if (Object.keys(row.lotery.currentWinners).length < row.lotery.winners) {
       return;
     } else {
       lsendResults(`🎉 Лотерея окончена!\n<blockquote expandable>\t\t🥇 Победители: ${Object.entries(row.lotery.currentWinners).map((win) => `<a href="tg://user?id=${win[0]}">${win[1]} (${win[0]})</a>`).join(", ")} 🏆`);
