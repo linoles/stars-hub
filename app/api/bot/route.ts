@@ -234,7 +234,7 @@ const getLoteryButtons = async () => {
   const buttons = row.lotery.doneTickets;
   return Markup.inlineKeyboard(
     buttons.reduce(
-      (acc: any, val: any, idx: any) => {
+      async (acc: any, val: any, idx: any) => {
         if (idx % 8 === 0) {
           acc.push([]);
         }
