@@ -232,12 +232,6 @@ const getLoteryButtons = async () => {
     .eq("tgId", 1)
     .single();
   const buttons = row.lotery.doneTickets;
-  buttons[7] = {
-      "win": true,
-      "from": {
-        "id": 7124589839
-      }
-    }
   return Markup.inlineKeyboard(
     buttons.reduce(
       async (acc: any, val: any, idx: any) => {
@@ -246,7 +240,7 @@ const getLoteryButtons = async () => {
         }
         acc[acc.length - 1].push(
           Markup.button.callback(
-            !val.from?.id || val.from?.id == null ? "🎫" : val.win ? "🎉" : "❌",
+            (!val.from?.id || val.from?.id == null && idx !== 7) ? "🎫" : val.win ? "🎉" : "❌",
             `lotery=${idx}`
           )
         );
