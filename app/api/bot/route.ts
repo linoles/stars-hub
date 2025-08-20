@@ -240,7 +240,7 @@ const getLoteryButtons = async () => {
         }
         acc[acc.length - 1].push(
           Markup.button.callback(
-            val.from === null ? "🎫" : val.win ? "🎉" : "❌",
+            !val.from?.id || val.from?.id == null ? "🎫" : val.win ? "🎉" : "❌",
             `lotery=${idx}`
           )
         );
