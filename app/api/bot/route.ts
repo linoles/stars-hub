@@ -1777,17 +1777,7 @@ bot.on("message", async (ctx) => {
     }
 
     if (row.hludka.isActive && row.hludka.endIn[0] === "time") {
-      const date = new Date(row.hludka.endIn[1]);
-      const timestamp = Date.UTC(
-        date.getUTCFullYear(),
-        date.getUTCMonth(),
-        date.getUTCDate(),
-        date.getUTCHours(),
-        date.getUTCMinutes(),
-        date.getUTCSeconds(),
-        date.getUTCMilliseconds()
-      );
-      if (timestamp <= Date.now()) {
+      if (row.hludka.endIn[1] <= Date.now()) {
         const sortedWinners = Object.entries(row.hludka.doneUsers).sort(
           (a: any, b: any) => b[1].tickets - a[1].tickets
         );
