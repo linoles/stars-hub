@@ -2127,14 +2127,25 @@ bot.on("message", async (ctx) => {
               message_id: ctx.message.message_id,
             },
           });
-          const sortedWinners = Object.entries(row.hludka.doneUsers).sort(
-            (a: any, b: any) => b[1].tickets - a[1].tickets
-          );
-          const hcurrentWinners = sortedWinners.slice(0, row.hludka.winners);
-          let hfinalText = `🏆 Лудка по билетам закончена!\n<blockquote expandable>Победители:\n`;
-          for (const id of hcurrentWinners as any) {
-            hfinalText += `<a href="tg://openmessage?user_id=${id[0]}">${id[1].name}</a>: ${id[1].tickets} 🎫\n`;
-          }
+          const htop1 = Object.entries(row.hludka.doneUsers)
+            .filter((arr: any) => arr[1].tickets > 0)
+            .sort((a: any, b: any) => b[1].tickets - a[1].tickets)
+            .map(
+              (arr: any, index: number) =>
+                `${
+                  index === 0
+                    ? "🥇"
+                    : index === 1
+                    ? "🥈"
+                    : index === 2
+                    ? "🥉"
+                    : `${index + 1}.`
+                } <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${
+                  arr[1].tickets
+                } 🎫`
+            )
+            .join("\n");
+          let hfinalText = `🏆 Лудка по билетам закончена!\n<blockquote expandable>Победители:\n${htop1}`;
           hsendResults(hfinalText + "</blockquote>");
           row.hludka.isActive = false;
           row.hludka.doneUsers = {};
