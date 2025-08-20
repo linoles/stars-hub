@@ -1,0 +1,68 @@
+/ludka
+/ludka@StarzHubBot
+/лудка
+.лудка
+
+/stop_ludka
+/stop_ludka@StarzHubBot
+-лудка
+
+
+  /hludka
+  /hludka@StarzHubBot
+  /хлудка
+  .хлудка
+  
+  /max_tickets 1+
+  /time GGGG-MM-DD HH:MM
+  
+  /set_hludka*ch
+  
+  /top
+  /hludka_top
+  /top@StarzHubBot
+  /hludka_top@StarzHubBot
+  /топ
+  
+  /stop_hludka
+  /stop_hludka@StarzHubBot
+  -хлудка
+
+
+    /game
+    /game@StarzHubBot
+    /игра
+    .игра
+
+    /stop_game
+    /stop_game@StarzHubBot
+    -игра
+
+    /set_game*ch
+
+    /upd
+
+    /game_text
+    /game_moves 1+
+    /game_space 1+
+    /game_winners 1+
+
+    /start profile_id
+
+    /points top1+
+
+
+      /lotery
+      /lotery@StarzHubBot
+      /лотерея
+      .лотерея
+      /set_lotery*ch
+
+      /lotery_tickets 1+
+
+      /lotery_text text
+      /lotery_winners 1+
+
+
+        /delete ch_id msg_id
+        /reply ch_id msg_id\_text

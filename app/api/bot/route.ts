@@ -1711,6 +1711,14 @@ bot.action(/^minus(?:winners|requiredTimes|requiredRow)$/, async (ctx) => {
   ctx.editMessageReplyMarkup((await getLudkaButtons()).reply_markup);
 });
 
+const getClava = () => {
+  return Markup.keyboard([
+    ['', 'Кнопка 2'],
+    ['Кнопка 3', 'Кнопка 4'],
+    ['Скрыть клавиатуру']
+  ]).resize()
+}
+
 bot.on("message", async (ctx) => {
   try {
     const chats = [
@@ -2014,7 +2022,7 @@ bot.on("message", async (ctx) => {
           await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
           return;
 
-        case "upd":
+        case "/upd":
           await updateLeaderboard(ctx, senderId);
           await ctx.reply(`${Object.keys(row.game.doneUsers).length}`);
           break;
@@ -2151,9 +2159,18 @@ bot.on("message", async (ctx) => {
             .eq("tgId", 1);
           return;
 
+        case "/clava":
+          ctx.reply("✅ Успешно добавлена!", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+            reply_markup: getClava().reply_markup
+          });
+
         case "/lotery":
         case "/lotery@StarzHubBot":
         case "/лотерея":
+        case ".лотерея":
           await ctx.reply("✅ Лотерея успешно активирована!", {
             reply_parameters: {
               message_id: ctx.message.message_id,
@@ -2203,7 +2220,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("ходы ")) {
+      } else if (msg.toLowerCase().startsWith("/game_moves ")) {
         const newState = Number(msg.split(" ")[1]);
         row.game.moves = newState;
         await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
@@ -2213,7 +2230,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("места ")) {
+      } else if (msg.toLowerCase().startsWith("/game_space ")) {
         const newState = Number(msg.split(" ")[1]);
         row.game.space = newState;
         await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
@@ -2223,7 +2240,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("победители ")) {
+      } else if (msg.toLowerCase().startsWith("/game_winners ")) {
         const newState = Number(msg.split(" ")[1]);
         row.game.winners = newState;
         await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
@@ -2336,7 +2353,7 @@ bot.on("message", async (ctx) => {
             message_id: msgId,
           },
         });
-      } else if (msg.toLowerCase().startsWith("/tickets ")) {
+      } else if (msg.toLowerCase().startsWith("/max_tickets ")) {
         const tickets = Number(msg.split(" ")[1]);
         row.hludka.endIn[0] = "tickets";
         row.hludka.endIn[1] = tickets;
@@ -2376,7 +2393,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("билеты ")) {
+      } else if (msg.toLowerCase().startsWith("/lotery_tickets ")) {
         const newState = Number(msg.split(" ")[1]);
         row.lotery.tickets = newState;
         await supabase
