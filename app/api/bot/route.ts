@@ -225,12 +225,7 @@ const getHludkaButtons = async () => {
   ]);
 };
 
-const getLoteryButtons = async () => {
-  const { data: row, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("tgId", 1)
-    .single();
+const getLoteryButtons = async (row: any) => {
   const buttons = row.lotery.doneTickets;
   return Markup.inlineKeyboard(
     buttons.reduce(
@@ -757,7 +752,7 @@ bot.action(/lotery=(.+)/, async (ctx) => {
       });
       row.lotery.doneTickets[num].from = { "id": ctx.callbackQuery.from.id };
       await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
-      await ctx.editMessageReplyMarkup((await getLoteryButtons()).reply_markup);
+      await ctx.editMessageReplyMarkup((await getLoteryButtons(row)).reply_markup);
       return;
     }
     ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n🎉 И он оказался выигрышным!\n${row.lotery.currentWinners.length + 1 < row.lotery.winners ? "Ожидайте конца лотереи! 🥇" : "Поздравляем с победой! 🎊"}`, {
@@ -767,7 +762,7 @@ bot.action(/lotery=(.+)/, async (ctx) => {
     row.lotery.currentWinners[`${ctx.callbackQuery.from.id}`] = ctx.callbackQuery.from.first_name
     row.lotery.doneTickets[num].from = { "id": ctx.callbackQuery.from.id };
     await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
-    await ctx.editMessageReplyMarkup((await getLoteryButtons()).reply_markup);
+    await ctx.editMessageReplyMarkup((await getLoteryButtons(row)).reply_markup);
     if (row.lotery.currentWinners.length + 1 < row.lotery.winners) return;
     lsendResults(`🎉 Лотерея окончена!\n<blockquote expandable>\t\t🥇 Победители: ${Object.entries(row.lotery.currentWinners).map((win) => `<a href="tg://user?id=${win[0]}">${win[1]} (${win[0]})</a>`).join(", ")} 🏆`);
     row.lotery.isActive = false;
@@ -2179,7 +2174,7 @@ bot.on("message", async (ctx) => {
                 `🎫 Начало лотереи!\n<blockquote>${row.lotery.text}</blockquote>`,
                 {
                   parse_mode: "HTML",
-                  reply_markup: (await getLoteryButtons()).reply_markup,
+                  reply_markup: (await getLoteryButtons(row)).reply_markup,
                 }
               );
               row.lotery.messageId = msg1.message_id;
