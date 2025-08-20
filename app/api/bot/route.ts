@@ -1808,6 +1808,7 @@ bot.on("message", async (ctx) => {
         case "/ludka":
         case "/лудка":
         case ".лудка":
+        case "🎰 Начать лудку":
         case "/ludka@StarzHubBot":
           ctx.reply(await getLudkaMessage(), {
             reply_markup: (await getLudkaButtons()).reply_markup,
@@ -1854,6 +1855,7 @@ bot.on("message", async (ctx) => {
 
         case "/stop_ludka":
         case "-лудка":
+        case "📛 Закончить лудку":
         case "/stop_ludka@StarzHubBot":
           ctx.reply("❌ Лудка успешно остановлена!", {
             reply_parameters: {
@@ -1891,6 +1893,7 @@ bot.on("message", async (ctx) => {
         case "/hludka":
         case "/хлудка":
         case ".хлудка":
+        case "🎫 Начать hлудку":
         case "/hludka@StarzHubBot":
           try {
             ctx.reply(await getHludkaMessage(), {
@@ -1942,6 +1945,7 @@ bot.on("message", async (ctx) => {
         case "/game":
         case "/игра":
         case ".игра":
+        case "🎮 Начать игру":
         case "/game@StarzHubBot":
           ctx.reply(await getGameMessage(row), {
             reply_markup: (await getGameButtons(row)).reply_markup,
@@ -1954,6 +1958,7 @@ bot.on("message", async (ctx) => {
 
         case "/stop_game":
         case "-игра":
+        case "📛 Закончить игру":
         case "/stop_game@StarzHubBot":
           ctx.reply("❌ Игра успешно остановлена!", {
             reply_parameters: {
@@ -2024,6 +2029,7 @@ bot.on("message", async (ctx) => {
           return;
 
         case "/upd":
+        case "🔄 Обновить данные":
           await updateLeaderboard(ctx, senderId);
           await ctx.reply(`${Object.keys(row.game.doneUsers).length}`);
           break;
@@ -2092,6 +2098,7 @@ bot.on("message", async (ctx) => {
         case "/top":
         case "/hludka_top@StarzHubBot":
         case "/top@StarzHubBot":
+        case "🏆 Топ":
         case "/топ":
           const htop = Object.entries(row.hludka.doneUsers)
             .filter((arr: any) => arr[1].tickets > 0)
@@ -2124,6 +2131,7 @@ bot.on("message", async (ctx) => {
 
         case "/stop_hludka":
         case "-хлудка":
+        case "📛 Закончить hлудку":
         case "/stop_hludka@StarzHubBot":
           ctx.reply("❌ Игра успешно остановлена!", {
             reply_parameters: {
@@ -2173,6 +2181,7 @@ bot.on("message", async (ctx) => {
         case "/lotery":
         case "/lotery@StarzHubBot":
         case "/лотерея":
+        case "🎫 Начать лотерею":
         case ".лотерея":
           await ctx.reply("✅ Лотерея успешно активирована!", {
             reply_parameters: {
