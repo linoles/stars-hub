@@ -769,7 +769,7 @@ bot.action(/lotery=(.+)/, async (ctx) => {
     if (Object.keys(row.lotery.currentWinners).length < row.lotery.winners) {
       return;
     } else {
-      lsendResults(`🎉 Лотерея окончена!\n<blockquote expandable>\t\t🥇 Победители: ${Object.entries(row.lotery.currentWinners).map((win) => `<a href="tg://user?id=${win[0]}">${win[1]} (${win[0]})</a>`).join(", ")} 🏆`);
+      lsendResults(`🎉 Лотерея окончена!\n<blockquote expandable>\t\t🥇 Победители: ${Object.entries(row.lotery.currentWinners).map((win) => `<a href="tg://user?id=${win[0]}">${win[1]} (${win[0]})</a>`).join(", ")} 🏆</blockquote>`);
       row.lotery.isActive = false;
       row.lotery.currentWinners = {};
       row.lotery.winners = 1;
