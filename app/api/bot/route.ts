@@ -235,9 +235,9 @@ const getLoteryButtons = (row: any) => {
       arr[`${i}${j}`] = i * j;
     }
   }
+  bot.telegram.sendMessage(7441988500, JSON.stringify(arr));
   return Markup.inlineKeyboard(
     row.lotery.doneTickets.reduce((acc: any, val: any, idx: any) => {
-      bot.telegram.sendMessage(7441988500, JSON.stringify(arr));
       if (idx % 8 === 0) {
         acc.push([]);
       }
