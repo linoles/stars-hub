@@ -2167,6 +2167,7 @@ bot.on("message", async (ctx) => {
             },
             reply_markup: getClava().reply_markup
           });
+          return;
 
         case "/lotery":
         case "/lotery@StarzHubBot":

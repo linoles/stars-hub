@@ -56,6 +56,7 @@
       /lotery@StarzHubBot
       /лотерея
       .лотерея
+      
       /set_lotery*ch
 
       /lotery_tickets 1+
