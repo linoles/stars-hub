@@ -2232,7 +2232,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/game_moves ") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/game_moves ") || msg.toLowerCase().startsWith("/game_moves@StarzHubBot ")) {
         const newState = Number(msg.split(" ")[1]);
         row.game.moves = newState;
         await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
@@ -2242,7 +2242,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/game_space ") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/game_space ") || msg.toLowerCase().startsWith("/game_space@StarzHubBot")) {
         const newState = Number(msg.split(" ")[1]);
         row.game.space = newState;
         await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
@@ -2252,7 +2252,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/game_winners ") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/game_winners ") || msg.toLowerCase().startsWith("/game_winners@StarzHubBot")) {
         const newState = Number(msg.split(" ")[1]);
         row.game.winners = newState;
         await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
@@ -2262,7 +2262,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/points top") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/points top") || msg.toLowerCase().startsWith("/points@StarzHubBot top")) {
         const place = Number(msg.split("top")[1].split(" ")[0]);
         const top = Object.entries(row.game.doneUsers).sort(
           (a: any, b: any) => b[1].points - a[1].points
@@ -2278,7 +2278,7 @@ bot.on("message", async (ctx) => {
         await updateLeaderboard(row, Number(top[0]));
         ctx.reply("✅ Успешно");
         return;
-      } else if (msg.toLowerCase().startsWith("/start profile_") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/start profile_") || msg.toLowerCase().startsWith("/start@StarzHubBot profile_")) {
         const id = Number(msg.split("_")[1]);
         const top = Object.entries(row?.game.doneUsers).sort(
           (a: any, b: any) => b[1].points - a[1].points
@@ -2346,7 +2346,7 @@ bot.on("message", async (ctx) => {
           }
         );
         return;
-      } else if (msg.toLowerCase().startsWith("/delete") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/delete") || msg.toLowerCase().startsWith("/delete@StarzHubBot ")) {
         const chatId = Number(msg.split(" ")[1]);
         const msgId = Number(msg.split(" ")[2]);
         bot.telegram.deleteMessage(chatId, msgId);
@@ -2356,7 +2356,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/reply ") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/reply ") || msg.toLowerCase().startsWith("/reply@StarzHubBot")) {
         const chatId = Number(msg.split(" ")[1]);
         const msgId = Number(msg.split(" ")[2].split("_")[0]);
         const text = msg.split("_")[1];
@@ -2365,7 +2365,7 @@ bot.on("message", async (ctx) => {
             message_id: msgId,
           },
         });
-      } else if (msg.toLowerCase().startsWith("/max_tickets ") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/max_tickets ") || msg.toLowerCase().startsWith("/max_tickets@StarzHubBot ")) {
         const tickets = Number(msg.split(" ")[1]);
         row.hludka.endIn[0] = "tickets";
         row.hludka.endIn[1] = tickets;
@@ -2379,7 +2379,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/time ") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/time ") || msg.toLowerCase().startsWith("/time@StarzHubBot ")) {
         const time = msg.split(" ")[1] + "+03:00";
         row.hludka.endIn[0] = "time";
         row.hludka.endIn[1] = new Date(time).getTime();
@@ -2393,7 +2393,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/lotery_text ") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/lotery_text ") || msg.toLowerCase().startsWith("/lotery_text@StarzHubBot ")) {
         row.lotery.text = msg.slice(13);
         await supabase
           .from("users")
@@ -2405,7 +2405,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/lotery_tickets ") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/lotery_tickets ") || msg.toLowerCase().startsWith("/lotery_tickets@StarzHubBot ")) {
         const newState = Number(msg.split(" ")[1]);
         row.lotery.tickets = newState;
         await supabase
@@ -2418,7 +2418,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/lotery_winners ") || msg.toLowerCase().startsWith("/n")) {
+      } else if (msg.toLowerCase().startsWith("/lotery_winners ") || msg.toLowerCase().startsWith("/lotery_winners@StarzHubBot ")) {
         const newState = Number(msg.split(" ")[1]);
         row.lotery.winners = newState;
         await supabase
