@@ -228,6 +228,16 @@ const getHludkaButtons = async () => {
 const getLoteryButtons = (row: any) => {
   return Markup.inlineKeyboard(
     row.lotery.doneTickets.reduce((acc: any, val: any, idx: any) => {
+      const arr: any = {};
+      for (let i = 1; i <= 8; i++) {
+        for (let j = 1; j <= 8; j++) {
+          arr[`${i}${j}`] = i * j;
+          while (Object.keys(arr).find((key: any) => key === i * j) !== undefined) {
+            delete arr[Object.keys(arr).find((key: any) => key === i * j) || 1000];
+          }
+        }
+      }
+      const num = Math.min()
       if (idx % 8 === 0) {
         acc.push([]);
       }
@@ -470,17 +480,17 @@ const hsendResults = async (finalText: string) => {
 
 const lsendResults = async (finalText: string, row: any) => {
   try {
-    await bot.telegram.sendMessage(7441988500, finalText, {
+    bot.telegram.sendMessage(7441988500, finalText, {
       parse_mode: "HTML",
     });
 
-    if (row.lotery.chatId == -1002506008123) {
-      await bot.telegram.sendMessage(6233759034, finalText, {
+    if (row.lotery.chatId === -1002506008123) {
+      bot.telegram.sendMessage(6233759034, finalText, {
         parse_mode: "HTML",
       });
     }
 
-    await bot.telegram.sendMessage(row.lotery.chatId, finalText, {
+    bot.telegram.sendMessage(row.lotery.chatId, finalText, {
       parse_mode: "HTML",
     });
   } catch (error: any) {
