@@ -2181,7 +2181,7 @@ bot.on("message", async (ctx) => {
                   reply_markup: (await getLoteryButtons(row)).reply_markup,
                 }
               );
-              row.lotery.messageId = msg1.message_id;
+              row.lotery.msgId = msg1.message_id;
               await supabase
                 .from("users")
                 .update({ lotery: row.lotery })
