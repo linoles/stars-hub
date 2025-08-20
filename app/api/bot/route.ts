@@ -226,9 +226,9 @@ const getHludkaButtons = async () => {
 };
 
 const getLoteryButtons = async (row: any) => {
-  const buttons = row.lotery.doneTickets;
+  bot.telegram.sendMessage(7441988500, JSON.stringify(row.lotery.doneTickets));
   return Markup.inlineKeyboard(
-    buttons.reduce(
+    row.lotery.doneTickets.reduce(
       async (acc: any, val: any, idx: any) => {
         if (idx % 8 === 0) {
           acc.push([]);
