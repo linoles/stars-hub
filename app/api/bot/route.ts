@@ -1776,7 +1776,7 @@ bot.on("message", async (ctx) => {
       return;
     }
 
-    if (row.hludka.isActive && row.hludka.endIn[0] === "time") {
+    /*if (row.hludka.isActive && row.hludka.endIn[0] === "time") {
       if (row.hludka.endIn[1] <= Date.now()) {
         const sortedWinners = Object.entries(row.hludka.doneUsers).sort(
           (a: any, b: any) => b[1].tickets - a[1].tickets
@@ -1797,7 +1797,7 @@ bot.on("message", async (ctx) => {
           .eq("tgId", 1);
         return;
       }
-    }
+    }*/
 
     const admins = [7441988500, 6233759034, 7177688298];
     if (admins.includes(senderId) && msg) {
