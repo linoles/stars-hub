@@ -760,16 +760,12 @@ bot.action(/lotery=(.+)/, async (ctx) => {
       show_alert: true,
       cache_time: 0,
     });
-    if (Object.keys(row.lotery.currentWinners).length < row.lotery.winners) {
-      return;
-    } else {
       lsendResults(`🎉 Лотерея окончена!\n<blockquote expandable>\t\t🥇 Победители: ${Object.entries(row.lotery.currentWinners).map((win) => `<a href="tg://user?id=${win[0]}">${win[1]} (${win[0]})</a>`).join(", ")} 🏆</blockquote>`, row);
       row.lotery.isActive = false;
       row.lotery.currentWinners = {};
       row.lotery.winners = 1;
       await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
       return;
-    };
   }
 });
 
@@ -2223,7 +2219,7 @@ bot.on("message", async (ctx) => {
               return;
             });
       }
-      if (msg.startsWith("/game_text ")) {
+      if (msg.startsWith("/game_text ") || msg.toLowerCase().startsWith("/game_text@StarzHubBot ")) {
         row.game.text = msg.slice(11);
         await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
         ctx.reply("Успешно ✅", {
@@ -2232,7 +2228,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/game_moves ")) {
+      } else if (msg.toLowerCase().startsWith("/game_moves ") || msg.toLowerCase().startsWith("/")) {
         const newState = Number(msg.split(" ")[1]);
         row.game.moves = newState;
         await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
@@ -2242,7 +2238,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/game_space ")) {
+      } else if (msg.toLowerCase().startsWith("/game_space ") || msg.toLowerCase().startsWith("/")) {
         const newState = Number(msg.split(" ")[1]);
         row.game.space = newState;
         await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
@@ -2252,7 +2248,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/game_winners ")) {
+      } else if (msg.toLowerCase().startsWith("/game_winners ") || msg.toLowerCase().startsWith("/")) {
         const newState = Number(msg.split(" ")[1]);
         row.game.winners = newState;
         await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
@@ -2262,7 +2258,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/points top")) {
+      } else if (msg.toLowerCase().startsWith("/points top") || msg.toLowerCase().startsWith("/")) {
         const place = Number(msg.split("top")[1].split(" ")[0]);
         const top = Object.entries(row.game.doneUsers).sort(
           (a: any, b: any) => b[1].points - a[1].points
@@ -2278,7 +2274,7 @@ bot.on("message", async (ctx) => {
         await updateLeaderboard(row, Number(top[0]));
         ctx.reply("✅ Успешно");
         return;
-      } else if (msg.toLowerCase().startsWith("/start profile_")) {
+      } else if (msg.toLowerCase().startsWith("/start profile_") || msg.toLowerCase().startsWith("/")) {
         const id = Number(msg.split("_")[1]);
         const top = Object.entries(row?.game.doneUsers).sort(
           (a: any, b: any) => b[1].points - a[1].points
@@ -2346,7 +2342,7 @@ bot.on("message", async (ctx) => {
           }
         );
         return;
-      } else if (msg.toLowerCase().startsWith("/delete")) {
+      } else if (msg.toLowerCase().startsWith("/delete") || msg.toLowerCase().startsWith("/")) {
         const chatId = Number(msg.split(" ")[1]);
         const msgId = Number(msg.split(" ")[2]);
         bot.telegram.deleteMessage(chatId, msgId);
@@ -2356,7 +2352,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/reply ")) {
+      } else if (msg.toLowerCase().startsWith("/reply ") || msg.toLowerCase().startsWith("/")) {
         const chatId = Number(msg.split(" ")[1]);
         const msgId = Number(msg.split(" ")[2].split("_")[0]);
         const text = msg.split("_")[1];
@@ -2365,7 +2361,7 @@ bot.on("message", async (ctx) => {
             message_id: msgId,
           },
         });
-      } else if (msg.toLowerCase().startsWith("/max_tickets ")) {
+      } else if (msg.toLowerCase().startsWith("/max_tickets ") || msg.toLowerCase().startsWith("/")) {
         const tickets = Number(msg.split(" ")[1]);
         row.hludka.endIn[0] = "tickets";
         row.hludka.endIn[1] = tickets;
@@ -2379,7 +2375,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/time ")) {
+      } else if (msg.toLowerCase().startsWith("/time ") || msg.toLowerCase().startsWith("/")) {
         const time = msg.split(" ")[1] + "+03:00";
         row.hludka.endIn[0] = "time";
         row.hludka.endIn[1] = new Date(time).getTime();
@@ -2393,7 +2389,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/lotery_text ")) {
+      } else if (msg.toLowerCase().startsWith("/lotery_text ") || msg.toLowerCase().startsWith("/")) {
         row.lotery.text = msg.slice(13);
         await supabase
           .from("users")
@@ -2405,7 +2401,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/lotery_tickets ")) {
+      } else if (msg.toLowerCase().startsWith("/lotery_tickets ") || msg.toLowerCase().startsWith("/")) {
         const newState = Number(msg.split(" ")[1]);
         row.lotery.tickets = newState;
         await supabase
@@ -2418,7 +2414,7 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
-      } else if (msg.toLowerCase().startsWith("/lotery_winners ")) {
+      } else if (msg.toLowerCase().startsWith("/lotery_winners ") || msg.toLowerCase().startsWith("/")) {
         const newState = Number(msg.split(" ")[1]);
         row.lotery.winners = newState;
         await supabase
