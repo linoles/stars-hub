@@ -477,9 +477,6 @@ const lsendResults = async (finalText: string, row: any) => {
     if (row.lotery.chatId == -1002506008123) {
       await bot.telegram.sendMessage(6233759034, finalText, {
         parse_mode: "HTML",
-        reply_parameters: {
-          message_id: row.lotery.msgId,
-        }
       });
     }
 
