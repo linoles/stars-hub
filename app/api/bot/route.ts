@@ -2159,7 +2159,15 @@ bot.on("message", async (ctx) => {
             from: null,
             win: false,
           });
-          buttons[Math.floor(Math.random() * buttons.length)] = { from: null, win: true };
+          const indices: number[] = [];
+          for (let i = 0; i < row.lotery.winners; i++) {
+            let idx: number;
+            do {
+              idx = Math.floor(Math.random() * buttons.length);
+            } while (indices.includes(idx) || buttons[idx].win);
+            indices.push(idx);
+            buttons[idx] = { from: null, win: true };
+          }
           row.lotery.doneTickets = buttons;
           await supabase
             .from("users")
