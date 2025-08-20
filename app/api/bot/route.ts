@@ -228,11 +228,11 @@ const getHludkaButtons = async () => {
 const getLoteryButtons = (row: any) => {
   const arr: any = {};
   for (let i = 1; i <= 8; i++) {
-    for (let j = 1; j <= 8; j++) {
-      arr[`${i}${j}`] = i * j;
+    for (let j = 1; j <= 10; j++) {
       while (Object.values(arr).find((value: any) => value === i * j) !== undefined) {
         delete arr[Object.keys(arr).find((key: any) => arr[key] === i * j) || 1000];
       }
+      arr[`${i}${j}`] = i * j;
     }
   }
   return Markup.inlineKeyboard(
