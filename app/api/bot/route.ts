@@ -237,7 +237,7 @@ const getLoteryButtons = (row: any) => {
   }
   const difs = Object.values(arr).map((number: any) => Math.abs(number - row.lotery.tickets));
   const minDif = Math.min(...difs);
-  const num = Number(Object.keys(arr).find((key: any) => arr[key] === difs.indexOf(minDif))?.split("")[0]) || 8;
+  const num = Number(Object.keys(arr).find((key: any) => arr[key] === difs.indexOf(minDif))?.split("")[1]) || 8;
   return Markup.inlineKeyboard(
     row.lotery.doneTickets.reduce((acc: any, val: any, idx: any) => {
       if (idx % num === 0) {
