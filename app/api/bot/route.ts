@@ -240,7 +240,7 @@ const getLoteryButtons = async () => {
         }
         acc[acc.length - 1].push(
           Markup.button.callback(
-            val.from === null ? "🎫" : val.win === true ? "🎉" : "❌",
+            val.from === null ? "🎫" : val.win ? "🎉" : "❌",
             `lotery=${idx}`
           )
         );
@@ -765,7 +765,7 @@ bot.action(/lotery=(.+)/, async (ctx) => {
       cache_time: 0,
     });
     lsendResults(`🎉 У нас есть победитель! И это <a href="tg://user?id=${ctx.callbackQuery.from.id}">${ctx.callbackQuery.from.first_name} (${ctx.callbackQuery.from.id})</a> 🏆`);
-    row.lotery.doneTickets[num].from = ctx.callbackQuery.from;
+    row.lotery.doneTickets[num].from = { "id": ctx.callbackQuery.from.id };
     row.lotery.isActive = false;
     await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
     await ctx.editMessageReplyMarkup((await getLoteryButtons()).reply_markup);
