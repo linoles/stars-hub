@@ -2431,6 +2431,22 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
+      } else if (msg.toLowerCase().startsWith("/lotery_prizes ") || msg.toLowerCase().startsWith("/lotery_prizes@StarzHubBot ")) {
+        const newState: any = {};
+        for (let i = 0; i < row.lotery.winners; i++) {
+          newState[msg.split(" ")[i + 1]] = 0;
+        }
+        row.lotery.prizes = newState;
+        await supabase
+          .from("users")
+          .update({ lotery: row.lotery })
+          .eq("tgId", 1);
+        ctx.reply("✅ Успешно", {
+          reply_parameters: {
+            message_id: ctx.message?.message_id,
+          },
+        });
+        return;
       }
     }
 
