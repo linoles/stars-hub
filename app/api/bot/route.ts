@@ -754,7 +754,7 @@ bot.action(/lotery=(.+)/, async (ctx) => {
     }
     row.lotery.currentWinners[`${ctx.callbackQuery.from.id}`] = ctx.callbackQuery.from.first_name
     row.lotery.doneTickets[num].from = { "id": ctx.callbackQuery.from.id };
-    row.lotery.prizes[Object.keys(row.lotery.prizes)[row.lotery.currentWinners.length - 1]] = ctx.callbackQuery.from.id;
+    row.lotery.prizes[Object.keys(row.lotery.prizes)[Object.keys(row.lotery.currentWinners).length - 1]] = ctx.callbackQuery.from.id;
     await supabase.from("users").update({ lotery: row.lotery }).eq("tgId", 1);
     await ctx.editMessageReplyMarkup(getLoteryButtons(row).reply_markup);
     await ctx.answerCbQuery(`✅ Вы вытянули билет №${num + 1}! \n🎉 И он оказался выигрышным!\n${Object.keys(row.lotery.currentWinners).length < row.lotery.winners ? "Ожидайте конца лотереи! 🥇" : "Поздравляем с победой! 🎊"}`, {
