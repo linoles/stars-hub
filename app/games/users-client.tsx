@@ -5,6 +5,7 @@ import { inter } from "../fonts";
 import BottomMenu from "../lib/bottomMenu";
 import { User } from "../users-client";
 import "@/app/games/games.css";
+import GameCard from "../lib/gameCard";
 
 declare global {
   interface Window {
@@ -16,7 +17,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 0, friends: 0 });
+  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 1, friends: 0 });
 
   useEffect(() => {
     try {
@@ -94,10 +95,10 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
               <div className="absolute -inset-2 border-2 border-casino-gold/30 rounded-full"></div>
             </div>
             <h1 className={"text-5xl text-center font-bold bg-gradient-to-r from-casino-gold via-orange-400 to-casino-gold bg-clip-text text-transparent tracking-wide " + inter.className}>STARSHUB</h1>
-            <div className="flex items-center justify-center space-x-2 mt-3">
-              <div className="text-casino-gold animate-pulse" style={{ fontSize: "12px" }}>✦</div>
-              <p className={"text-casino-lightGray text-lg font-light " + inter.className}>Azart Gaming Experience</p>
-              <div className="text-casino-gold animate-pulse delay-500" style={{ fontSize: "12px" }}>✦</div>
+            <div className="flex items-center justify-center mt-3">
+              <div className="text-casino-gold animate-pulse mr-2" style={{ fontSize: "12px" }}>✦</div>
+              <p className={"text-casino-lightGray text-lg font-light " + inter.className}>Азартные игры на звёзды</p>
+              <div className="text-casino-gold animate-pulse ml-2 delay-500" style={{ fontSize: "12px" }}>✦</div>
             </div>
           </div>
         </div>
@@ -115,57 +116,12 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
             <div className={"text-casino-lightGray text-sm " + inter.className}>Друзья</div>
           </div>
         </div>
-        <div className="px-6 space-y-4 pb-20">
+        <div className="px-6 space-y-4 pb-20 w-screen flex flex-col justify-center items-center max-w-[500px] mx-auto">
           <h2 className="text-xl font-semibold text-foreground">Игры</h2>
-          <div className="space-y-3">
-            <div className="rounded-2xl border text-card-foreground shadow-sm game-card-glow bg-card/70 backdrop-blur-sm border-border/50 hover:bg-card/90 transition-all duration-300">
-              <div className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center star-shadow">
-                      <img src="/slots.png" className="w-10 h-10" />
-                    </div>
-                    <div>
-                      <h3 className={"font-semibold text-foreground " + inter.className}>Слоты</h3>
-                      <p className={"text-sm text-muted-foreground " + inter.className}>Классика казино</p>
-                    </div>
-                  </div>
-                  <button className={"inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary hover:bg-primary/90 h-9 rounded-md px-3 gold-gradient text-black font-semibold hover:scale-105 transition-transform " + inter.className}>PLAY</button>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-2xl border text-card-foreground shadow-sm game-card-glow bg-card/70 backdrop-blur-sm border-border/50 hover:bg-card/90 transition-all duration-300">
-              <div className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center star-shadow">
-                      <img src="/rsp.png" className="w-10 h-10" />
-                    </div>
-                    <div>
-                      <h3 className={"font-semibold text-foreground " + inter.className}>КНБ</h3>
-                      <p className={"text-sm text-muted-foreground " + inter.className}>🪨-✂️-📄</p>
-                    </div>
-                  </div>
-                  <button className={"inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary hover:bg-primary/90 h-9 rounded-md px-3 gold-gradient text-black font-semibold hover:scale-105 transition-transform " + inter.className}>PLAY</button>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-2xl border text-card-foreground shadow-sm game-card-glow bg-card/70 backdrop-blur-sm border-border/50 hover:bg-card/90 transition-all duration-300">
-              <div className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-400 to-orange-500 flex items-center justify-center star-shadow">
-                      <img src="/roulette.png" className="w-10 h-10" />
-                    </div>
-                    <div>
-                      <h3 className={"font-semibold text-foreground " + inter.className}>Рулетка</h3>
-                      <p className={"text-sm text-muted-foreground " + inter.className}>Колесо удачи</p>
-                    </div>
-                  </div>
-                  <button className={"inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary hover:bg-primary/90 h-9 rounded-md px-3 gold-gradient text-black font-semibold hover:scale-105 transition-transform " + inter.className}>PLAY</button>
-                </div>
-              </div>
-            </div>
+          <div className="flex flex-wrap justify-center gap-4">
+            {["Слоты", "Рулетка", "КНБ"].map((game, index) => (
+              <GameCard key={index} game={game} />
+            ))}
           </div>
         </div>
         <BottomMenu activeItem={1} />

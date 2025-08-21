@@ -24,7 +24,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 0, friends: 0 });
+  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 1, friends: 0 });
 
   useEffect(() => {
     try {
@@ -85,68 +85,62 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   }, [tgData]);
 
   return (
-    <div id="root" className="overflow-hidden">
+    <div id="root">
       <div role="region" aria-label="Notifications (F8)" tabIndex={-1} style={{ pointerEvents: "none" }}>
         <ol tabIndex={-1} className="fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]"></ol>
       </div>
       <section aria-label="Notifications alt+T" tabIndex={-1} aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section>
-      <div className={`min-h-screen bg-casino-black relative overflow-hidden`}>
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-casino-black via-casino-darkGray/20 to-casino-black"></div>
-          <div className="absolute top-20 left-10 text-casino-gold/30 animate-pulse" style={{ fontSize: "12px" }}>✦</div>
-          <div className="absolute top-40 right-16 text-casino-gold/20 animate-pulse delay-1000" style={{ fontSize: "8px" }}>✦</div>
-          <div className="absolute top-60 left-1/4 text-casino-gold/40 animate-pulse delay-500" style={{ fontSize: "10px" }}>✦</div>
-          <div className="absolute top-80 right-1/3 text-casino-gold/25 animate-pulse delay-700" style={{ fontSize: "14px" }}>✦</div>
-          <div className="absolute bottom-40 left-12 text-casino-gold/35 animate-pulse delay-300" style={{ fontSize: "16px" }}>✦</div>
-          <div className="absolute bottom-60 right-8 text-casino-gold/20 animate-pulse delay-1200" style={{ fontSize: "12px" }}>✦</div>
-        </div>
-        <div className="px-4 pb-20 mt-10 relative z-10 h-max">
-          <div className="max-w-md mx-auto">
-            <div className="space-y-8 py-8">
-              <div className="text-center space-y-6 relative">
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute top-4 left-8 text-casino-gold animate-pulse" style={{ fontSize: "20px" }}>✦</div>
-                  <div className="absolute top-12 right-12 text-casino-gold/60 animate-pulse delay-500" style={{ fontSize: "16px" }}>✦</div>
-                  <div className="absolute top-20 left-16 text-casino-gold/40 animate-pulse delay-1000" style={{ fontSize: "12px" }}>✦</div>
-                  <div className="absolute top-6 right-6 text-casino-gold/80 animate-pulse delay-300" style={{ fontSize: "14px" }}>✦</div>
-                  <div className="absolute top-16 left-1/3 text-casino-gold/50 animate-pulse delay-700" style={{ fontSize: "18px" }}>✦</div>
+      <div className="min-h-screen bg-background star-pattern relative overflow-auto"> {/* Добавлен класс star-pattern */}
+        <div className="px-4 pb-20 relative z-10 h-screen flex flex-col items-center justify-center">
+          <div className="relative z-10 text-center space-y-6">
+            <div className="relative z-10">
+              <div className="w-24 h-24 mx-auto mb-6 relative">
+                <div className="w-full h-full bg-gradient-to-br from-casino-gold to-orange-500 rounded-full flex items-center justify-center relative overflow-hidden">
+                  <video autoPlay loop muted playsInline onClick={e => e.stopPropagation()} className="w-60 h-60">
+                    <source src="/frog.gif.mp4" type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-casino-gold/20 to-transparent animate-pulse"></div>
                 </div>
-                <div className="relative z-10">
-                  <div className="w-24 h-24 mx-auto mb-6 relative">
-                    <div className="w-full h-full bg-gradient-to-br from-casino-gold to-orange-500 rounded-full flex items-center justify-center relative overflow-hidden">
-                      <video autoPlay loop muted playsInline onClick={e => e.stopPropagation()} className="w-60 h-60">
-                        <source src="/frog.gif.mp4" type="video/mp4" />
-                      </video>
-                      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-casino-gold/20 to-transparent animate-pulse"></div>
-                    </div>
-                    <div className="absolute -inset-2 border-2 border-casino-gold/30 rounded-full"></div>
-                  </div>
-                  <h1 className={"text-5xl font-bold bg-gradient-to-r from-casino-gold via-orange-400 to-casino-gold bg-clip-text text-transparent tracking-wide " + inter.className}>STARSHUB</h1>
-                  <div className="flex items-center justify-center space-x-2 mt-3">
-                    <div className="text-casino-gold animate-pulse" style={{ fontSize: "12px" }}>✦</div>
-                    <p className={"text-casino-lightGray text-lg font-light " + inter.className}>Azart Gaming Experience</p>
-                    <div className="text-casino-gold animate-pulse delay-500" style={{ fontSize: "12px" }}>✦</div>
-                  </div>
-                </div>
+                <div className="absolute -inset-2 border-2 border-casino-gold/30 rounded-full"></div>
               </div>
-              <div className="flex justify-center py-6">
-                <div className="text-center pr-8 border-r border-casino-gold/20">
-                  <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.lvl}</div>
-                  <div className={"text-casino-lightGray text-sm " + inter.className}>Уровень</div>
-                </div>
-                <div className="text-center mx-8">
-                  <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.stars}</div>
-                  <div className={"text-casino-lightGray text-sm " + inter.className}>Звёзды</div>
-                </div>
-                <div className="text-center pl-8 border-l border-casino-gold/20">
-                  <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.friends}</div>
-                  <div className={"text-casino-lightGray text-sm " + inter.className}>Друзья</div>
-                </div>
+              <h1 className={"text-5xl font-bold bg-gradient-to-r from-casino-gold via-orange-400 to-casino-gold bg-clip-text text-transparent tracking-wide " + inter.className}>STARSHUB</h1>
+              <div className="flex items-center justify-center mt-3">
+                <div className="text-casino-gold animate-pulse mr-2" style={{ fontSize: "12px" }}>✦</div>
+                <p className={"text-casino-lightGray text-lg font-light " + inter.className}>Азартные игры на звёзды</p>
+                <div className="text-casino-gold animate-pulse delay-500 ml-2" style={{ fontSize: "12px" }}>✦</div>
               </div>
+            </div>
+          </div>
+          <div className="flex justify-center py-6">
+            <div className="text-center pr-8 border-r border-casino-gold/20">
+              <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.lvl}</div>
+              <div className={"text-casino-lightGray text-sm " + inter.className}>Уровень</div>
+            </div>
+            <div className="text-center mx-8">
+              <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.stars}</div>
+              <div className={"text-casino-lightGray text-sm " + inter.className}>Звёзды</div>
+            </div>
+            <div className="text-center pl-8 border-l border-casino-gold/20">
+              <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.friends}</div>
+              <div className={"text-casino-lightGray text-sm " + inter.className}>Друзья</div>
             </div>
           </div>
         </div>
         <BottomMenu activeItem={0} />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "38.7565%", top: "56.0304%", animationDelay: "1.32899s", fontSize: " 9.80749px" }}>✦</div>
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "47.5803%", top: "18.9982%", animationDelay: "1.25741s", fontSize: "9.70331px" }}>✦</div>
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "53.0188%", top: "89.78%", animationDelay: "0.586266s", fontSize: "12.2947px" }}>✦</div>
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "79.7041%", top: "13.3367%", animationDelay: "1.74073s", fontSize: "13.2311px" }}>✦</div>
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "23.518%", top: "84.2616%", animationDelay: "2.12519s", fontSize: "11.8656px" }}>✦</div>
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "15.2164%", top: "66.9954%", animationDelay: "1.52031s", fontSize: "15.5654px" }}>✦</div>
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "12.9064%", top: "16.3438%", animationDelay: "0.159508s", fontSize: "15.6116px" }}>✦</div>
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "46.8969%", top: "14.6909%", animationDelay: "0.479396s", fontSize: "8.22172px" }}>✦</div>
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "16.0076%", top: "0.78161%", animationDelay: "0.398253s", fontSize: "14.6898px" }}>✦</div>
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "95.5268%", top: "87.3953%", animationDelay: "1.28216s", fontSize: "15.6566px" }}>✦</div>
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "42.2717%", top: "49.0051%", animationDelay: "1.05661s", fontSize: "9.62768px" }}>✦</div>
+          <div className="absolute text-primary/30 animate-pulse" style={{ left: "92.6545%", top: "49.7537%", animationDelay: "2.027s", fontSize: "9.19608px" }}>✦</div>
+        </div>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 0, friends: 0 });
+  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 1, friends: 0 });
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
@@ -72,6 +72,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
 
   return (
     <div id="root" className="overflow-hidden">
+      <div>Тут пока ничего нету! Раздел находится в разработке и будет доступен в ближайшее время!</div>
       <BottomMenu activeItem={2} />
     </div>
   )

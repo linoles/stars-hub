@@ -245,7 +245,7 @@ const getLoteryButtons = (row: any) => {
       }
       acc[acc.length - 1].push(
         Markup.button.callback(
-          !val.from?.id || val.from?.id == null ? "🎫" : val.win ? (Object.keys(row.lotery.prizes)[Object.values(row.lotery.prizes).findIndex((value: any) => value === val.from?.id)]) : "❌",
+          !val.from?.id || val.from?.id == null ? "🎫" : val.win ? (Object.keys(row.lotery.prizes)[Object.values(row.lotery.prizes).findIndex((value: any) => value === val.from?.id)]?.split(" ")[0]) : "❌",
           `lotery=${idx}`
         )
       );
@@ -764,7 +764,7 @@ bot.action(/lotery=(.+)/, async (ctx) => {
     if (Object.keys(row.lotery.currentWinners).length < row.lotery.winners) {
       return;
     } else {
-      lsendResults(`🎉 Лотерея окончена!\n<blockquote expandable>\t\t🥇 Победители: ${Object.entries(row.lotery.currentWinners).map((win) => `<a href="tg://user?id=${win[0]}">${win[1]} (${win[0]})</a> ${Object.keys(row.lotery.prizes).find((key: any) => row.lotery.prizes[key] === Number(win[0])) || "🎉"}`).join(", ")}</blockquote>`, row);
+      lsendResults(`🎉 Лотерея окончена!\n<blockquote expandable>\t\t🥇 Победители: ${Object.entries(row.lotery.currentWinners).map((win) => `<a href="tg://user?id=${win[0]}">${win[1]} (${win[0]})</a> ${Object.keys(row.lotery.prizes).find((key: any) => row.lotery.prizes[key] === Number(win[0]))?.split(" ")[0] || "🎉"}`).join(", ")}</blockquote>`, row);
       row.lotery.isActive = false;
       row.lotery.currentWinners = {};
       row.lotery.winners = 1;
@@ -2435,7 +2435,11 @@ bot.on("message", async (ctx) => {
       } else if (msg.toLowerCase().startsWith("/lotery_prizes ") || msg.startsWith("/lotery_prizes@StarzHubBot ")) {
         const newState: any = {};
         for (let i = 0; i < row.lotery.winners; i++) {
-          newState[msg.split(" ")[i + 1]] = 0;
+          if (newState[msg.split(" ")[i + 1]] === undefined || newState[msg.split(" ")[i + 1]] === null) {
+            newState[msg.split(" ")[i + 1]] = 0;
+          } else {
+            newState[`${msg.split(" ")[i + 1]} ${i}`] = 0;
+          }
         }
         row.lotery.prizes = newState;
         await supabase
