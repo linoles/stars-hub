@@ -71,8 +71,8 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   }, [tgData]);
 
   return (
-    <div id="root" className="overflow-hidden w-full h-full flex flex-row justify-center items-center">
-      <div className="text-center font-extrabold text-red-500">Тут пока ничего нету! Раздел находится в разработке и будет доступен в ближайшее время!</div>
+    <div id="root" className="w-screen h-screen flex flex-row justify-center items-center">
+      <div className={"text-center font-extrabold text-red-600 mx-3 " + inter.className}>Тут пока ничего нету!<br />Раздел находится в разработке и будет доступен в ближайшее время!</div>
       <BottomMenu activeItem={2} />
     </div>
   )
