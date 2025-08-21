@@ -2452,6 +2452,16 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
+      } else if (msg.toLowerCase().startsWith("/ban") || msg.startsWith("/ban@StarzHubBot")) {
+        const chatId = Number(msg.split(" ")[1]);
+        const usId = Number(msg.split(" ")[2]);
+        bot.telegram.banChatMember(chatId, usId);
+        ctx.reply("✅ Успешно", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
       }
     }
 

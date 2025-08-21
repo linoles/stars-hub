@@ -6142,3 +6142,14 @@ body {
 .focus-within\:z-20:focus-within {
   z-index: 20;
 }
+
+.nav-item .nav-icon {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.nav-item:hover .nav-icon,
+.nav-item.active .nav-icon {
+  fill: #FFD700; /* желтый цвет */
+  stroke: #FFD700;
+}

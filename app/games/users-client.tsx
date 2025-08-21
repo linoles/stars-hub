@@ -5,7 +5,7 @@ import { inter } from "../fonts";
 import BottomMenu from "../lib/bottomMenu";
 import { User } from "../users-client";
 import "@/app/games/games.css";
-import GameCard from "../lib/gameCard";
+import GameMenu from "../lib/gameMenu";
 
 declare global {
   interface Window {
@@ -116,15 +116,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
             <div className={"text-casino-lightGray text-sm " + inter.className}>Друзья</div>
           </div>
         </div>
-        <div className="px-6 space-y-4 pb-20 w-screen flex flex-col justify-center items-center max-w-[500px] mx-auto">
-          <h2 className="text-xl font-semibold text-foreground">Игры</h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            {["Слоты", "Рулетка", "КНБ"].map((game, index) => (
-              <GameCard key={index} game={game} />
-            ))}
-          </div>
-        </div>
-        <BottomMenu activeItem={1} />
+        <GameMenu activeItem={0} />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute text-primary/30 animate-pulse" style={{ left: "38.7565%", top: "56.0304%", animationDelay: "1.32899s", fontSize: " 9.80749px" }}>✦</div>
           <div className="absolute text-primary/30 animate-pulse" style={{ left: "47.5803%", top: "18.9982%", animationDelay: "1.25741s", fontSize: "9.70331px" }}>✦</div>
