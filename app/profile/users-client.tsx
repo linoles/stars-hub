@@ -72,6 +72,21 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
 
   return (
     <div id="root" className="overflow-hidden">
+      <div className={`w-screen h-screen flex flex-col items-center justify-center ${inter.className}`}>
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-2xl font-bold mb-4">Профиль</h1>
+          <div className="flex items-center mb-4">
+            <img src="/userImg.png" alt="User Avatar" className="w-16 h-16 rounded-full mr-4" />
+            <div>
+              <p className="text-lg font-semibold">{curUser.tgNick}</p>
+              <p className="text-sm text-gray-600">{curUser.tgUsername}</p>
+            </div>
+          </div>
+          <p className="text-lg font-semibold">Звезды: {curUser.stars}</p>
+          <p className="text-lg font-semibold">Уровень: {curUser.lvl}</p>
+          <p className="text-lg font-semibold">Друзья: {curUser.friends}</p>
+        </div>
+      </div>
       <BottomMenu activeItem={3} />
     </div>
   )
