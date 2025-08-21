@@ -71,8 +71,8 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   }, [tgData]);
 
   return (
-    <div id="root" className="overflow-hidden">
-      <div>Тут пока ничего нету! Раздел находится в разработке и будет доступен в ближайшее время!</div>
+    <div id="root" className="overflow-hidden w-full h-full flex flex-row justify-center items-center">
+      <div className="text-center font-extrabold text-red-500">Тут пока ничего нету! Раздел находится в разработке и будет доступен в ближайшее время!</div>
       <BottomMenu activeItem={2} />
     </div>
   )
