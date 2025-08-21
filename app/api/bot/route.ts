@@ -3045,6 +3045,15 @@ bot.on("message", async (ctx) => {
       case "/game_text":
       case "/ludka@StarzHubBot":
       case "/stop_ludka":
+      case "🎮 Начать игру":
+      case "🔄 Обновить данные":
+      case "📛 Закончить игру":
+      case "🎰 Начать лудку":
+      case "📛 Закончить лудку":
+      case "🎫 Начать hлудку":
+      case "🏆 Топ":
+      case "📛 Закончить hлудку":
+      case "🎫 Начать лотерею":
       case "/stop_ludka@StarzHubBot":
         ctx.reply(
           "❌ Вы не можете использовать эту команду, так как не являетесь администратором бота!",
@@ -3095,31 +3104,27 @@ bot.on("message", async (ctx) => {
 
 bot.on("pre_checkout_query", async (ctx) => {
   try {
-    const payload = ctx.update.pre_checkout_query.invoice_payload;
-    const userId = ctx.update.pre_checkout_query.from.id;
+    const { from, invoice_payload } = ctx.update.pre_checkout_query;
+    const userId = from.id;
+    const data = JSON.parse(invoice_payload);
 
-    try {
-      const data = JSON.parse(payload);
-      const user = await supabase
+    const { data: user } = await supabase
+      .from("users")
+      .select("tgId, stars")
+      .eq("tgId", userId)
+      .single();
+
+    if (user) {
+      const newStars = user.stars + data.amount;
+      await supabase
         .from("users")
-        .select("tgId, stars")
-        .eq("tgId", userId)
-        .single();
-
-      if (user.data) {
-        const newStars = user.data.stars + data.amount;
-        await supabase
-          .from("users")
-          .update({ stars: newStars })
-          .eq("tgId", userId);
-        await ctx.reply(
-          `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
-        );
-      }
-      await ctx.answerPreCheckoutQuery(true);
-    } catch (e) {
-      await ctx.answerPreCheckoutQuery(false, "Ошибка обработки платежа");
+        .update({ stars: newStars })
+        .eq("tgId", userId);
+      await ctx.reply(
+        `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
+      );
     }
+    await ctx.answerPreCheckoutQuery(true);
   } catch (error) {
     console.error("Error in pre_checkout_query:", error);
     await ctx.answerPreCheckoutQuery(false, "Произошла ошибка");
