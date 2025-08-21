@@ -245,7 +245,7 @@ const getLoteryButtons = (row: any) => {
       }
       acc[acc.length - 1].push(
         Markup.button.callback(
-          !val.from?.id || val.from?.id == null ? "🎫" : val.win ? "🎉" : "❌",
+          !val.from?.id || val.from?.id == null ? "🎫" : val.win ? (Object.keys(row.lotery.prizes)[Object.values(row.lotery.prizes).findIndex((value: any) => value === val.from?.id)]) : "❌",
           `lotery=${idx}`
         )
       );
@@ -763,7 +763,7 @@ bot.action(/lotery=(.+)/, async (ctx) => {
     if (Object.keys(row.lotery.currentWinners).length < row.lotery.winners) {
       return;
     } else {
-      lsendResults(`🎉 Лотерея окончена!\n<blockquote expandable>\t\t🥇 Победители: ${Object.entries(row.lotery.currentWinners).map((win) => `<a href="tg://user?id=${win[0]}">${win[1]} (${win[0]})</a>`).join(", ")} 🏆</blockquote>`, row);
+      lsendResults(`🎉 Лотерея окончена!\n<blockquote expandable>\t\t🥇 Победители: ${Object.entries(row.lotery.currentWinners).map((win) => `<a href="tg://user?id=${win[0]}">${win[1]} ${row.lotery.prizes[Object.keys(row.lotery.prizes).find((key: any) => row.lotery.prizes[key] === win[0]) || "🎉"]} (${win[0]})</a>`).join(", ")}</blockquote>`, row);
       row.lotery.isActive = false;
       row.lotery.currentWinners = {};
       row.lotery.winners = 1;
