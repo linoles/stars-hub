@@ -18,28 +18,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'No profile photo found' }, { status: 404 });
     }
 
-    await bot.telegram.sendMessage(
-      parseInt(userId),
-      `${userId}`
-    )
-
     const fileId = userProfile.photos[0][2].file_id;
     const file = await bot.telegram.getFile(fileId);
     const filePath = file.file_path;
     
-    const fileUrl = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${filePath}`;
-    const response = await fetch(fileUrl);
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    return new NextResponse(buffer, {
-      headers: {
-        'Content-Type': 'image/jpeg',
-        'Cache-Control': 'public, max-age=3600',
-      },
-    });
+    const safeUrl = `/api/avatar-proxy?filePath=${encodeURIComponent(filePath)}`;
+    
+    return NextResponse.json({ avatarUrl: safeUrl });
   } catch (error) {
-    console.error('Error fetching avatar:', error);
-    return NextResponse.json({ error: 'Failed to fetch avatar' }, { status: 500 });
+    console.error('Error:', error);
+    return NextResponse.json({ error: 'Failed to get avatar' }, { status: 500 });
   }
 }
