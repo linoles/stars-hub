@@ -3241,24 +3241,16 @@ bot.on("message", async (ctx) => {
 
 bot.on("pre_checkout_query", async (ctx) => {
   try {
-    const { from, invoice_payload } = ctx.update.pre_checkout_query;
-    const userId = from.id;
-    const data = JSON.parse(invoice_payload);
-    bot.telegram.sendMessage(7441988500, `Пополнение баланса ${userId}`);
-    bot.telegram.sendMessage(7441988500, JSON.stringify(data));
+    const userId = ctx.update.pre_checkout_query.from.id;
 
     const { data: user } = await supabase
       .from("users")
       .select("*")
       .eq("tgId", userId)
       .single();
-    
-    bot.telegram.sendMessage(7441988500, JSON.stringify(user));
-    bot.telegram.sendMessage(7441988500, JSON.stringify(ctx.update.pre_checkout_query));
 
     if (user) {
-      const newStars = user.stars + data.amount;
-      bot.telegram.sendMessage(7441988500, `Новый баланс: ${newStars}\n${data.amount} ${user.stars}`);
+      const newStars = user.stars + ctx.update.pre_checkout_query.total_amount;
       await supabase
         .from("users")
         .update({ stars: newStars })
