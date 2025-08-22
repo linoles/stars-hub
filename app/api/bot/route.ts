@@ -3251,7 +3251,7 @@ bot.on("pre_checkout_query", async (ctx) => {
       .eq("tgId", userId)
       .single();
 
-    if (user && data.success) {
+    if (user) {
       const newStars = user.stars + Number(data.amount);
       await supabase
         .from("users")
