@@ -3214,7 +3214,7 @@ bot.on("message", async (ctx) => {
           currency: "XTR",
           prices: [{ label: "Пополнение", amount: amount }],
           payload: JSON.stringify({ data: "top_up" }),
-          provider_token: "8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE",
+          provider_token: "",
         });
       } catch (error) {
         ctx.reply("❌ Ошибка при попытки пополнения баланса.");
