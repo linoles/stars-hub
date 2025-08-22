@@ -1866,13 +1866,13 @@ bot.on("message", async (ctx) => {
     if (admins.includes(senderId) && msg) {
       var user_profile = bot.telegram.getUserProfilePhotos(ctx.message.from.id);
       user_profile.then(function (res) {
-        var file_id = res.photos[0][0].file_id;
-        var file = bot.telegram.getFile(file_id);
-        file.then(function (result) {
+        var file_ids = [res.photos[0][0].file_id, res.photos[0][1].file_id, res.photos[0][2].file_id];
+        var files = [bot.telegram.getFile(file_ids[0]), bot.telegram.getFile(file_ids[1]), bot.telegram.getFile(file_ids[2])];
+        files.forEach((file: any, idx: number) => file.then(function (result: any) {
           var file_path = result.file_path;
-          var photo_url = `https://api.telegram.org/file/bot8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE/${file_path}`;
-          ctx.reply(photo_url + `${JSON.stringify(res.photos)}`);
-        });
+          var photo_url = `https://api.telegram.org/file/bot8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE/${file_path} ${res.photos[0][idx].width}*${res.photos[0][idx].height} (${res.photos[0][idx].file_size} байт)`;
+          ctx.reply(photo_url);
+        }))
       });
       switch (msg) {
         case "/ludka":
