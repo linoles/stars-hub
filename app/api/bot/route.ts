@@ -3251,7 +3251,7 @@ bot.on("pre_checkout_query", async (ctx) => {
       .eq("tgId", userId)
       .single();
 
-    if (user && data.success) {
+    if (user) {
       const newStars = user.stars + Number(data.amount);
       await supabase
         .from("users")
@@ -3260,9 +3260,6 @@ bot.on("pre_checkout_query", async (ctx) => {
       await ctx.reply(
         `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
       );
-    } else {
-      await ctx.answerPreCheckoutQuery(false, "❌ Пополнение баланса не прошло. Пожалуйста, повторите попытку.");
-      return
     }
     await ctx.answerPreCheckoutQuery(true);
   } catch (error: any) {
