@@ -3251,15 +3251,19 @@ bot.on("pre_checkout_query", async (ctx) => {
       .eq("tgId", userId)
       .single();
 
-    if (user) {
+    if (user && data.success) {
       const newStars = user.stars + Number(data.amount);
       await supabase
         .from("users")
         .update({ stars: newStars })
         .eq("tgId", userId);
-      await ctx.reply(
+      await bot.telegram.sendMessage(
+        userId, 
         `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
       );
+    } else {
+      await ctx.answerPreCheckoutQuery(false, "❌ Пополнение баланса не прошло. Пожалуйста, повторите попытку.");
+      return
     }
     await ctx.answerPreCheckoutQuery(true);
   } catch (error: any) {
