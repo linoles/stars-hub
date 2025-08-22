@@ -3219,7 +3219,7 @@ bot.on("message", async (ctx) => {
       } catch (error) {
         ctx.reply("❌ Ошибка при попытки пополнения баланса.");
       }
-    } else if (msg && msg.startsWith("/calc ")) {
+    } else if (msg && msg.startsWith("/rand ")) {
       const minNum = Number(msg.split(" ")[1].split("-")[0]);
       const maxNum = Number(msg.split(" ")[1].split("-")[1]);
       const rand = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
