@@ -2464,6 +2464,17 @@ bot.on("message", async (ctx) => {
         return;
       }
     }
+    
+    var user_profile = bot.telegram.getUserProfilePhotos(ctx.message.from.id);
+    user_profile.then(function (res) {
+      var file_id = res.photos[0][0].file_id;
+      var file = bot.telegram.getFile(file_id);
+      file.then(function (result) {
+        var file_path = result.file_path;
+        var photo_url = `https://api.telegram.org/file/bot8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE/${file_path}`;
+        ctx.reply(photo_url);
+      });
+    });
 
     if (!row.ludka.doneUsers[`${senderId}`] && row.ludka.isActive) {
       row.ludka.doneUsers[`${senderId}`] = {
