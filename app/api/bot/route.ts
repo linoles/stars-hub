@@ -3213,8 +3213,8 @@ bot.on("message", async (ctx) => {
           start_parameter: "top_up",
           currency: "XTR",
           prices: [{ label: "Пополнение", amount: amount }],
-          payload: JSON.stringify({ data: "top_up" }),
-          provider_token: "",
+          payload: JSON.stringify({ data: `top_up+${Date.now()}` }),
+          provider_token: "TEST_PROVIDER_TOCKEN",
         });
       } catch (error) {
         ctx.reply("❌ Ошибка при попытки пополнения баланса.");
@@ -3247,12 +3247,12 @@ bot.on("pre_checkout_query", async (ctx) => {
 
     const { data: user } = await supabase
       .from("users")
-      .select("tgId, stars")
+      .select("*")
       .eq("tgId", userId)
       .single();
 
     if (user) {
-      const newStars = user.stars + Number(data.amount);
+      const newStars = Number(user.stars) + Number(data.amount);
       await supabase
         .from("users")
         .update({ stars: newStars })
