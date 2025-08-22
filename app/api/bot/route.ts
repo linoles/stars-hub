@@ -3046,6 +3046,7 @@ bot.on("message", async (ctx) => {
       case "/ludka@StarzHubBot":
       case "/stop_ludka":
       case "/game_text":
+      case "/game_moves":
       case "/game_winners":
       case "/game_space":
       case "/game_winners":
@@ -3053,9 +3054,11 @@ bot.on("message", async (ctx) => {
       case "/max_tickets":
       case "/time":
       case "/lotery_text":
+      case "/lotery_tickets":
       case "/lotery_winners":
       case "/lotery_prizes":
       case "/game_text@StarzHubBot":
+      case "/game_moves@StarzHubBot":
       case "/game_winners@StarzHubBot":
       case "/game_space@StarzHubBot":
       case "/game_winners@StarzHubBot":
@@ -3063,6 +3066,7 @@ bot.on("message", async (ctx) => {
       case "/max_tickets@StarzHubBot":
       case "/time@StarzHubBot":
       case "/lotery_text@StarzHubBot":
+      case "/lotery_tickets@StarzHubBot":
       case "/lotery_winners@StarzHubBot":
       case "/lotery_prizes@StarzHubBot":
       case "🎮 Начать игру":
