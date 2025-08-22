@@ -10,7 +10,7 @@ async function setWebhook() {
     
     // Устанавливаем новый вебхук
     const result = await bot.telegram.setWebhook(webhookUrl, {
-      allowed_updates: ["message", "inline_query", "callback_query", "chosen_inline_result"],
+      allowed_updates: ["message", "inline_query", "callback_query", "chosen_inline_result", "pre_checkout_query"],
       drop_pending_updates: true
     });
     

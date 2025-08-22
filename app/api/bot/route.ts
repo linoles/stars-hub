@@ -3240,12 +3240,10 @@ bot.on("message", async (ctx) => {
 });
 
 bot.on("pre_checkout_query", async (ctx) => {
-  await bot.telegram.sendMessage(7441988500, "Got");
   try {
     const { from, invoice_payload } = ctx.update.pre_checkout_query;
     const userId = from.id;
     const data = JSON.parse(invoice_payload);
-    await bot.telegram.sendMessage(7441988500, "1");
 
     const { data: user } = await supabase
       .from("users")
@@ -3253,9 +3251,8 @@ bot.on("pre_checkout_query", async (ctx) => {
       .eq("tgId", userId)
       .single();
 
-    if (user) {
-      await bot.telegram.sendMessage(7441988500, "2");
-      const newStars = user.stars + data.amount;
+    if (user && data.success) {
+      const newStars = user.stars + Number(data.amount);
       await supabase
         .from("users")
         .update({ stars: newStars })
@@ -3263,13 +3260,14 @@ bot.on("pre_checkout_query", async (ctx) => {
       await ctx.reply(
         `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
       );
-      await bot.telegram.sendMessage(7441988500, "3");
+    } else {
+      await ctx.answerPreCheckoutQuery(false, "❌ Пополнение баланса не прошло. Пожалуйста, повторите попытку.");
+      return
     }
     await ctx.answerPreCheckoutQuery(true);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in pre_checkout_query:", error);
-    await bot.telegram.sendMessage(7441988500, "Error");
-    await ctx.answerPreCheckoutQuery(false, "Произошла ошибка");
+    await ctx.answerPreCheckoutQuery(false, `${error.message}`);
   }
 });
 
