@@ -3045,6 +3045,26 @@ bot.on("message", async (ctx) => {
       case "/game_text":
       case "/ludka@StarzHubBot":
       case "/stop_ludka":
+      case "/game_text":
+      case "/game_winners":
+      case "/game_space":
+      case "/game_winners":
+      case "/points":
+      case "/max_tickets":
+      case "/time":
+      case "/lotery_text":
+      case "/lotery_winners":
+      case "/lotery_prizes":
+      case "/game_text@StarzHubBot":
+      case "/game_winners@StarzHubBot":
+      case "/game_space@StarzHubBot":
+      case "/game_winners@StarzHubBot":
+      case "/points@StarzHubBot":
+      case "/max_tickets@StarzHubBot":
+      case "/time@StarzHubBot":
+      case "/lotery_text@StarzHubBot":
+      case "/lotery_winners@StarzHubBot":
+      case "/lotery_prizes@StarzHubBot":
       case "🎮 Начать игру":
       case "🔄 Обновить данные":
       case "📛 Закончить игру":

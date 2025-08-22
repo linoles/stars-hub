@@ -57,8 +57,8 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           }
 
           const newUser = await response.json();
-          setUsers(prev => [...prev, newUser]);
           setCurUser(newUser);
+          setUsers(prev => [...prev, newUser]);
         } catch (error) {
           console.error('Error adding user:', error);
         } finally {

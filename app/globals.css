@@ -6153,3 +6153,7 @@ body {
   fill: #FFD700; /* желтый цвет */
   stroke: #FFD700;
 }
+
+.border-casino-darkGray\/50 {
+  background-color: rgba(0, 0, 0, 0.3);
+}

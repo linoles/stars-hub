@@ -82,38 +82,40 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
         <ol tabIndex={-1} className="fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]"></ol>
       </div>
       <section aria-label="Notifications alt+T" tabIndex={-1} aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section>
-      <div className="min-h-screen bg-background star-pattern relative overflow-auto">
-        <div className="relative z-10 pt-14 pb-8">
-          <div className="relative z-10">
-            <div className="w-24 h-24 mx-auto mb-6 relative">
-              <div className="w-full h-full bg-gradient-to-br from-casino-gold to-orange-500 rounded-full flex items-center justify-center relative overflow-hidden">
-                <video autoPlay loop muted playsInline onClick={e => e.stopPropagation()} className="w-60 h-60">
-                  <source src="/frog.gif.mp4" type="video/mp4" />
-                </video>
-                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-casino-gold/20 to-transparent animate-pulse"></div>
+      <div className="min-h-screen bg-background star-pattern relative overflow-auto"> {/* Добавлен класс star-pattern */}
+        <div className="px-4 pb-20 relative z-10 h-screen flex flex-col items-center justify-center">
+          <div className="relative z-10 text-center space-y-6">
+            <div className="relative z-10">
+              <div className="w-24 h-24 mx-auto mb-6 relative">
+                <div className="w-full h-full bg-gradient-to-br from-casino-gold to-orange-500 rounded-full flex items-center justify-center relative overflow-hidden">
+                  <video autoPlay loop muted playsInline onClick={e => e.stopPropagation()} className="w-60 h-60">
+                    <source src="/frog.gif.mp4" type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-casino-gold/20 to-transparent animate-pulse"></div>
+                </div>
+                <div className="absolute -inset-2 border-2 border-casino-gold/30 rounded-full"></div>
               </div>
-              <div className="absolute -inset-2 border-2 border-casino-gold/30 rounded-full"></div>
+              <h1 className={"text-5xl font-bold bg-gradient-to-r from-casino-gold via-orange-400 to-casino-gold bg-clip-text text-transparent tracking-wide " + inter.className}>STARSHUB</h1>
+              <div className="flex items-center justify-center mt-3">
+                <div className="text-casino-gold animate-pulse mr-2" style={{ fontSize: "12px" }}>✦</div>
+                <p className={"text-casino-lightGray text-lg font-light " + inter.className}>Азартные игры на звёзды</p>
+                <div className="text-casino-gold animate-pulse delay-500 ml-2" style={{ fontSize: "12px" }}>✦</div>
+              </div>
             </div>
-            <h1 className={"text-5xl text-center font-bold bg-gradient-to-r from-casino-gold via-orange-400 to-casino-gold bg-clip-text text-transparent tracking-wide " + inter.className}>STARSHUB</h1>
-            <div className="flex items-center justify-center mt-3">
-              <div className="text-casino-gold animate-pulse mr-2" style={{ fontSize: "12px" }}>✦</div>
-              <p className={"text-casino-lightGray text-lg font-light " + inter.className}>Азартные игры на звёзды</p>
-              <div className="text-casino-gold animate-pulse ml-2 delay-500" style={{ fontSize: "12px" }}>✦</div>
+          </div>
+          <div className="flex justify-center py-6">
+            <div className="text-center pr-8 border-r border-casino-gold/20">
+              <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.lvl}</div>
+              <div className={"text-casino-lightGray text-sm " + inter.className}>Уровень</div>
             </div>
-          </div>
-        </div>
-        <div className="flex justify-center pb-6">
-          <div className="text-center pr-8 border-r border-casino-gold/20">
-            <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.lvl}</div>
-            <div className={"text-casino-lightGray text-sm " + inter.className}>Уровень</div>
-          </div>
-          <div className="text-center mx-8">
-            <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.stars}</div>
-            <div className={"text-casino-lightGray text-sm " + inter.className}>Звёзды</div>
-          </div>
-          <div className="text-center pl-8 border-l border-casino-gold/20">
-            <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.friends}</div>
-            <div className={"text-casino-lightGray text-sm " + inter.className}>Друзья</div>
+            <div className="text-center mx-8">
+              <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.stars}</div>
+              <div className={"text-casino-lightGray text-sm " + inter.className}>Звёзды</div>
+            </div>
+            <div className="text-center pl-8 border-l border-casino-gold/20">
+              <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.friends}</div>
+              <div className={"text-casino-lightGray text-sm " + inter.className}>Друзья</div>
+            </div>
           </div>
         </div>
         <GameMenu activeItem={0} />

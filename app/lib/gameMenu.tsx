@@ -5,14 +5,15 @@ export default function GameMenu({ activeItem }: { activeItem: number }) {
     <div className="fixed bottom-0 left-0 right-0 bg-casino-darkGray/95 backdrop-blur-sm border-t border-casino-gold/20 z-20">
       <div className="max-w-md mx-auto px-4 py-2">
         <div className="flex justify-around">
-          <button className={`nav-item ${activeItem === 1 ? "active" : ""}`} onClick={() => activeItem !== 0 ? window.location.href = "/" : ""}>
+          <button className={`nav-item ${activeItem === 1 ? "active" : ""}`} onClick={() => activeItem !== 1 ? window.location.href = "/" : ""}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-house">
               <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path>
               <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             </svg>
             <span className={"text-xs mt-1 " + inter.className}>Главная</span>
           </button>
-          <button className={`nav-item ${activeItem === 2 ? "active" : ""}`} onClick={() => activeItem !== 0 ? window.location.href = "/games/slots" : ""}>
+          <div className="my-3 bg-[#666666] w-[1px]" />
+          <button className={`nav-item ${activeItem === 2 ? "active" : ""}`} onClick={() => activeItem !== 2 ? window.location.href = "/games/slots" : ""}>
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
               width="24" height="24" viewBox="0 0 512.000000 512.000000"
               preserveAspectRatio="xMidYMid meet"
@@ -25,7 +26,7 @@ export default function GameMenu({ activeItem }: { activeItem: number }) {
             </svg>
             <span className={"text-xs mt-1 " + inter.className}>Слоты</span>
           </button>
-          <button className={`nav-item ${activeItem === 3 ? "active" : ""}`} onClick={() => activeItem !== 1 ? window.location.href = "/games/roulette" : ""}>
+          <button className={`nav-item ${activeItem === 3 ? "active" : ""}`} onClick={() => activeItem !== 3 ? window.location.href = "/games/roulette" : ""}>
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
               width="24" height="24" viewBox="0 0 512.000000 512.000000"
               preserveAspectRatio="xMidYMid meet"
@@ -38,7 +39,7 @@ export default function GameMenu({ activeItem }: { activeItem: number }) {
             </svg>
             <span className={"text-xs mt-1 " + inter.className}>Рулетка</span>
           </button>
-          <button className={`nav-item ${activeItem === 4 ? "active" : ""}`} onClick={() => activeItem !== 2 ? window.location.href = "/games/rsp" : ""}>
+          <button className={`nav-item ${activeItem === 4 ? "active" : ""}`} onClick={() => activeItem !== 4 ? window.location.href = "/games/rsp" : ""}>
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
               width="24" height="24" viewBox="0 0 512.000000 512.000000"
               preserveAspectRatio="xMidYMid meet"
