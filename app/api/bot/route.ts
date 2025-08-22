@@ -2142,7 +2142,7 @@ bot.on("message", async (ctx) => {
             },
           });
           const channel2 = msg.split("*")[1];
-          row.hludka.chatId =
+          row.lotery.chatId =
             channel2 === "hub"
               ? -1002506008123
               : channel2 === "lnt"
@@ -2150,7 +2150,7 @@ bot.on("message", async (ctx) => {
               : -1002606260123;
           await supabase
             .from("users")
-            .update({ hludka: row.hludka })
+            .update({ lotery: row.lotery })
             .eq("tgId", 1);
           return;
 
