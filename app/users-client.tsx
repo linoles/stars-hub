@@ -105,7 +105,20 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
                 </div>
                 <div className="absolute -inset-2 border-2 border-casino-gold/30 rounded-full"></div>
               </div>
-              <h1 className={"text-5xl font-bold bg-gradient-to-r from-casino-gold via-orange-400 to-casino-gold bg-clip-text text-transparent tracking-wide " + inter.className}>STARSHUB</h1>
+              <h1
+                className={"text-5xl font-bold tracking-wide " + inter.className}
+                style={{
+                  background: "linear-gradient(90deg, #fbbf24, #f59939, #fbbf24)",
+                  backgroundSize: "200% auto",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  animation: "gradient 3s linear infinite",
+                  letterSpacing: "0.04em"
+                }}
+              >
+                STARSHUB
+              </h1>
               <div className="flex items-center justify-center mt-3">
                 <div className="text-casino-gold animate-pulse mr-2" style={{ fontSize: "12px" }}>✦</div>
                 <p className={"text-casino-lightGray text-lg font-light " + inter.className}>Азартные игры на звёзды</p>

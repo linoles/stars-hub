@@ -1776,15 +1776,33 @@ body {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
+/* Добавьте в ваш global.css */
+.bg-gradient-to-r {
+  background-size: 200% auto;
+}
+
+.animate-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient 3s linear infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .from-casino-gold {
-  --tw-gradient-from: #ffd700 var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(255 215 0 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-from: #ffe244 var(--tw-gradient-from-position);
+  --tw-gradient-to: #ffd700 var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
 .from-casino-gold\/10 {
-  --tw-gradient-from: rgb(255 215 0 / 0.1) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(255 215 0 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-from: rgb(255 226 68 / 0.1) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(255 215 0 / 0.1) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
