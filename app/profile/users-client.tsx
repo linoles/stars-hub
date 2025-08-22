@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { inter } from "../fonts";
 import BottomMenu from "../lib/bottomMenu";
 import { User } from "../users-client";
-import Image from "next/image";
+import UserAvatar from "../lib/userAvatar";
 
 declare global {
   interface Window {
@@ -12,17 +12,11 @@ declare global {
   }
 }
 
-interface UserAvatarProps {
-  userId: number;
-}
-
 export default function ClientComponent({ initialUsers }: { initialUsers: User[] }) {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: null, tgNick: "Player", stars: 0, lvl: 1, friends: 0 });
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     try {
@@ -83,25 +77,6 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
     checkAndAddUser();
   }, [tgData]);
 
-  useEffect(() => {
-    async function fetchAvatar() {
-      try {
-        const response = await fetch(`/api/get-avatar?userId=${curUser.tgId}`);
-        const data = await response.json();
-
-        if (data.avatarUrl) {
-          setAvatarUrl(data.avatarUrl);
-        }
-      } catch (error) {
-        console.error('Failed to fetch avatar:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchAvatar();
-  }, [curUser.tgId]);
-
   return (
     <div id="root">
       <div role="region" aria-label="Notifications (F8)" tabIndex={-1} style={{ pointerEvents: "none" }}>
@@ -115,13 +90,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
             <div className={"text-3xl font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap max-w-[300px] " + inter.className}>{curUser.tgUsername !== null && curUser.tgUsername !== "" ? `@${curUser.tgUsername}` : `id${curUser.tgId}`}</div>
           </div>
           <div className="relative z-10 text-center space-y-6 border-2 rounded-full border-b-red-400">
-            {loading ? <div className="w-12 h-12 bg-gray-300 rounded-full animate-pulse" /> : (!avatarUrl ? <div className="w-12 h-12 bg-gray-400 rounded-full" /> : <Image
-              src={avatarUrl}
-              alt="User avatar"
-              width={200}
-              height={200}
-              className="rounded-full"
-            />)}
+            <UserAvatar userId={curUser.tgId} size={200} className="border-2 border-white" />
           </div>
           <div className="flex justify-center pt-6 pb-3">
             <div className="text-center pr-8 border-r border-casino-gold/20">
