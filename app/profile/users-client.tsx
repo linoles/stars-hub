@@ -15,7 +15,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [curUser, setCurUser] = useState<User>({ tgId: 7441988500, tgUsername: "Test", tgNick: "Test", stars: 0, lvl: 1, friends: 0 });
+  const [curUser, setCurUser] = useState<User>({ tgId: 7441988500, tgUsername: "TestНуТУтМногоСимволов", tgNick: "TestНуТутМногоСимволов", stars: 0, lvl: 1, friends: 0 });
 
   useEffect(() => {
     try {
@@ -111,9 +111,9 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
             </div>
           </div>
           <div className="w-screen flex flex-row justify-around items-center">
-            <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.tgNick.toUpperCase()}</div>
-            <div className={"text-2xl font-bold text-casino-gold/20 " + inter.className}>{curUser.tgUsername.toUpperCase()}</div>
-            <div className={"text-2xl font-bold text-casino-gold/20 " + inter.className}>{curUser.tgId}</div>
+            <div className={"text-2xl font-bold text-casino-gold overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px] " + inter.className}>{curUser.tgNick.toLowerCase()}</div>
+            <div className={"text-2xl font-bold text-casino-gold/20 overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px] " + inter.className}>{curUser.tgUsername.toLowerCase()}</div>
+            <div className={"text-2xl font-bold text-casino-gold/20 " + inter.className}>{curUser.tgId.toString()}</div>
           </div>
         </div>
         <BottomMenu activeItem={3} />
