@@ -85,6 +85,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
       <section aria-label="Notifications alt+T" tabIndex={-1} aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section>
       <div className="min-h-screen bg-background star-pattern relative overflow-auto">
         <div className="px-4 pb-20 relative z-10 h-screen flex flex-col items-center justify-center">
+          
         </div>
         <GameMenu activeItem={2} />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">

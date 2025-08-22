@@ -815,7 +815,7 @@ bot.action(/lotery=(.+)/, async (ctx) => {
         )
           .map(
             (win) =>
-              `<a href="tg://user?id=${win[0]}">${win[1]} (${win[0]})</a> ${
+              `<a href="tg://openmessage?user_id=${win[0]}">${win[1]} (${win[0]})</a> ${
                 Object.keys(row.lotery.prizes)
                   .find((key: any) => row.lotery.prizes[key] === Number(win[0]))
                   ?.split(" ")[0] || "🎉"
@@ -853,7 +853,7 @@ const updateLeaderboard = async (ctx: any, from: number) => {
         ([user, data]: any, index) =>
           `<a href="https://t.me/StarzHubBot?start=profile_${user}">${
             index + 1
-          }. </a><b><a href="tg://user?id=${user}">${data.name}</a></b>: ${
+          }. </a><b><a href="tg://openmessage?user_id=${user}">${data.name}</a></b>: ${
             data.points
           }`
       )
@@ -906,7 +906,7 @@ const endGlobalGame = async (ctx: any) => {
       .slice(0, row.game.winners)
       .map(
         ([user, data]: any, index) =>
-          `${index + 1}. <a href="tg://user?id=${user}">${data.name}</a>: ${
+          `${index + 1}. <a href="tg://openmessage?user_id=${user}">${data.name}</a>: ${
             data.points
           } <a href="https://t.me/StarzHubBot?start=profile_${user}">📎</a>`
       )
@@ -918,7 +918,7 @@ const endGlobalGame = async (ctx: any) => {
         ([user, data]: any, index) =>
           `<a href="https://t.me/StarzHubBot?start=profile_${user}">${
             index + 1
-          }. </a><b><a href="tg://user?id=${user}">${data.name}</a></b>: ${
+          }. </a><b><a href="tg://openmessage?user_id=${user}">${data.name}</a></b>: ${
             data.points
           }`
       )
@@ -2030,7 +2030,7 @@ bot.on("message", async (ctx) => {
             .slice(0, row.game.winners)
             .map(
               ([user, data]: any, index) =>
-                `${index + 1}. <a href="tg://user?id=${user}">${
+                `${index + 1}. <a href="tg://openmessage?user_id=${user}">${
                   data.name
                 }</a>: ${
                   data.points
@@ -2045,7 +2045,7 @@ bot.on("message", async (ctx) => {
               ([user, data]: any, index) =>
                 `<a href="https://t.me/StarzHubBot?start=profile_${user}">${
                   index + 1
-                }. </a><b><a href="tg://user?id=${user}">${
+                }. </a><b><a href="tg://openmessage?user_id=${user}">${
                   data.name
                 }</a></b>: ${data.points}`
             )
@@ -2173,7 +2173,7 @@ bot.on("message", async (ctx) => {
                     : index === 2
                     ? "🥉"
                     : `${index + 1}.`
-                } <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${
+                } <a href="tg://openmessage?user_id=${arr[0]}">${arr[1].name}</a>: ${
                   arr[1].tickets
                 } 🎫`
             )
@@ -2211,7 +2211,7 @@ bot.on("message", async (ctx) => {
                     : index === 2
                     ? "🥉"
                     : `${index + 1}.`
-                } <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${
+                } <a href="tg://openmessage?user_id=${arr[0]}">${arr[1].name}</a>: ${
                   arr[1].tickets
                 } 🎫`
             )
@@ -3046,7 +3046,7 @@ bot.on("message", async (ctx) => {
                 : index === 2
                 ? "🥉"
                 : `${index + 1}.`
-            } <a href="tg://user?id=${arr[0]}">${arr[1].name}</a>: ${
+            } <a href="tg://openmessage?user_id=${arr[0]}">${arr[1].name}</a>: ${
               arr[1].tickets
             } 🎫`
         )
@@ -3219,6 +3219,11 @@ bot.on("message", async (ctx) => {
       } catch (error) {
         ctx.reply("❌ Ошибка при попытки пополнения баланса.");
       }
+    } else if (msg && msg.startsWith("/calc ")) {
+      const minNum = Number(msg.split(" ")[1].split("-")[0]);
+      const maxNum = Number(msg.split(" ")[1].split("-")[1]);
+      const rand = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
+      ctx.reply(`Йоу, я выбрал: ${rand.toString()} 😏`);
     }
 
     await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
