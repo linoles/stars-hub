@@ -86,7 +86,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   useEffect(() => {
     async function fetchAvatar() {
       try {
-        const response = await fetch(`/api/avatar-url?userId=${curUser.tgId}`);
+        const response = await fetch(`/api/get-avatar?userId=${curUser.tgId}`);
         const data = await response.json();
 
         if (data.avatarUrl) {
