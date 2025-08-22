@@ -18,6 +18,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'No profile photo found' }, { status: 404 });
     }
 
+    await bot.telegram.sendMessage(
+      parseInt(userId),
+      `${userId}`
+    )
+
     const fileId = userProfile.photos[0][2].file_id;
     const file = await bot.telegram.getFile(fileId);
     const filePath = file.file_path;
