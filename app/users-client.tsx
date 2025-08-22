@@ -78,6 +78,8 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
         } finally {
           setIsAdding(false);
         }
+      } else {
+        setCurUser(users.find(u => u.tgId === tgData.id) || { tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 1, friends: 0 });
       }
     }
 

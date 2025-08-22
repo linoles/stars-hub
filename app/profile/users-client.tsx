@@ -15,7 +15,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [curUser, setCurUser] = useState<User>({ tgId: 7441988500, tgUsername: null, tgNick: "linoles", stars: 0, lvl: 1, friends: 0 });
+  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: null, tgNick: "Player", stars: 0, lvl: 1, friends: 0 });
 
   useEffect(() => {
     try {
