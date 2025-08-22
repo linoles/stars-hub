@@ -15,7 +15,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [curUser, setCurUser] = useState<User>({ tgId: 7441988500, tgUsername: "TestНуТУтМногоСимволов", tgNick: "TestНуТутМногоСимволов", stars: 0, lvl: 1, friends: 0 });
+  const [curUser, setCurUser] = useState<User>({ tgId: 7441988500, tgUsername: null, tgNick: "linoles", stars: 0, lvl: 1, friends: 0 });
 
   useEffect(() => {
     try {
@@ -84,6 +84,10 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
       <section aria-label="Notifications alt+T" tabIndex={-1} aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section>
       <div className="min-h-screen bg-background star-pattern relative overflow-auto"> {/* Добавлен класс star-pattern */}
         <div className="px-4 pb-20 relative z-10 h-screen flex flex-col items-center justify-center">
+          <div className="w-[287px] flex flex-col justify-around items-center mb-2">
+            <div className={"text-3xl font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap max-w-[300px] " + inter.className}>{curUser.tgNick}</div>
+            <div className={"text-3xl font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap max-w-[300px] " + inter.className}>{curUser.tgUsername !== null && curUser.tgUsername !== "" ? `@${curUser.tgUsername}` : `id${curUser.tgId}`}</div>
+          </div>
           <div className="relative z-10 text-center space-y-6 border-2 rounded-full border-b-red-400">
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
               width="200" height="200" viewBox="0 0 512.000000 512.000000"
@@ -109,11 +113,6 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
               <div className={"text-2xl font-bold text-casino-gold " + inter.className}>{curUser.friends}</div>
               <div className={"text-casino-lightGray text-sm " + inter.className}>Друзья</div>
             </div>
-          </div>
-          <div className="w-screen flex flex-row justify-around items-center">
-            <div className={"text-2xl font-bold text-casino-gold overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px] " + inter.className}>{curUser.tgNick.toLowerCase()}</div>
-            <div className={"text-2xl font-bold text-casino-gold/20 overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px] " + inter.className}>{curUser.tgUsername.toLowerCase()}</div>
-            <div className={"text-2xl font-bold text-casino-gold/20 " + inter.className}>{curUser.tgId.toString()}</div>
           </div>
         </div>
         <BottomMenu activeItem={3} />

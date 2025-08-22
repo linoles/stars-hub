@@ -12,7 +12,7 @@ declare global {
 
 export interface User {
   tgId: number;
-  tgUsername: string;
+  tgUsername: string | null;
   tgNick: string;
   stars: number;
   lvl: number;
