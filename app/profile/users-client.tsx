@@ -90,7 +90,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
             <div className={"text-3xl font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap max-w-[300px] " + inter.className}>{curUser.tgUsername !== null && curUser.tgUsername !== "" ? `@${curUser.tgUsername}` : `id${curUser.tgId}`}</div>
           </div>
           <div className="relative z-10 text-center space-y-6 border-2 rounded-full border-b-red-400">
-            <UserAvatar userId={curUser.tgId} size={200} className="border-2 border-white" />
+            <UserAvatar userId={7441988500} size={200} className="border-2 border-white" />
           </div>
           <div className="flex justify-center pt-6 pb-3">
             <div className="text-center pr-8 border-r border-casino-gold/20">
