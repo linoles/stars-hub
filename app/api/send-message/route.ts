@@ -1,15 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Telegraf } from 'telegraf';
 
-// Инициализация бота
-const botToken = process.env.BOT_TOKEN || "";
-const bot = new Telegraf(botToken);
+const botToken = process.env.TELEGRAM_BOT_TOKEN;
+
+if (!botToken) {
+  console.error('TELEGRAM_BOT_TOKEN is not defined in environment variables');
+}
+
+const bot = new Telegraf(botToken!);
 
 export async function POST(req: NextRequest) {
   try {
+    // Проверяем, что токен есть
+    if (!botToken) {
+      return NextResponse.json(
+        { error: "Bot token is not configured" },
+        { status: 500 }
+      );
+    }
+
     const { userId, message } = await req.json();
 
-    // Валидация входных данных
+    // Валидация
     if (!userId || !message) {
       return NextResponse.json(
         { error: "userId and message are required" },
@@ -17,7 +29,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Отправка сообщения через Telegram API
+    // Отправка сообщения
     await bot.telegram.sendMessage(userId, message);
 
     return NextResponse.json({ 
@@ -31,7 +43,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { 
         error: "Failed to send message",
-        details: error.message 
+        details: error.response?.description || error.message 
       },
       { status: 500 }
     );
