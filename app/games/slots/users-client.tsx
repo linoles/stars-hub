@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { inter } from "../../fonts";
 import { User } from "../../users-client";
 import "@/app/games/games.css";
 import GameMenu from "../../lib/gameMenu";
@@ -11,6 +10,31 @@ declare global {
     Telegram: any;
   }
 }
+
+const sendMessage = async () => {
+  try {
+    const response = await fetch('/api/send-message', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: 7441988500,
+        message: "test message"
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (response.ok) {
+      console.log('Message sent successfully');
+    } else {
+      console.error('Failed to send message:', result.error);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
 
 export default function ClientComponent({ initialUsers }: { initialUsers: User[] }) {
   const [users, setUsers] = useState<User[]>(initialUsers);
@@ -85,7 +109,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
       <section aria-label="Notifications alt+T" tabIndex={-1} aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section>
       <div className="min-h-screen bg-background star-pattern relative overflow-auto">
         <div className="px-4 pb-20 relative z-10 h-screen flex flex-col items-center justify-center">
-          
+          <button onClick={sendMessage}>Test</button>
         </div>
         <GameMenu activeItem={2} />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">

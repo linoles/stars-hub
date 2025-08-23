@@ -3270,44 +3270,6 @@ bot.on("pre_checkout_query", async (ctx) => {
   }
 });
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const action = searchParams.get('action');
-  const userId = searchParams.get('userId');
-
-  // Новый endpoint для получения аватара
-  if (action === 'getAvatar' && userId) {
-    try {
-      // Используем уже инициализированного бота
-      const userProfile = await bot.telegram.getUserProfilePhotos(parseInt(userId));
-      
-      if (!userProfile.photos || userProfile.photos.length === 0) {
-        return NextResponse.json({ error: 'No profile photo found' }, { status: 404 });
-      }
-
-      const fileId = userProfile.photos[0][2].file_id;
-      const file = await bot.telegram.getFile(fileId);
-      const filePath = file.file_path;
-      
-      // Возвращаем filePath для безопасного проксирования
-      return NextResponse.json({ 
-        success: true, 
-        filePath: filePath 
-      });
-      
-    } catch (error: any) {
-      console.error('Error fetching avatar:', error);
-      return NextResponse.json({ 
-        error: 'Failed to fetch avatar',
-        details: error.message 
-      }, { status: 500 });
-    }
-  }
-
-  // Остальная логика вашего бота...
-  return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
-}
-
 export async function POST(req: Request) {
   try {
     const body = await req.json();
