@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Telegraf } from 'telegraf';
 
 // Инициализация бота
-const botToken = process.env.TELEGRAM_BOT_TOKEN || "8270325718:AAFFL73Yy6cp00-WEFwys-qnb7t5kA_qVmE";
+const botToken = process.env.BOT_TOKEN || "";
 const bot = new Telegraf(botToken);
 
 export async function POST(req: NextRequest) {
