@@ -97,6 +97,38 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
     }, spinDuration);
   };
 
+  const changeBet = async () => {
+    const input = prompt("🔢 Введите новую ставку: ");
+    if (input === null || isNaN(parseInt(input))) {
+      alert("❌ Введите целое число!");
+      return;
+    } else if (parseInt(input) < 5) {
+      alert("❌ Минимальная ставка - 5⭐!");
+      return;
+    } else if (parseInt(input) > curUser.stars) {
+      alert("❌ Недостаточно звезд!");
+      return;
+    } else {
+      alert("✅ Ставка успешно изменена!");
+      curUser.bet = parseInt(input);
+      setCurUser({ ...curUser });
+      setUsers([...users, curUser]);
+      const response = await fetch('/api/save-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(curUser),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Ошибка сервера");
+      }
+      const result = await response.json();
+    }
+  }
+
   const checkWin = async (finalSlots: string[]) => {
     let retBet = 0;
     let multiplier = 0;
@@ -310,19 +342,17 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           <div className="w-full h-fit flex flex-col justify-center items-center">
             <button
               className="w-full mt-4 h-[60px] flex flex-row justify-center items-center"
-              onClick={spinSlots}
-              disabled={isSpinning}
             >
               <p className={
                 `text-${curUser.bet >= 1000 ? "2xl" : curUser.bet >= 100 ? "[1.6rem]" : "4xl"} font-bold w-[320px] py-3 pl-6 pr-3 mr-2 duration-500 rounded-r-xl rounded-l-full bg-stone-800/75 text-white ` +
                 inter.className +
                 (isSpinning ? " opacity-50 cursor-not-allowed" : " hover:bg-stone-800/35")
-              }>{`${curUser.bet} ⭐`}</p>
+              } onClick={() => isSpinning ? null : changeBet()}>{`${curUser.bet} ⭐`}</p>
               <p className={
                 "text-4xl font-bold w-[320px] py-3 px-6 duration-500 rounded-l-xl rounded-r-full bg-stone-800/75 text-white " +
                 inter.className +
                 (isSpinning ? " opacity-50 cursor-not-allowed" : " hover:bg-stone-800/35")
-              }>
+              } onClick={() => isSpinning ? null : spinSlots()}>
                 {`ИГРАТЬ`}
               </p>
             </button>
