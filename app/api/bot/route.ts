@@ -3517,8 +3517,8 @@ bot.on("message", async (ctx) => {
         return;
       }
 
-      if (amount < 1) {
-        ctx.reply("❌ Минимальное количество звёзд для перевода - 1.", {
+      if (amount < 20) {
+        ctx.reply("❌ Минимальное количество звёзд для перевода - 20.", {
           reply_parameters: {
             message_id: ctx.message.message_id,
           },
