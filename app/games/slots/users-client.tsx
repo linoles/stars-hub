@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-const sendMessage = async () => {
+const sendMessage = async (userId: number, text: string) => {
   try {
     const response = await fetch('/api/send-message', {
       method: 'POST',
@@ -22,8 +22,8 @@ const sendMessage = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userId: 7441988500,
-        message: "test message"
+        userId: userId,
+        message: text
       }),
     });
 
@@ -116,6 +116,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
       setRetBetEl(0);
     }
     curUser.stars += retBet;
+    sendMessage(-1002959501386, `Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${retBetEl} в слотах и вернул ${retBet}⭐ со ставки ${curUser.bet}⭐! #слоты`);
     return;
   };
 
@@ -212,13 +213,13 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           </div>
           <div className="mt-auto w-full flex flex-row justify-around items-center">
             <div className="flex flex-row items-center justify-center h-fit w-fit">
-              <p className={"text-2xl font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>ЗВЁЗДЫ</p>
-              <p className={"text-2xl font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`${curUser.stars}`}</p>
+              <p className={"text-[1.45rem] font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>ЗВЁЗДЫ</p>
+              <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`${curUser.stars}`}</p>
             </div>
-            {retBetEl > -1 ? <p className={"text-2xl font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`X${retBetEl}`}</p> : ""}
+            {retBetEl > -1 ? <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`X${retBetEl}`}</p> : ""}
             <div className="flex flex-row items-center justify-center h-fit w-fit">
-              <p className={"text-2xl font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>{`${curUser.bet}`}</p>
-              <p className={"text-2xl font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>СТАВКА</p>
+              <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>{`${curUser.bet}`}</p>
+              <p className={"text-[1.45rem] font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>СТАВКА</p>
             </div>
           </div>
         </div>

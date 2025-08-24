@@ -27,7 +27,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await bot.telegram.sendMessage(userId, message);
+    await bot.telegram.sendMessage(userId, message, {
+      parse_mode: "HTML",
+    });
 
     return NextResponse.json({ 
       success: true, 
