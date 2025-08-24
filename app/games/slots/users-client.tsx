@@ -298,7 +298,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
               <p className={"text-[1.45rem] font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>ЗВЁЗДЫ</p>
               <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`${curUser.stars}`}</p>
             </div>
-            {retBetEl > -1 ? <p className={"text-[1.2rem] font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`X${retBetEl}`}</p> : ""}
+            {retBetEl > -1 ? <p className={"text-[1rem] font-bold text-casino-gold/50 " + inter.className}>{`X${retBetEl}`}</p> : ""}
             <div className="flex flex-row items-center justify-center h-fit w-fit">
               <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>{`${curUser.bet}`}</p>
               <p className={"text-[1.45rem] font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>СТАВКА</p>
