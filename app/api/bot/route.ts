@@ -1820,7 +1820,7 @@ async function processTransfer(sender: any, receiver: any, amount: any, ctx: any
     try {
       await bot.telegram.sendMessage(
         receiver.tgId,
-        `🎉 Вы получили перевод в размере ${amount * 0.95}⭐ (${amount} - 5%) от <a href="tg://openmessage?user_id=${sender.tgId}">${sender.tgNick}</a> (#${sender.tgId})!\nТеперь ваш баланс составляет: ${receiver.stars + (amount * 0.95)} ⭐`,
+        `🎉 Вы получили перевод в размере ${amount * 0.95}⭐ (${amount} - 5%) от <a href="tg://openmessage?user_id=${sender.tgId}">${sender.tgNick}</a> (#id${sender.tgId})!\nТеперь ваш баланс составляет: ${receiver.stars + (amount * 0.95)} ⭐`,
         { parse_mode: "HTML" }
       );
     } catch (error) {
@@ -1828,7 +1828,7 @@ async function processTransfer(sender: any, receiver: any, amount: any, ctx: any
     }
 
     sendLog(
-      `Совершён перевод звёзд (${amount}⭐ - ${amount * 0.95}) с <a href="tg://openmessage?user_id=${sender.tgId}">${sender.tgNick}</a> (#${sender.tgId}) на <a href="tg://openmessage?user_id=${receiver.tgId}">${receiver.tgNick}</a> (#${receiver.tgId}) #transfer`
+      `Совершён перевод звёзд (${amount}⭐ - ${amount * 0.95}⭐) с <a href="tg://openmessage?user_id=${sender.tgId}">${sender.tgNick}</a> (#id${sender.tgId}) на <a href="tg://openmessage?user_id=${receiver.tgId}">${receiver.tgNick}</a> (#id${receiver.tgId}) #transfer`
     );
 
   } catch (error) {
