@@ -3266,12 +3266,19 @@ bot.on("message", async (ctx) => {
           },
         });
         return;
+      } else if (amount < 1) {
+        ctx.reply("❌ Минимальное количество звёзд для перевода - 1.", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
       }
       const user2 = (
         await supabase
           .from("users")
           .select("*")
-          .eq("tgUsername", userTag)
+          .eq("lower(tgUsername)", userTag.toLowerCase())
           .single()
       ).data;
       if (!user2) {
@@ -3289,7 +3296,7 @@ bot.on("message", async (ctx) => {
       await supabase
         .from("users")
         .update({ stars: user2.stars + amount })
-        .eq("tgId", user2.tgId);
+        .eq("lower(tgUsername)", userTag.toLowerCase());
       ctx.reply("✅ Перевод успешно выполнен.", {
         reply_parameters: {
           message_id: ctx.message.message_id,
