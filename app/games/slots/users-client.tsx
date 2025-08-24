@@ -188,11 +188,14 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
 
     setRetBetEl(multiplier);
 
-    setCurUser(prevUser => ({
-      ...prevUser,
-      stars: prevUser.stars + retBet
-    }));
-    supabase.from("users").update({ stars: curUser.stars }).eq("tgId", curUser.tgId);
+    setCurUser(prevUser => {
+      const newCurUser = {
+        ...prevUser,
+        stars: prevUser.stars + retBet
+      };
+      supabase.from("users").update({ stars: newCurUser.stars }).eq("tgId", newCurUser.tgId);
+      return newCurUser;
+    });
 
     sendMessage(
       -1002959501386,
