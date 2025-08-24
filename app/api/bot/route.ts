@@ -1914,7 +1914,7 @@ async function processAdmTransfer(
     );
   } catch (error) {
     console.error("Ошибка при переводе:", error);
-    ctx.reply("❌ Произошла ошибка при выполнении перевода.", {
+    ctx.reply("❌ Произошла ошибка при выполнении начисления.", {
       reply_parameters: {
         message_id: ctx.message.message_id,
       },
@@ -3517,13 +3517,21 @@ bot.on("message", async (ctx) => {
         return;
       }
 
-      if (amount < 20) {
-        ctx.reply("❌ Минимальное количество звёзд для перевода - 20.", {
+      if (amount < 5) {
+        ctx.reply("❌ Минимальное количество звёзд для перевода - 5.", {
           reply_parameters: {
             message_id: ctx.message.message_id,
           },
         });
         return;
+      }
+
+      if (Math.floor(amount) !== amount) {
+        ctx.reply("❌ Количество звёзд для перевода должно быть целым числом.", {
+          reply_parameters: {
+            message_id: ctx.message.message_id
+          }
+        });
       }
 
       const user2Result = await supabase
