@@ -52,7 +52,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 100, bet: 10, lvl: 1, friends: 0 });
+  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 10000, bet: 10, lvl: 1, friends: 0 });
   const [slots, setSlots] = useState(['/7_1.png', '/7_1.png', '/7_1.png']);
   const [isSpinning, setIsSpinning] = useState(false);
   const [retBetEl, setRetBetEl] = useState(-1);
@@ -140,7 +140,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           multiplier = 4;
           triggerConfetti();
           showToast({
-            message: `Вы выбили тройную комбинацию и получаете ${retBet - curUser.bet}⭐ (X${multiplier})!`,
+            message: `Вы выбили тройную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${multiplier})!`,
             type: 'success',
             duration: 2500
           });
@@ -150,7 +150,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           multiplier = 3;
           triggerConfetti();
           showToast({
-            message: `Вы выбили тройную комбинацию и получаете ${retBet - curUser.bet}⭐ (X${multiplier})!`,
+            message: `Вы выбили тройную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${multiplier})!`,
             type: 'success',
             duration: 2500
           });
@@ -160,7 +160,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           multiplier = 2.5;
           triggerConfetti();
           showToast({
-            message: `Вы выбили тройную комбинацию и получаете ${retBet - curUser.bet}⭐ (X${multiplier})!`,
+            message: `Вы выбили тройную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${multiplier})!`,
             type: 'success',
             duration: 2500
           });
@@ -170,7 +170,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           multiplier = 2;
           triggerConfetti();
           showToast({
-            message: `Вы выбили тройную комбинацию и получаете ${retBet - curUser.bet}⭐ (X${multiplier})!`,
+            message: `Вы выбили тройную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${multiplier})!`,
             type: 'success',
             duration: 2500
           });
@@ -187,7 +187,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           multiplier = mult;
           if (mult < 1) {
             showToast({
-              message: `Вы выбили проигрышную комбинацию и вам возвращается ${retBet - curUser.bet}⭐ (X${mult})!`,
+              message: `Вы выбили проигрышную комбинацию и вам возвращается ${Math.floor(retBet - curUser.bet)}⭐ (X${mult})!`,
               type: 'error',
               duration: 2500
             });
@@ -199,7 +199,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
             });
           } else {
             showToast({
-              message: `Вы выбили выигрышную комбинацию и получаете ${retBet - curUser.bet}⭐ (X${mult})!`,
+              message: `Вы выбили выигрышную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${mult})!`,
               type: 'success',
               duration: 2500
             });
@@ -344,7 +344,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
               className="w-full mt-4 h-[60px] flex flex-row justify-center items-center"
             >
               <p className={
-                `text-${curUser.bet >= 1000 ? "[1.5rem]" : curUser.bet >= 100 ? "[1.75rem]" : "[2rem]"} font-bold w-[320px] py-3 pl-6 pr-3 mr-2 duration-500 rounded-r-xl rounded-l-full bg-stone-800/75 text-white ` +
+                `${curUser.bet >= 1000 ? "text-[22px]" : curUser.bet >= 100 ? "text-[25px]" : "text-[28px]"} font-bold w-[320px] py-3 pl-6 pr-3 mr-2 duration-500 rounded-r-xl rounded-l-full bg-stone-800/75 text-white ` +
                 inter.className +
                 (isSpinning ? " opacity-50 cursor-not-allowed" : " hover:bg-stone-800/35")
               } onClick={() => isSpinning ? null : changeBet()}>{`${curUser.bet} ⭐`}</p>
