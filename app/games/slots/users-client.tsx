@@ -314,20 +314,20 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
               disabled={isSpinning}
             >
               <p className={
-                "text-4xl font-bold w-[320px] py-3 px-6 duration-500 rounded-r-3xl rounded-l-full bg-stone-800/75 text-white " +
+                `text-${curUser.bet >= 1000 ? "2xl" : curUser.bet >= 100 ? "[1.6rem]" : "4xl"} font-bold w-[320px] py-3 pl-6 pr-3 mr-2 duration-500 rounded-r-xl rounded-l-full bg-stone-800/75 text-white ` +
                 inter.className +
                 (isSpinning ? " opacity-50 cursor-not-allowed" : " hover:bg-stone-800/35")
               }>{`${curUser.bet} ⭐`}</p>
               <p className={
-                "text-4xl font-bold w-[320px] py-3 px-6 duration-500 rounded-3xl bg-stone-800/75 text-white " +
+                "text-4xl font-bold w-[320px] py-3 px-6 duration-500 rounded-l-xl rounded-r-full bg-stone-800/75 text-white " +
                 inter.className +
                 (isSpinning ? " opacity-50 cursor-not-allowed" : " hover:bg-stone-800/35")
               }>
-                {isSpinning ? 'КРУТИМ...' : `ИГРАТЬ`}
+                {`ИГРАТЬ`}
               </p>
             </button>
           </div>
-          <div className="mt-auto w-full flex flex-row justify-around items-center">
+          <div className="mt-auto w-full max-w-[320px] flex flex-row justify-around items-center">
             <div className="flex flex-row items-center justify-center h-fit w-fit">
               <p className={"text-[1.45rem] font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>ЗВЁЗДЫ</p>
               <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`${curUser.stars}`}</p>
