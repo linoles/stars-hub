@@ -1797,7 +1797,6 @@ const sendLog = async (msg: string) => {
 
 async function processTransfer(sender: any, receiver: any, amount: any, ctx: any) {
   try {
-    // Обновляем баланс отправителя
     const updateSender = await supabase
       .from("users")
       .update({ stars: sender.stars - amount })
@@ -1805,35 +1804,31 @@ async function processTransfer(sender: any, receiver: any, amount: any, ctx: any
 
     if (updateSender.error) throw updateSender.error;
 
-    // Обновляем баланс получателя
     const updateReceiver = await supabase
       .from("users")
-      .update({ stars: receiver.stars + amount })
+      .update({ stars: receiver.stars + (amount * 0.95) })
       .eq("tgId", receiver.tgId);
 
     if (updateReceiver.error) throw updateReceiver.error;
 
-    // Уведомляем отправителя
-    ctx.reply(`✅ Перевод ${amount} ⭐ пользователю @${receiver.tgUsername} успешно выполнен.`, {
+    ctx.reply(`✅ Перевод ${amount}⭐ пользователю @${receiver.tgUsername} успешно выполнен. Однако он получит ${amount * 0.95}⭐ (-5% комиссии)`, {
       reply_parameters: {
         message_id: ctx.message.message_id,
       },
     });
 
-    // Уведомляем получателя
     try {
       await bot.telegram.sendMessage(
         receiver.tgId,
-        `🎉 Вы получили перевод в размере ${amount} звёзд от <a href="tg://openmessage?user_id=${sender.tgId}">${sender.tgNick} (#${sender.tgId})</a>!\nТеперь ваш баланс составляет: ${receiver.stars + amount} ⭐`,
+        `🎉 Вы получили перевод в размере ${amount * 0.95}⭐ (${amount} - 5%) от <a href="tg://openmessage?user_id=${sender.tgId}">${sender.tgNick}</a> (#${sender.tgId})!\nТеперь ваш баланс составляет: ${receiver.stars + (amount * 0.95)} ⭐`,
         { parse_mode: "HTML" }
       );
     } catch (error) {
       console.log("Не удалось отправить сообщение получателю:", error);
     }
 
-    // Логируем операцию
     sendLog(
-      `Совершён перевод звёзд (${amount} ⭐) с <a href="tg://openmessage?user_id=${sender.tgId}">${sender.tgNick} (#${sender.tgId})</a> на <a href="tg://openmessage?user_id=${receiver.tgId}">${receiver.tgNick} (#${receiver.tgId})</a> #transfer`
+      `Совершён перевод звёзд (${amount}⭐ - ${amount * 0.95}) с <a href="tg://openmessage?user_id=${sender.tgId}">${sender.tgNick}</a> (#${sender.tgId}) на <a href="tg://openmessage?user_id=${receiver.tgId}">${receiver.tgNick}</a> (#${receiver.tgId}) #transfer`
     );
 
   } catch (error) {
