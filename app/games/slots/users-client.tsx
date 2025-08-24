@@ -209,17 +209,17 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(curUser),
-    })
+    });
 
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || "Ошибка сервера")
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Ошибка сервера");
     }
-    const result = await response.json()
+    const result = await response.json();
 
     sendMessage(
       -1002959501386,
-      `Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${multiplier} в слотах и вернул ${retBet}⭐ со ставки ${curUser.bet}⭐! #слоты`
+      `🎰 Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${multiplier} в слотах и вернул ${retBet}⭐ со ставки ${curUser.bet}⭐!\n⚡ Его новый баланс: ${result.stars}⭐ #слоты`
     );
     if (multiplier === 0) {
       showToast({

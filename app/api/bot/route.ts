@@ -1836,9 +1836,7 @@ async function processTransfer(
           sender.tgId
         }">${sender.tgNick}</a> (#id${
           sender.tgId
-        })!\nТеперь ваш баланс составляет: ${
-          receiver.stars + amount * 0.95
-        }⭐`,
+        })!\nТеперь ваш баланс составляет: ${receiver.stars + amount * 0.95}⭐`,
         { parse_mode: "HTML" }
       );
     } catch (error) {
@@ -1846,13 +1844,15 @@ async function processTransfer(
     }
 
     sendLog(
-      `Совершён перевод звёзд (${amount}⭐ - ${
+      `🤝 Совершён перевод звёзд (${amount}⭐ - ${
         amount * 0.95
       }⭐) с <a href="tg://openmessage?user_id=${sender.tgId}">${
         sender.tgNick
       }</a> (#id${sender.tgId}) на <a href="tg://openmessage?user_id=${
         receiver.tgId
-      }">${receiver.tgNick}</a> (#id${receiver.tgId}) #transfer`
+      }">${receiver.tgNick}</a> (#id${receiver.tgId})\nБаланс отправителя: ${
+        sender.stars - amount
+      }⭐\nБаланс получателя: ${receiver.stars + amount * 0.95}⭐ #transfer`
     );
   } catch (error) {
     console.error("Ошибка при переводе:", error);
@@ -1879,9 +1879,7 @@ async function processAdmTransfer(
     if (updateReceiver.error) throw updateReceiver.error;
 
     ctx.reply(
-      `✅ Начисление ${amount}⭐ пользователю @${
-        receiver.tgUsername
-      } успешно выполнен!`,
+      `✅ Начисление ${amount}⭐ пользователю @${receiver.tgUsername} успешно выполнен!`,
       {
         reply_parameters: {
           message_id: ctx.message.message_id,
@@ -1892,15 +1890,11 @@ async function processAdmTransfer(
     try {
       await bot.telegram.sendMessage(
         receiver.tgId,
-        `🎉 Вы получили начисление в размере ${
-          amount
-        }⭐ от <a href="tg://openmessage?user_id=${
+        `🎉 Вы получили начисление в размере ${amount}⭐ от <a href="tg://openmessage?user_id=${
           sender.tgId
         }">${sender.tgNick}</a> (#id${
           sender.tgId
-        })!\nТеперь ваш баланс составляет: ${
-          receiver.stars + amount
-        }⭐`,
+        })!\nТеперь ваш баланс составляет: ${receiver.stars + amount}⭐`,
         { parse_mode: "HTML" }
       );
     } catch (error) {
@@ -1908,11 +1902,15 @@ async function processAdmTransfer(
     }
 
     sendLog(
-      `Совершено начисление звёзд (${amount}⭐) с <a href="tg://openmessage?user_id=${sender.tgId}">${
-        sender.tgNick
-      }</a> (#id${sender.tgId}) на <a href="tg://openmessage?user_id=${
-        receiver.tgId
-      }">${receiver.tgNick}</a> (#id${receiver.tgId}) #начисление`
+      `🧙‍♂️ Совершено начисление звёзд (${amount}⭐) с <a href="tg://openmessage?user_id=${
+        sender.tgId
+      }">${sender.tgNick}</a> (#id${
+        sender.tgId
+      }) на <a href="tg://openmessage?user_id=${receiver.tgId}">${
+        receiver.tgNick
+      }</a> (#id${receiver.tgId})\nНовый баланс получателя: ${
+        receiver.stars + amount
+      }⭐ #начисление`
     );
   } catch (error) {
     console.error("Ошибка при переводе:", error);
@@ -2715,92 +2713,92 @@ bot.on("message", async (ctx) => {
         });
         return;
       } else if (msg && msg.startsWith("/накрутить ")) {
-      const parts = msg.split(" ");
-      if (parts.length < 3) {
-        ctx.reply(
-          "❌ Неправильный формат команды. Используйте: /накрутить @username количество",
-          {
-            reply_parameters: {
-              message_id: ctx.message.message_id,
-            },
-          }
-        );
-        return;
-      }
-
-      const userTag = parts[1].replace("@", ""); // Убираем @ из тега
-      const amount = Number(parts[2]);
-
-      if (isNaN(amount)) {
-        ctx.reply(
-          "❌ Некорректное количество звёзд. Пожалуйста, введите число.",
-          {
-            reply_parameters: {
-              message_id: ctx.message.message_id,
-            },
-          }
-        );
-        return;
-      }
-
-      const userId = ctx.message.from.id;
-
-      const userResult = await supabase
-        .from("users")
-        .select("*")
-        .eq("tgId", userId)
-        .single();
-      if (userResult.error) {
-        ctx.reply("❌ Ошибка при получении данных отправителя.", {
-          reply_parameters: {
-            message_id: ctx.message.message_id,
-          },
-        });
-        return;
-      }
-      const user = userResult.data;
-
-      if (amount < 1) {
-        ctx.reply("❌ Минимальное количество звёзд для накрутки - 1.", {
-          reply_parameters: {
-            message_id: ctx.message.message_id,
-          },
-        });
-        return;
-      }
-
-      const user2Result = await supabase
-        .from("users")
-        .select("*")
-        .ilike("tgUsername", `%${userTag}%`)
-        .maybeSingle();
-
-      if (user2Result.error || !user2Result.data) {
-        if (!isNaN(Number(userTag))) {
-          const user2ByIdResult = await supabase
-            .from("users")
-            .select("*")
-            .eq("tgId", Number(userTag))
-            .maybeSingle();
-
-          if (user2ByIdResult.data) {
-            const user2 = user2ByIdResult.data;
-            await processAdmTransfer(user, user2, amount, ctx);
-            return;
-          }
+        const parts = msg.split(" ");
+        if (parts.length < 3) {
+          ctx.reply(
+            "❌ Неправильный формат команды. Используйте: /накрутить @username количество",
+            {
+              reply_parameters: {
+                message_id: ctx.message.message_id,
+              },
+            }
+          );
+          return;
         }
 
-        ctx.reply("❌ Пользователь не найден.", {
-          reply_parameters: {
-            message_id: ctx.message.message_id,
-          },
-        });
-        return;
-      }
+        const userTag = parts[1].replace("@", ""); // Убираем @ из тега
+        const amount = Number(parts[2]);
 
-      const user2 = user2Result.data;
-      await processAdmTransfer(user, user2, amount, ctx);
-    }
+        if (isNaN(amount)) {
+          ctx.reply(
+            "❌ Некорректное количество звёзд. Пожалуйста, введите число.",
+            {
+              reply_parameters: {
+                message_id: ctx.message.message_id,
+              },
+            }
+          );
+          return;
+        }
+
+        const userId = ctx.message.from.id;
+
+        const userResult = await supabase
+          .from("users")
+          .select("*")
+          .eq("tgId", userId)
+          .single();
+        if (userResult.error) {
+          ctx.reply("❌ Ошибка при получении данных отправителя.", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          return;
+        }
+        const user = userResult.data;
+
+        if (amount < 1) {
+          ctx.reply("❌ Минимальное количество звёзд для накрутки - 1.", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          return;
+        }
+
+        const user2Result = await supabase
+          .from("users")
+          .select("*")
+          .ilike("tgUsername", `%${userTag}%`)
+          .maybeSingle();
+
+        if (user2Result.error || !user2Result.data) {
+          if (!isNaN(Number(userTag))) {
+            const user2ByIdResult = await supabase
+              .from("users")
+              .select("*")
+              .eq("tgId", Number(userTag))
+              .maybeSingle();
+
+            if (user2ByIdResult.data) {
+              const user2 = user2ByIdResult.data;
+              await processAdmTransfer(user, user2, amount, ctx);
+              return;
+            }
+          }
+
+          ctx.reply("❌ Пользователь не найден.", {
+            reply_parameters: {
+              message_id: ctx.message.message_id,
+            },
+          });
+          return;
+        }
+
+        const user2 = user2Result.data;
+        await processAdmTransfer(user, user2, amount, ctx);
+      }
     }
 
     if (!row.ludka.doneUsers[`${senderId}`] && row.ludka.isActive) {
