@@ -219,7 +219,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
 
     sendMessage(
       -1002959501386,
-      `🎰 Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${multiplier} в слотах и вернул ${retBet}⭐ со ставки ${curUser.bet}⭐!\n⚡ Его новый баланс: ${result.stars}⭐ #слоты`
+      `🎰 Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${multiplier} в слотах и вернул ${retBet}⭐ со ставки ${curUser.bet}⭐!\n⚡ Его новый баланс: ${result.stars + retBet}⭐ #слоты\n\n[${(new Date()).toLocaleString("ru-RU")}]`
     );
     if (multiplier === 0) {
       showToast({
