@@ -5,6 +5,8 @@ import { User } from "../../users-client";
 import "@/app/games/games.css";
 import GameMenu from "../../lib/gameMenu";
 import { inter } from "@/app/fonts";
+import { useConfetti } from "@/app/lib/useConfetti";
+import Confetti from "@/app/lib/confetti";
 
 const SLOT_ICONS = ['/BAR.png', '/🍇.png', '/🍋.png', '/7_1.png'];
 
@@ -47,6 +49,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [slots, setSlots] = useState(['/7_1.png', '/7_1.png', '/7_1.png']);
   const [isSpinning, setIsSpinning] = useState(false);
   const [retBetEl, setRetBetEl] = useState(-1);
+  const { isConfettiActive, triggerConfetti } = useConfetti();
 
   const spinSlots = async () => {
     if (isSpinning) return;
@@ -90,15 +93,19 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
     let retBet = 0;
     if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/7_1.png") {
       retBet = curUser.bet * 4;
+      triggerConfetti();
       setRetBetEl(4);
     } else if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/🍋.png") {
       retBet = curUser.bet * 3;
+      triggerConfetti();
       setRetBetEl(3);
     } else if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/🍇.png") {
       retBet = curUser.bet * 2.5;
+      triggerConfetti();
       setRetBetEl(2.5);
     } else if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/BAR.png") {
       retBet = curUser.bet * 2;
+      triggerConfetti();
       setRetBetEl(2);
     } else if ((finalSlots[0] === finalSlots[1] && finalSlots[0] === "/7_1.png") || (finalSlots[1] === finalSlots[2] && finalSlots[1] === "/7_1.png") || (finalSlots[0] === finalSlots[2] && finalSlots[0] === "/7_1.png")) {
       retBet = curUser.bet * 1.2;
@@ -116,7 +123,9 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
       setRetBetEl(0);
     }
     curUser.stars += retBet;
-    sendMessage(-1002959501386, `Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${retBetEl} в слотах и вернул ${retBet}⭐ со ставки ${curUser.bet}⭐! #слоты`);
+    setTimeout(() => {
+      sendMessage(-1002959501386, `Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${retBetEl} в слотах и вернул ${retBet}⭐ со ставки ${curUser.bet}⭐! #слоты`);
+    }, 100);
     return;
   };
 
@@ -185,6 +194,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
         <ol tabIndex={-1} className="fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]"></ol>
       </div>
       <section aria-label="Notifications alt+T" tabIndex={-1} aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section>
+      <Confetti isActive={isConfettiActive} />
       <div className="min-h-screen bg-background star-pattern relative overflow-auto">
         <div className="px-4 pb-20 relative z-10 h-screen flex flex-col items-center justify-center">
           <div className="slots flex flex-row justify-center items-center mt-auto">
