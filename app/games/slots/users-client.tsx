@@ -9,9 +9,14 @@ import { useConfetti } from "@/app/lib/useConfetti";
 import Confetti from "@/app/lib/confetti";
 import { useToast } from "@/app/lib/useToast";
 import ToastNotification from "@/app/lib/toast";
+import { createClient } from "@supabase/supabase-js";
 
 const SLOT_ICONS = ['/BAR.png', '/🍇.png', '/🍋.png', '/7_1.png'];
 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 declare global {
   interface Window {
     Telegram: any;
@@ -187,6 +192,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
       ...prevUser,
       stars: prevUser.stars + retBet
     }));
+    supabase.from("users").update({ stars: curUser.stars }).eq("tgId", curUser.tgId);
 
     sendMessage(
       -1002959501386,
@@ -289,7 +295,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
                 inter.className +
                 (isSpinning ? " opacity-50 cursor-not-allowed" : " hover:bg-stone-800/35")
               }>
-                {isSpinning ? 'КРУТИМ...' : `ИГРАТЬ (${curUser.bet}⭐)`}
+                {isSpinning ? 'КРУТИМ...' : `ИГРАТЬ`}
               </p>
             </button>
           </div>
