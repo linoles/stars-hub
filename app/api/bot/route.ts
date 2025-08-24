@@ -2,7 +2,7 @@ import { config } from "@/app/config";
 import { createClient } from "@supabase/supabase-js";
 import { Markup, Telegraf } from "telegraf";
 import { TelegramEmoji } from "telegraf/types";
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 const bot = new Telegraf("8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE");
 
@@ -815,7 +815,9 @@ bot.action(/lotery=(.+)/, async (ctx) => {
         )
           .map(
             (win) =>
-              `<a href="tg://openmessage?user_id=${win[0]}">${win[1]} (${win[0]})</a> ${
+              `<a href="tg://openmessage?user_id=${win[0]}">${win[1]} (${
+                win[0]
+              })</a> ${
                 Object.keys(row.lotery.prizes)
                   .find((key: any) => row.lotery.prizes[key] === Number(win[0]))
                   ?.split(" ")[0] || "🎉"
@@ -853,9 +855,9 @@ const updateLeaderboard = async (ctx: any, from: number) => {
         ([user, data]: any, index) =>
           `<a href="https://t.me/StarzHubBot?start=profile_${user}">${
             index + 1
-          }. </a><b><a href="tg://openmessage?user_id=${user}">${data.name}</a></b>: ${
-            data.points
-          }`
+          }. </a><b><a href="tg://openmessage?user_id=${user}">${
+            data.name
+          }</a></b>: ${data.points}`
       )
       .join("\n");
 
@@ -906,7 +908,9 @@ const endGlobalGame = async (ctx: any) => {
       .slice(0, row.game.winners)
       .map(
         ([user, data]: any, index) =>
-          `${index + 1}. <a href="tg://openmessage?user_id=${user}">${data.name}</a>: ${
+          `${index + 1}. <a href="tg://openmessage?user_id=${user}">${
+            data.name
+          }</a>: ${
             data.points
           } <a href="https://t.me/StarzHubBot?start=profile_${user}">📎</a>`
       )
@@ -918,9 +922,9 @@ const endGlobalGame = async (ctx: any) => {
         ([user, data]: any, index) =>
           `<a href="https://t.me/StarzHubBot?start=profile_${user}">${
             index + 1
-          }. </a><b><a href="tg://openmessage?user_id=${user}">${data.name}</a></b>: ${
-            data.points
-          }`
+          }. </a><b><a href="tg://openmessage?user_id=${user}">${
+            data.name
+          }</a></b>: ${data.points}`
       )
       .join("\n");
 
@@ -1780,6 +1784,17 @@ const getClava = () => {
   ]).resize();
 };
 
+const sendLog = async (msg: string) => {
+  const dateNow = new Date();
+  await bot.telegram.sendMessage(
+    -1002959501386,
+    msg + `\n\n[${dateNow.toLocaleString("ru-RU")}]`,
+    {
+      parse_mode: "HTML",
+    }
+  );
+};
+
 bot.on("message", async (ctx) => {
   try {
     const chats = [
@@ -2173,9 +2188,9 @@ bot.on("message", async (ctx) => {
                     : index === 2
                     ? "🥉"
                     : `${index + 1}.`
-                } <a href="tg://openmessage?user_id=${arr[0]}">${arr[1].name}</a>: ${
-                  arr[1].tickets
-                } 🎫`
+                } <a href="tg://openmessage?user_id=${arr[0]}">${
+                  arr[1].name
+                }</a>: ${arr[1].tickets} 🎫`
             )
             .join("\n");
           ctx.reply(
@@ -2211,9 +2226,9 @@ bot.on("message", async (ctx) => {
                     : index === 2
                     ? "🥉"
                     : `${index + 1}.`
-                } <a href="tg://openmessage?user_id=${arr[0]}">${arr[1].name}</a>: ${
-                  arr[1].tickets
-                } 🎫`
+                } <a href="tg://openmessage?user_id=${arr[0]}">${
+                  arr[1].name
+                }</a>: ${arr[1].tickets} 🎫`
             )
             .join("\n");
           let hfinalText = `🏆 Лудка по билетам закончена!\n<blockquote expandable>Победители:\n${htop1}`;
@@ -3046,9 +3061,9 @@ bot.on("message", async (ctx) => {
                 : index === 2
                 ? "🥉"
                 : `${index + 1}.`
-            } <a href="tg://openmessage?user_id=${arr[0]}">${arr[1].name}</a>: ${
-              arr[1].tickets
-            } 🎫`
+            } <a href="tg://openmessage?user_id=${arr[0]}">${
+              arr[1].name
+            }</a>: ${arr[1].tickets} 🎫`
         )
         .join("\n");
       const randomReacts = ["🏆", "🎉", "💪", "⚡", "✍", "😎", "👍"] as const;
@@ -3224,6 +3239,70 @@ bot.on("message", async (ctx) => {
       const maxNum = Number(msg.split(" ")[1].split("-")[1]);
       const rand = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
       ctx.reply(`Йоу, я выбрал: ${rand.toString()} 😏`);
+    } else if (msg && msg.startsWith("/transfer ")) {
+      const userTag = msg.split(" ")[1].slice(1);
+      const amount = Number(msg.split(" ")[2]);
+      if (isNaN(amount)) {
+        ctx.reply(
+          "❌ Некорректное количество звёзд. Пожалуйста, введите число."
+        );
+        return;
+      }
+      const userId = ctx.message.from.id;
+      const user = (
+        await supabase.from("users").select("*").eq("tgId", userId).single()
+      ).data;
+      if (user.stars < amount) {
+        ctx.reply("❌ Недостаточно звёзд.", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
+      } else if (userTag === ctx.message.from.username) {
+        ctx.reply("❌ Вы не можете перевести звёзды самому себе.", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
+      }
+      const user2 = (
+        await supabase
+          .from("users")
+          .select("*")
+          .eq("tgUsername", userTag)
+          .single()
+      ).data;
+      if (!user2) {
+        ctx.reply("❌ Пользователь не найден.", {
+          reply_parameters: {
+            message_id: ctx.message.message_id,
+          },
+        });
+        return;
+      }
+      await supabase
+        .from("users")
+        .update({ stars: user.stars - amount })
+        .eq("tgId", userId);
+      await supabase
+        .from("users")
+        .update({ stars: user2.stars + amount })
+        .eq("tgId", user2.tgId);
+      ctx.reply("✅ Перевод успешно выполнен.", {
+        reply_parameters: {
+          message_id: ctx.message.message_id,
+        },
+      });
+      bot.telegram.sendMessage(
+        user2.tgId,
+        `Вы получили перевод в размере ${amount} звёзд от <a href="tg://openmessage?user_id=${user.tgId}">${user.tgNick} (#${user.tgId})</a>!\nТеперь ваш баланс составляет: ${user2.stars + amount} ⭐`,
+        { parse_mode: "HTML" }
+      );
+      sendLog(
+        `Совершён перевод звёзд (Сумма: ${amount}) с <a href="tg://openmessage?user_id=${user.tgId}">${user.tgNick} (#${user.tgId})</a> на <a href="tg://openmessage?user_id=${user2.tgId}">${user2.tgNick} (#${user2.tgId})</a> #transfer`
+      );
     }
 
     await supabase.from("users").update({ game: row.game }).eq("tgId", 1);
@@ -3256,12 +3335,15 @@ bot.on("pre_checkout_query", async (ctx) => {
         .update({ stars: newStars })
         .eq("tgId", userId);
       await bot.telegram.sendMessage(
-        userId, 
+        userId,
         `✅ Пополнение баланса прошло успешно! Теперь ваш баланс: ${newStars}`
       );
     } else {
-      await ctx.answerPreCheckoutQuery(false, "❌ Пополнение баланса не прошло. Пожалуйста, повторите попытку.");
-      return
+      await ctx.answerPreCheckoutQuery(
+        false,
+        "❌ Пополнение баланса не прошло. Пожалуйста, повторите попытку."
+      );
+      return;
     }
     await ctx.answerPreCheckoutQuery(true);
   } catch (error: any) {

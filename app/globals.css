@@ -1776,6 +1776,29 @@ body {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
+/* В CSS */
+@keyframes slotSpin {
+  0% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-100%);
+  }
+  50% {
+    transform: translateY(-200%);
+  }
+  75% {
+    transform: translateY(-300%);
+  }
+  100% {
+    transform: translateY(-400%);
+  }
+}
+
+.animate-slot-spin {
+  animation: slotSpin 0.2s linear infinite;
+}
+
 /* Добавьте в ваш global.css */
 .bg-gradient-to-r {
   background-size: 200% auto;

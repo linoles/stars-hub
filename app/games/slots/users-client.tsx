@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { User } from "../../users-client";
 import "@/app/games/games.css";
 import GameMenu from "../../lib/gameMenu";
+import { inter } from "@/app/fonts";
+
+const SLOT_ICONS = ['/BAR.png', '/🍇.png', '/🍋.png', '/7_1.png'];
 
 declare global {
   interface Window {
@@ -25,7 +28,7 @@ const sendMessage = async () => {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log('Message sent successfully');
     } else {
@@ -40,7 +43,81 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 1, friends: 0 });
+  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, bet: 10, lvl: 1, friends: 0 });
+  const [slots, setSlots] = useState(['/7_1.png', '/7_1.png', '/7_1.png']);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [retBetEl, setRetBetEl] = useState(1);
+
+  const spinSlots = async () => {
+    if (isSpinning) return;
+    if (curUser.stars < curUser.bet) {
+      alert("Недостаточно звезд!");
+      return;
+    }
+
+    setIsSpinning(true);
+
+    const spinDuration = 3000;
+    const spinInterval = 200;
+    const startTime = Date.now();
+
+    const getRandomIcon = () => {
+      return SLOT_ICONS[Math.floor(Math.random() * SLOT_ICONS.length)];
+    };
+
+    const spinAnimation = setInterval(() => {
+      setSlots([getRandomIcon(), getRandomIcon(), getRandomIcon()]);
+    }, spinInterval);
+
+    setTimeout(() => {
+      clearInterval(spinAnimation);
+
+      const finalSlots = [
+        getRandomIcon(),
+        getRandomIcon(),
+        getRandomIcon()
+      ];
+
+      setSlots(finalSlots);
+      setIsSpinning(false);
+      curUser.stars -= curUser.bet;
+
+      checkWin(finalSlots);
+    }, spinDuration);
+  };
+
+  const checkWin = (finalSlots: any) => {
+    let retBet = 0;
+    if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/7_1.png") {
+      retBet = curUser.bet * 4;
+      setRetBetEl(4);
+    } else if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/🍋.png") {
+      retBet = curUser.bet * 3;
+      setRetBetEl(3);
+    } else if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/🍇.png") {
+      retBet = curUser.bet * 2.5;
+      setRetBetEl(2.5);
+    } else if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/BAR.png") {
+      retBet = curUser.bet * 2;
+      setRetBetEl(2);
+    } else if ((finalSlots[0] === finalSlots[1] && finalSlots[0] === "/7_1.png") || (finalSlots[1] === finalSlots[2] && finalSlots[1] === "/7_1.png") || (finalSlots[0] === finalSlots[2] && finalSlots[0] === "/7_1.png")) {
+      retBet = curUser.bet * 1.2;
+      setRetBetEl(1.2);
+    } else if ((finalSlots[0] === finalSlots[1] && finalSlots[0] === "/🍋.png") || (finalSlots[1] === finalSlots[2] && finalSlots[1] === "/🍋.png") || (finalSlots[0] === finalSlots[2] && finalSlots[0] === "/🍋.png")) {
+      retBet = curUser.bet;
+      setRetBetEl(1);
+    } else if ((finalSlots[0] === finalSlots[1] && finalSlots[0] === "/🍇.png") || (finalSlots[1] === finalSlots[2] && finalSlots[1] === "/🍇.png") || (finalSlots[0] === finalSlots[2] && finalSlots[0] === "/🍇.png")) {
+      retBet = curUser.bet * 0.8;
+      setRetBetEl(0.8);
+    } else if ((finalSlots[0] === finalSlots[1] && finalSlots[0] === "/BAR.png") || (finalSlots[1] === finalSlots[2] && finalSlots[1] === "/BAR.png") || (finalSlots[0] === finalSlots[2] && finalSlots[0] === "/BAR.png")) {
+      retBet = curUser.bet * 0.6;
+      setRetBetEl(0.6);
+    } else {
+      setRetBetEl(0);
+    }
+    curUser.stars += retBet;
+    return;
+  };
 
   useEffect(() => {
     try {
@@ -94,7 +171,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           setIsAdding(false);
         }
       } else {
-        setCurUser(users.find(u => u.tgId === tgData.id) || { tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 1, friends: 0 });
+        setCurUser(users.find(u => u.tgId === tgData.id) || { tgId: 0, tgUsername: "", tgNick: "", stars: 0, bet: 10, lvl: 1, friends: 0 });
       }
     }
 
@@ -109,7 +186,31 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
       <section aria-label="Notifications alt+T" tabIndex={-1} aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section>
       <div className="min-h-screen bg-background star-pattern relative overflow-auto">
         <div className="px-4 pb-20 relative z-10 h-screen flex flex-col items-center justify-center">
-          <button onClick={sendMessage}>Test</button>
+          <div className="slots flex flex-row justify-center items-center">
+            {slots.map((slot, index) => (
+              <div key={index} className={`slot-container relative w-[6.25rem] h-[6.25rem] md:w-32 md:h-32 bg-stone-800/75 rounded-xl overflow-hidden mr-${index == 2 ? 0 : 2}`}>
+                <div className={`absolute inset-0 ${isSpinning ? 'animate-slot-spin' : ''}`}>
+                  <img src={slot} alt="slot" className="w-full h-full object-cover" />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="w-full h-fit flex flex-col justify-center items-center">
+            <button
+              className="w-full mt-4 h-[60px] flex flex-row justify-center items-center"
+              onClick={spinSlots}
+              disabled={isSpinning}
+            >
+              <p className={
+                "text-4xl font-bold w-[320px] py-3 px-6 duration-500 rounded-3xl bg-stone-800/75 text-white " +
+                inter.className +
+                (isSpinning ? " opacity-50 cursor-not-allowed" : " hover:bg-stone-800/35")
+              }>
+                {isSpinning ? 'КРУТИМ...' : 'ИГРАТЬ (10⭐)'}
+              </p>
+            </button>
+            <p>{`Баланс: ${curUser.stars} | X${retBetEl} | Ставка: ${curUser.bet}`}</p>
+          </div>
         </div>
         <GameMenu activeItem={2} />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">

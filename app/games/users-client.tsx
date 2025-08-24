@@ -16,7 +16,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 1, friends: 0 });
+  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, bet: 10, lvl: 1, friends: 0 });
 
   useEffect(() => {
     try {
@@ -70,7 +70,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           setIsAdding(false);
         }
       } else {
-        setCurUser(users.find(u => u.tgId === tgData.id) || { tgId: 0, tgUsername: "", tgNick: "", stars: 0, lvl: 1, friends: 0 });
+        setCurUser(users.find(u => u.tgId === tgData.id) || { tgId: 0, tgUsername: "", tgNick: "", stars: 0, bet: 10, lvl: 1, friends: 0 });
       }
     }
 

@@ -11,7 +11,6 @@ const bot = new Telegraf(botToken!);
 
 export async function POST(req: NextRequest) {
   try {
-    // Проверяем, что токен есть
     if (!botToken) {
       return NextResponse.json(
         { error: "Bot token is not configured" },
@@ -21,7 +20,6 @@ export async function POST(req: NextRequest) {
 
     const { userId, message } = await req.json();
 
-    // Валидация
     if (!userId || !message) {
       return NextResponse.json(
         { error: "userId and message are required" },
@@ -29,7 +27,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Отправка сообщения
     await bot.telegram.sendMessage(userId, message);
 
     return NextResponse.json({ 
