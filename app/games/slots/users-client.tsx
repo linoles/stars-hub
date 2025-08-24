@@ -344,7 +344,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
               className="w-full mt-4 h-[60px] flex flex-row justify-center items-center"
             >
               <p className={
-                `text-${curUser.bet >= 1000 ? "2xl" : curUser.bet >= 100 ? "[1.6rem]" : "4xl"} font-bold w-[320px] py-3 pl-6 pr-3 mr-2 duration-500 rounded-r-xl rounded-l-full bg-stone-800/75 text-white ` +
+                `text-${curUser.bet >= 1000 ? "[1.5rem]" : curUser.bet >= 100 ? "[1.75rem]" : "[2rem]"} font-bold w-[320px] py-3 pl-6 pr-3 mr-2 duration-500 rounded-r-xl rounded-l-full bg-stone-800/75 text-white ` +
                 inter.className +
                 (isSpinning ? " opacity-50 cursor-not-allowed" : " hover:bg-stone-800/35")
               } onClick={() => isSpinning ? null : changeBet()}>{`${curUser.bet} ⭐`}</p>
