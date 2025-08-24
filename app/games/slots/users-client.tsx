@@ -97,7 +97,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
     }, spinDuration);
   };
 
-  const checkWin = (finalSlots: string[]) => {
+  const checkWin = async (finalSlots: string[]) => {
     let retBet = 0;
     let multiplier = 0;
 
@@ -203,13 +203,19 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
       });
       return newCurUser;
     });
-    fetch('/api/save-users', {
+    const response = await fetch('/api/save-user', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(users),
-    });
+      body: JSON.stringify(curUser),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || "Ошибка сервера")
+    }
+    const result = await response.json()
 
     sendMessage(
       -1002959501386,
