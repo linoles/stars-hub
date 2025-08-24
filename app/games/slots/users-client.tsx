@@ -7,6 +7,8 @@ import GameMenu from "../../lib/gameMenu";
 import { inter } from "@/app/fonts";
 import { useConfetti } from "@/app/lib/useConfetti";
 import Confetti from "@/app/lib/confetti";
+import { useToast } from "@/app/lib/useToast";
+import ToastNotification from "@/app/lib/toast";
 
 const SLOT_ICONS = ['/BAR.png', '/🍇.png', '/🍋.png', '/7_1.png'];
 
@@ -50,6 +52,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [isSpinning, setIsSpinning] = useState(false);
   const [retBetEl, setRetBetEl] = useState(-1);
   const { isConfettiActive, triggerConfetti } = useConfetti();
+  const { toast, showToast, hideToast } = useToast();
 
   const spinSlots = async () => {
     if (isSpinning) return;
@@ -99,21 +102,41 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           retBet = curUser.bet * 4;
           multiplier = 4;
           triggerConfetti();
+          showToast({
+            message: `Вы выбили тройную комбинацию и получаете ${retBet - curUser.bet}⭐ (X${multiplier})!`,
+            type: 'success',
+            duration: 2500
+          });
           break;
         case "/🍋.png":
           retBet = curUser.bet * 3;
           multiplier = 3;
           triggerConfetti();
+          showToast({
+            message: `Вы выбили тройную комбинацию и получаете ${retBet - curUser.bet}⭐ (X${multiplier})!`,
+            type: 'success',
+            duration: 2500
+          });
           break;
         case "/🍇.png":
           retBet = curUser.bet * 2.5;
           multiplier = 2.5;
           triggerConfetti();
+          showToast({
+            message: `Вы выбили тройную комбинацию и получаете ${retBet - curUser.bet}⭐ (X${multiplier})!`,
+            type: 'success',
+            duration: 2500
+          });
           break;
         case "/BAR.png":
           retBet = curUser.bet * 2;
           multiplier = 2;
           triggerConfetti();
+          showToast({
+            message: `Вы выбили тройную комбинацию и получаете ${retBet - curUser.bet}⭐ (X${multiplier})!`,
+            type: 'success',
+            duration: 2500
+          });
           break;
       }
     } else {
@@ -125,6 +148,25 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
         ) {
           retBet = curUser.bet * mult;
           multiplier = mult;
+          if (mult < 1) {
+            showToast({
+              message: `Вы выбили проигрышную комбинацию и вам возвращается ${retBet - curUser.bet}⭐ (X${mult})!`,
+              type: 'error',
+              duration: 2500
+            });
+          } else if (mult === 1) {
+            showToast({
+              message: `Вы оставляете вашу ставку у себя - X1!`,
+              type: 'info',
+              duration: 2500
+            });
+          } else {
+            showToast({
+              message: `Вы выбили выигрышную комбинацию и получаете ${retBet - curUser.bet}⭐ (X${mult})!`,
+              type: 'success',
+              duration: 2500
+            });
+          }
           return true;
         }
         return false;
@@ -150,6 +192,13 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
       -1002959501386,
       `Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${multiplier} в слотах и вернул ${retBet}⭐ со ставки ${curUser.bet}⭐! #слоты`
     );
+    if (multiplier === 0) {
+      showToast({
+        message: `Вы выбили проигрышную комбинацию - X0!`,
+        type: 'error2',
+        duration: 2500
+      });
+    }
   };
 
   useEffect(() => {
@@ -249,7 +298,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
               <p className={"text-[1.45rem] font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>ЗВЁЗДЫ</p>
               <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`${curUser.stars}`}</p>
             </div>
-            {retBetEl > -1 ? <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`X${retBetEl}`}</p> : ""}
+            {retBetEl > -1 ? <p className={"text-[1.3rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`X${retBetEl}`}</p> : ""}
             <div className="flex flex-row items-center justify-center h-fit w-fit">
               <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>{`${curUser.bet}`}</p>
               <p className={"text-[1.45rem] font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>СТАВКА</p>
@@ -257,6 +306,14 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           </div>
         </div>
         <GameMenu activeItem={2} />
+
+        <ToastNotification
+          message={toast.message}
+          type={toast.type}
+          duration={toast.duration}
+          isVisible={toast.isVisible}
+          onClose={hideToast}
+        />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute text-primary/30 animate-pulse" style={{ left: "38.7565%", top: "56.0304%", animationDelay: "1.32899s", fontSize: " 9.80749px" }}>✦</div>
           <div className="absolute text-primary/30 animate-pulse" style={{ left: "47.5803%", top: "18.9982%", animationDelay: "1.25741s", fontSize: "9.70331px" }}>✦</div>
