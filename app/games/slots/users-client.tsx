@@ -193,8 +193,22 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
         ...prevUser,
         stars: prevUser.stars + retBet
       };
-      supabase.from("users").update({ stars: newCurUser.stars }).eq("tgId", newCurUser.tgId);
+      setUsers(prevUsers => {
+        return prevUsers.map(user => {
+          if (user.tgId === newCurUser.tgId) {
+            return newCurUser;
+          }
+          return user;
+        });
+      });
       return newCurUser;
+    });
+    fetch('/api/save-users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(users),
     });
 
     sendMessage(
