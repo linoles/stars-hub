@@ -43,15 +43,15 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [tgData, setTgData] = useState<any>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 0, bet: 10, lvl: 1, friends: 0 });
+  const [curUser, setCurUser] = useState<User>({ tgId: 0, tgUsername: "", tgNick: "", stars: 100, bet: 10, lvl: 1, friends: 0 });
   const [slots, setSlots] = useState(['/7_1.png', '/7_1.png', '/7_1.png']);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [retBetEl, setRetBetEl] = useState(1);
+  const [retBetEl, setRetBetEl] = useState(-1);
 
   const spinSlots = async () => {
     if (isSpinning) return;
     if (curUser.stars < curUser.bet) {
-      alert("Недостаточно звезд!");
+      alert("❌ Недостаточно звезд! ⭐");
       return;
     }
 
@@ -186,7 +186,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
       <section aria-label="Notifications alt+T" tabIndex={-1} aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section>
       <div className="min-h-screen bg-background star-pattern relative overflow-auto">
         <div className="px-4 pb-20 relative z-10 h-screen flex flex-col items-center justify-center">
-          <div className="slots flex flex-row justify-center items-center">
+          <div className="slots flex flex-row justify-center items-center mt-auto">
             {slots.map((slot, index) => (
               <div key={index} className={`slot-container relative w-[6.25rem] h-[6.25rem] md:w-32 md:h-32 bg-stone-800/75 rounded-xl overflow-hidden mr-${index == 2 ? 0 : 2}`}>
                 <div className={`absolute inset-0 ${isSpinning ? 'animate-slot-spin' : ''}`}>
@@ -206,10 +206,20 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
                 inter.className +
                 (isSpinning ? " opacity-50 cursor-not-allowed" : " hover:bg-stone-800/35")
               }>
-                {isSpinning ? 'КРУТИМ...' : 'ИГРАТЬ (10⭐)'}
+                {isSpinning ? 'КРУТИМ...' : `ИГРАТЬ (${curUser.bet}⭐)`}
               </p>
             </button>
-            <p>{`Баланс: ${curUser.stars} | X${retBetEl} | Ставка: ${curUser.bet}`}</p>
+          </div>
+          <div className="mt-auto w-full flex flex-row justify-around items-center">
+            <div className="flex flex-row items-center justify-center h-fit w-fit">
+              <p className={"text-2xl font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>ЗВЁЗДЫ</p>
+              <p className={"text-2xl font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`${curUser.stars}`}</p>
+            </div>
+            {retBetEl > -1 ? <p className={"text-2xl font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`X${retBetEl}`}</p> : ""}
+            <div className="flex flex-row items-center justify-center h-fit w-fit">
+              <p className={"text-2xl font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>{`${curUser.bet}`}</p>
+              <p className={"text-2xl font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>СТАВКА</p>
+            </div>
           </div>
         </div>
         <GameMenu activeItem={2} />

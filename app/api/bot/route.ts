@@ -2,9 +2,9 @@ import { config } from "@/app/config";
 import { createClient } from "@supabase/supabase-js";
 import { Markup, Telegraf } from "telegraf";
 import { TelegramEmoji } from "telegraf/types";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-const bot = new Telegraf("8270325718:AAFfL73Yy6cpOO-WEFwys-qnb7t5kA_qVmE");
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
