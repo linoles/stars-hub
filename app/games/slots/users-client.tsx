@@ -223,7 +223,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
     setCurUser(prevUser => {
       const newCurUser = {
         ...prevUser,
-        stars: prevUser.stars + retBet
+        stars: prevUser.stars + Math.floor(retBet)
       };
       setUsers(prevUsers => {
         return prevUsers.map(user => {
@@ -251,7 +251,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
 
     sendMessage(
       -1002959501386,
-      `🎰 Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${multiplier} в слотах и вернул ${retBet}⭐ со ставки ${curUser.bet}⭐!\n⚡ Его новый баланс: ${result.stars + retBet}⭐ #слоты\n\n[${(new Date()).toLocaleString("ru-RU")}]`
+      `🎰 Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${multiplier} в слотах и вернул ${Math.floor(retBet)}⭐ со ставки ${curUser.bet}⭐!\n⚡ Его новый баланс: ${result.stars + Math.floor(retBet)}⭐ #слоты\n\n[${(new Date()).toLocaleString("ru-RU")}]`
     );
     if (multiplier === 0) {
       showToast({
