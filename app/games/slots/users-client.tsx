@@ -99,7 +99,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
 
   const changeBet = async () => {
     const input = prompt("🔢 Введите новую ставку: ");
-    if (input === null || isNaN(parseInt(input))) {
+    if (input === null || isNaN(parseInt(input)) || parseInt(input) !== Math.floor(parseInt(input))) {
       alert("❌ Введите целое число!");
       return;
     } else if (parseInt(input) < 5) {
