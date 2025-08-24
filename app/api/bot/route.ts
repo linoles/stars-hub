@@ -3532,6 +3532,7 @@ bot.on("message", async (ctx) => {
             message_id: ctx.message.message_id
           }
         });
+        return;
       }
 
       const user2Result = await supabase
