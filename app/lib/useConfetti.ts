@@ -8,7 +8,7 @@ export function useConfetti() {
     
     setTimeout(() => {
       setIsConfettiActive(false);
-    }, 5000);
+    }, 2000);
   }, []);
 
   return { isConfettiActive, triggerConfetti };

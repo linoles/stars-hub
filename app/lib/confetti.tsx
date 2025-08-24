@@ -27,11 +27,11 @@ export default function Confetti({ isActive }: { isActive: boolean }) {
       pieces.push({
         id: i,
         left: Math.random() * 100,
-        animationDuration: 2 + Math.random() * 3,
+        animationDuration: 0.8 + Math.random() * 0.7,
         rotation: Math.random() * 360,
         size: 2 + Math.random() * 4,
         color: colors[Math.floor(Math.random() * colors.length)],
-        delay: Math.random() * 2
+        delay: Math.random() * 0.5
       });
     }
     
@@ -45,7 +45,7 @@ export default function Confetti({ isActive }: { isActive: boolean }) {
       // Автоматически очищаем конфетти через 5 секунд
       const timer = setTimeout(() => {
         setConfettiPieces([]);
-      }, 5000);
+      }, 2000);
 
       return () => clearTimeout(timer);
     }

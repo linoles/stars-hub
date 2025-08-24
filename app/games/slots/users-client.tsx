@@ -89,44 +89,67 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
     }, spinDuration);
   };
 
-  const checkWin = (finalSlots: any) => {
+  const checkWin = (finalSlots: string[]) => {
     let retBet = 0;
-    if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/7_1.png") {
-      retBet = curUser.bet * 4;
-      triggerConfetti();
-      setRetBetEl(4);
-    } else if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/🍋.png") {
-      retBet = curUser.bet * 3;
-      triggerConfetti();
-      setRetBetEl(3);
-    } else if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/🍇.png") {
-      retBet = curUser.bet * 2.5;
-      triggerConfetti();
-      setRetBetEl(2.5);
-    } else if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2] && finalSlots[0] === "/BAR.png") {
-      retBet = curUser.bet * 2;
-      triggerConfetti();
-      setRetBetEl(2);
-    } else if ((finalSlots[0] === finalSlots[1] && finalSlots[0] === "/7_1.png") || (finalSlots[1] === finalSlots[2] && finalSlots[1] === "/7_1.png") || (finalSlots[0] === finalSlots[2] && finalSlots[0] === "/7_1.png")) {
-      retBet = curUser.bet * 1.2;
-      setRetBetEl(1.2);
-    } else if ((finalSlots[0] === finalSlots[1] && finalSlots[0] === "/🍋.png") || (finalSlots[1] === finalSlots[2] && finalSlots[1] === "/🍋.png") || (finalSlots[0] === finalSlots[2] && finalSlots[0] === "/🍋.png")) {
-      retBet = curUser.bet;
-      setRetBetEl(1);
-    } else if ((finalSlots[0] === finalSlots[1] && finalSlots[0] === "/🍇.png") || (finalSlots[1] === finalSlots[2] && finalSlots[1] === "/🍇.png") || (finalSlots[0] === finalSlots[2] && finalSlots[0] === "/🍇.png")) {
-      retBet = curUser.bet * 0.8;
-      setRetBetEl(0.8);
-    } else if ((finalSlots[0] === finalSlots[1] && finalSlots[0] === "/BAR.png") || (finalSlots[1] === finalSlots[2] && finalSlots[1] === "/BAR.png") || (finalSlots[0] === finalSlots[2] && finalSlots[0] === "/BAR.png")) {
-      retBet = curUser.bet * 0.6;
-      setRetBetEl(0.6);
+    let multiplier = 0;
+
+    if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2]) {
+      switch (finalSlots[0]) {
+        case "/7_1.png":
+          retBet = curUser.bet * 4;
+          multiplier = 4;
+          triggerConfetti();
+          break;
+        case "/🍋.png":
+          retBet = curUser.bet * 3;
+          multiplier = 3;
+          triggerConfetti();
+          break;
+        case "/🍇.png":
+          retBet = curUser.bet * 2.5;
+          multiplier = 2.5;
+          triggerConfetti();
+          break;
+        case "/BAR.png":
+          retBet = curUser.bet * 2;
+          multiplier = 2;
+          triggerConfetti();
+          break;
+      }
     } else {
-      setRetBetEl(0);
+      const checkTwoOfKind = (icon: string, mult: number) => {
+        if (
+          (finalSlots[0] === finalSlots[1] && finalSlots[0] === icon) ||
+          (finalSlots[1] === finalSlots[2] && finalSlots[1] === icon) ||
+          (finalSlots[0] === finalSlots[2] && finalSlots[0] === icon)
+        ) {
+          retBet = curUser.bet * mult;
+          multiplier = mult;
+          return true;
+        }
+        return false;
+      };
+
+      if (!checkTwoOfKind("/7_1.png", 1.2)) {
+        if (!checkTwoOfKind("/🍋.png", 1)) {
+          if (!checkTwoOfKind("/🍇.png", 0.8)) {
+            checkTwoOfKind("/BAR.png", 0.6);
+          }
+        }
+      }
     }
-    curUser.stars += retBet;
-    setTimeout(() => {
-      sendMessage(-1002959501386, `Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${retBetEl} в слотах и вернул ${retBet}⭐ со ставки ${curUser.bet}⭐! #слоты`);
-    }, 100);
-    return;
+
+    setRetBetEl(multiplier);
+
+    setCurUser(prevUser => ({
+      ...prevUser,
+      stars: prevUser.stars + retBet
+    }));
+
+    sendMessage(
+      -1002959501386,
+      `Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${multiplier} в слотах и вернул ${retBet}⭐ со ставки ${curUser.bet}⭐! #слоты`
+    );
   };
 
   useEffect(() => {
