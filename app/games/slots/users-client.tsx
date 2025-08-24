@@ -360,11 +360,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           <div className="mt-auto w-full max-w-[320px] flex flex-row justify-around items-center">
             <div className="flex flex-row items-center justify-center h-fit w-fit">
               <p className={"text-[1.45rem] font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>ЗВЁЗДЫ</p>
-              <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`${curUser.stars}`}</p>
-            </div>
-            <div className="flex flex-row items-center justify-center h-fit w-fit">
-              <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap mr-2 " + inter.className}>{`${curUser.bet}`}</p>
-              <p className={"text-[1.45rem] font-bold text-casino-gold/50 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>СТАВКА</p>
+              <p className={"text-[1.45rem] font-bold text-casino-gold/80 overflow-hidden text-ellipsis whitespace-nowrap " + inter.className}>{`${Math.round(curUser.stars)}`}</p>
             </div>
           </div>
         </div>
