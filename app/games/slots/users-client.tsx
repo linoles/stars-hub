@@ -314,6 +314,11 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
               disabled={isSpinning}
             >
               <p className={
+                "text-4xl font-bold w-[320px] py-3 px-6 duration-500 rounded-r-3xl rounded-l-full bg-stone-800/75 text-white " +
+                inter.className +
+                (isSpinning ? " opacity-50 cursor-not-allowed" : " hover:bg-stone-800/35")
+              }>{`${curUser.bet} ⭐`}</p>
+              <p className={
                 "text-4xl font-bold w-[320px] py-3 px-6 duration-500 rounded-3xl bg-stone-800/75 text-white " +
                 inter.className +
                 (isSpinning ? " opacity-50 cursor-not-allowed" : " hover:bg-stone-800/35")
