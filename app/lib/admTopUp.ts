@@ -10,7 +10,7 @@ export default async function admTopUp({
   amount: any;
 }) {
   try {
-    receiver.stars += amount;
+    receiver.stars += Number(amount);
 
     const updatedUser = {
       ...receiver,
@@ -46,7 +46,7 @@ export default async function admTopUp({
           sender.tgId
         }">${sender.tgNick}</a> (#id${
           sender.tgId
-        })!\nТеперь ваш баланс составляет: ${Number(receiver.stars) + Number(amount) - Number(amount)}⭐`
+        })!\nТеперь ваш баланс составляет: ${receiver.stars}⭐`
       );
     } catch (error) {
       console.log("Не удалось отправить сообщение получателю:", error);
@@ -61,7 +61,7 @@ export default async function admTopUp({
       }) на <a href="tg://openmessage?user_id=${receiver.tgId}">${
         receiver.tgNick
       }</a> (#id${receiver.tgId})\nНовый баланс получателя: ${
-        Number(receiver.stars) + Number(amount) - Number(amount)
+        receiver.stars
       }⭐ #начисление\n\n[${(new Date()).toLocaleString("ru-RU")}]`
     );
   } catch (error) {
