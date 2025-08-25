@@ -130,137 +130,146 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   }
 
   const checkWin = async (finalSlots: string[]) => {
-    let retBet = 0;
-    let multiplier = 0;
+  let retBet = 0;
+  let multiplier = 0;
+  let netWin = 0;
 
-    if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2]) {
-      switch (finalSlots[0]) {
-        case "/7_1.png":
-          retBet = curUser.bet * 4;
-          multiplier = 4;
-          triggerConfetti();
+  // Определяем выигрыш
+  if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2]) {
+    switch (finalSlots[0]) {
+      case "/7_1.png":
+        retBet = curUser.bet * 4;
+        multiplier = 4;
+        break;
+      case "/🍋.png":
+        retBet = curUser.bet * 3;
+        multiplier = 3;
+        break;
+      case "/🍇.png":
+        retBet = curUser.bet * 2.5;
+        multiplier = 2.5;
+        break;
+      case "/BAR.png":
+        retBet = curUser.bet * 2;
+        multiplier = 2;
+        break;
+    }
+    triggerConfetti();
+    showToast({
+      message: `Вы выбили тройную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${multiplier})!`,
+      type: 'success',
+      duration: 2500
+    });
+  } else {
+    const checkTwoOfKind = (icon: string, mult: number) => {
+      if (
+        (finalSlots[0] === finalSlots[1] && finalSlots[0] === icon) ||
+        (finalSlots[1] === finalSlots[2] && finalSlots[1] === icon) ||
+        (finalSlots[0] === finalSlots[2] && finalSlots[0] === icon)
+      ) {
+        retBet = curUser.bet * mult;
+        multiplier = mult;
+        
+        if (mult < 1) {
           showToast({
-            message: `Вы выбили тройную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${multiplier})!`,
+            message: `Вы выбили проигрышную комбинацию и вам возвращается ${Math.floor(retBet)}⭐ (X${mult})!`,
+            type: 'error',
+            duration: 2500
+          });
+        } else if (mult === 1) {
+          showToast({
+            message: `Вы оставляете вашу ставку у себя - X1!`,
+            type: 'info',
+            duration: 2500
+          });
+        } else {
+          showToast({
+            message: `Вы выбили выигрышную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${mult})!`,
             type: 'success',
             duration: 2500
           });
-          break;
-        case "/🍋.png":
-          retBet = curUser.bet * 3;
-          multiplier = 3;
-          triggerConfetti();
-          showToast({
-            message: `Вы выбили тройную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${multiplier})!`,
-            type: 'success',
-            duration: 2500
-          });
-          break;
-        case "/🍇.png":
-          retBet = curUser.bet * 2.5;
-          multiplier = 2.5;
-          triggerConfetti();
-          showToast({
-            message: `Вы выбили тройную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${multiplier})!`,
-            type: 'success',
-            duration: 2500
-          });
-          break;
-        case "/BAR.png":
-          retBet = curUser.bet * 2;
-          multiplier = 2;
-          triggerConfetti();
-          showToast({
-            message: `Вы выбили тройную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${multiplier})!`,
-            type: 'success',
-            duration: 2500
-          });
-          break;
-      }
-    } else {
-      const checkTwoOfKind = (icon: string, mult: number) => {
-        if (
-          (finalSlots[0] === finalSlots[1] && finalSlots[0] === icon) ||
-          (finalSlots[1] === finalSlots[2] && finalSlots[1] === icon) ||
-          (finalSlots[0] === finalSlots[2] && finalSlots[0] === icon)
-        ) {
-          retBet = curUser.bet * mult;
-          multiplier = mult;
-          if (mult < 1) {
-            showToast({
-              message: `Вы выбили проигрышную комбинацию и вам возвращается ${Math.floor(retBet - curUser.bet)}⭐ (X${mult})!`,
-              type: 'error',
-              duration: 2500
-            });
-          } else if (mult === 1) {
-            showToast({
-              message: `Вы оставляете вашу ставку у себя - X1!`,
-              type: 'info',
-              duration: 2500
-            });
-          } else {
-            showToast({
-              message: `Вы выбили выигрышную комбинацию и получаете ${Math.floor(retBet - curUser.bet)}⭐ (X${mult})!`,
-              type: 'success',
-              duration: 2500
-            });
-          }
-          return true;
         }
-        return false;
-      };
+        return true;
+      }
+      return false;
+    };
 
-      if (!checkTwoOfKind("/7_1.png", 1.2)) {
-        if (!checkTwoOfKind("/🍋.png", 1)) {
-          if (!checkTwoOfKind("/🍇.png", 0.8)) {
-            checkTwoOfKind("/BAR.png", 0.6);
+    if (!checkTwoOfKind("/7_1.png", 1.2)) {
+      if (!checkTwoOfKind("/🍋.png", 1)) {
+        if (!checkTwoOfKind("/🍇.png", 0.8)) {
+          if (!checkTwoOfKind("/BAR.png", 0.6)) {
+            multiplier = 0;
+            showToast({
+              message: `Вы выбили проигрышную комбинацию - X0!`,
+              type: 'error2',
+              duration: 2500
+            });
           }
         }
       }
     }
+  }
 
-    setRetBetEl(multiplier);
+  // Рассчитываем чистый выигрыш
+  netWin = Math.floor(retBet);
+  const newStars = curUser.stars - curUser.bet + netWin;
 
-    setCurUser(prevUser => {
-      const newCurUser = {
-        ...prevUser,
-        stars: prevUser.stars + Math.floor(retBet)
-      };
-      setUsers(prevUsers => {
-        return prevUsers.map(user => {
-          if (user.tgId === newCurUser.tgId) {
-            return newCurUser;
-          }
-          return user;
-        });
-      });
-      return newCurUser;
-    });
+  setRetBetEl(multiplier);
+
+  // Создаем обновленного пользователя
+  const updatedUser = {
+    ...curUser,
+    stars: newStars
+  };
+
+  // Обновляем состояние
+  setCurUser(updatedUser);
+  setUsers(prevUsers => 
+    prevUsers.map(user => 
+      user.tgId === updatedUser.tgId ? updatedUser : user
+    )
+  );
+
+  try {
+    // Отправляем ОБНОВЛЕННЫЕ данные на сервер
     const response = await fetch('/api/save-user', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(curUser),
+      body: JSON.stringify(updatedUser), // Используем updatedUser, а не curUser
     });
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || "Ошибка сервера");
     }
+
     const result = await response.json();
 
+    // Отправляем сообщение с актуальными данными
     sendMessage(
       -1002959501386,
-      `🎰 Игрок <a href="tg://openmessage?user_id=${curUser.tgId}">${curUser.tgNick}</a> (#id${curUser.tgId}) получил Х${multiplier} в слотах и вернул ${Math.floor(retBet)}⭐ со ставки ${curUser.bet}⭐!\n⚡ Его новый баланс: ${result.stars + Math.floor(retBet)}⭐ #слоты\n\n[${(new Date()).toLocaleString("ru-RU")}]`
+      `🎰 Игрок <a href="tg://openmessage?user_id=${updatedUser.tgId}">${updatedUser.tgNick}</a> (#id${updatedUser.tgId}) получил Х${multiplier} в слотах и вернул ${netWin}⭐ со ставки ${updatedUser.bet}⭐!\n⚡ Его новый баланс: ${newStars}⭐ #слоты\n\n[${(new Date()).toLocaleString("ru-RU")}]`
     );
-    if (multiplier === 0) {
-      showToast({
-        message: `Вы выбили проигрышную комбинацию - X0!`,
-        type: 'error2',
-        duration: 2500
-      });
-    }
-  };
+
+  } catch (error) {
+    console.error('Ошибка при сохранении:', error);
+    // Можно добавить откат состояния в случае ошибки
+    setCurUser(curUser);
+    setUsers(prevUsers => 
+      prevUsers.map(user => 
+        user.tgId === curUser.tgId ? curUser : user
+      )
+    );
+    
+    showToast({
+      message: 'Ошибка при сохранении результатов',
+      type: 'error',
+      duration: 2500
+    });
+  }
+};
 
   useEffect(() => {
     try {
@@ -330,7 +339,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
       <Confetti isActive={isConfettiActive} />
       <div className="min-h-screen bg-background star-pattern relative overflow-auto">
         <div className="px-4 pb-20 relative z-10 h-screen flex flex-col items-center justify-center">
-          <div className="slots flex flex-row justify-center items-center mt-auto">
+          <div className="slots flex flex-row justify-center items-center mt-auto max-w-[320px]">
             {slots.map((slot, index) => (
               <div key={index} className={`slot-container relative w-[6.25rem] h-[6.25rem] md:w-32 md:h-32 bg-stone-800/75 rounded-xl overflow-hidden mr-${index == 2 ? 0 : 2}`}>
                 <div className={`absolute inset-0 ${isSpinning ? 'animate-slot-spin' : ''}`}>
@@ -341,7 +350,7 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
           </div>
           <div className="w-full h-fit flex flex-col justify-center items-center">
             <button
-              className="w-full mt-4 h-[60px] flex flex-row justify-center items-center"
+              className="w-full mt-4 h-[60px] flex flex-row justify-center items-center max-w-[320px]"
             >
               <p className={
                 `${curUser.bet >= 1000 ? "text-[22px]" : curUser.bet >= 100 ? "text-[25px]" : "text-[28px]"} font-bold w-[320px] py-3 pl-6 pr-3 mr-2 duration-500 rounded-r-xl rounded-l-full bg-stone-800/75 text-white ` +
