@@ -20,45 +20,31 @@ const procAdmTopUp = async (curUser: any) => {
       return;
     }
 
-    if (curUser.stars < Number(+amount)) {
-      alert("❌ Недостаточно звезд! ⭐");
-      return;
+    
+    const receiverResponse = await fetch("/api/get-user-by-tag", {
+      method: "POST",
+      body: JSON.stringify({ tgTag: username }),
+    });
+
+    if (!receiverResponse.ok) {
+      const errorData = await receiverResponse.json();
+      alert(errorData.error || "Ошибка сервера");
+      throw new Error(errorData.error || "Ошибка сервера");
     }
 
-    
-    const receiver = await (await fetch("/api/get-user-by-tag", { method: "POST", body: JSON.stringify({ tgTag: username }) })).json();
+    const receiver = await receiverResponse.json();
    
     if (!receiver) {
       alert("❌ Пользователь не найден!");
       return;
     }
-
-    curUser.stars -= Number(+amount);
-
-    const updatedUser = {
-      ...curUser,
-      tgId: curUser.tgId,
-      stars: curUser.stars,
-    };
-    const response = await fetch("/api/save-user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedUser),
-    });
-
+    
     alert("✅ Начисление успешно выполнено!");
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Ошибка сервера");
-    }
 
     usernameInput.value = "";
     amountInput.value = "";
 
-    admTopUp({ sender: curUser, receiver: receiver, amount: amount });
+    admTopUp({ sender: curUser, receiver: (await receiver), amount: amount });
   } else {
     alert("❌ Произошла ошибка!");
   }
