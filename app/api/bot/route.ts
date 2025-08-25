@@ -3483,7 +3483,6 @@ bot.on("message", async (ctx) => {
 
       const userId = ctx.message.from.id;
 
-      // Получаем отправителя
       const userResult = await supabase
         .from("users")
         .select("*")

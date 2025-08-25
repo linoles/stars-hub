@@ -10,6 +10,7 @@ import Confetti from "@/app/lib/confetti";
 import { useToast } from "@/app/lib/useToast";
 import ToastNotification from "@/app/lib/toast";
 import { createClient } from "@supabase/supabase-js";
+import sendMessage from "@/app/lib/sendMessage";
 
 const SLOT_ICONS = ['/BAR.png', '/🍇.png', '/🍋.png', '/7_1.png'];
 
@@ -22,31 +23,6 @@ declare global {
     Telegram: any;
   }
 }
-
-const sendMessage = async (userId: number, text: string) => {
-  try {
-    const response = await fetch('/api/send-message', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId: userId,
-        message: text
-      }),
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      console.log('Message sent successfully');
-    } else {
-      console.error('Failed to send message:', result.error);
-    }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-};
 
 export default function ClientComponent({ initialUsers }: { initialUsers: User[] }) {
   const [users, setUsers] = useState<User[]>(initialUsers);
@@ -227,13 +203,12 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   );
 
   try {
-    // Отправляем ОБНОВЛЕННЫЕ данные на сервер
     const response = await fetch('/api/save-user', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(updatedUser), // Используем updatedUser, а не curUser
+      body: JSON.stringify(updatedUser),
     });
 
     if (!response.ok) {
@@ -243,7 +218,6 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
 
     const result = await response.json();
 
-    // Отправляем сообщение с актуальными данными
     sendMessage(
       -1002959501386,
       `🎰 Игрок <a href="tg://openmessage?user_id=${updatedUser.tgId}">${updatedUser.tgNick}</a> (#id${updatedUser.tgId}) получил Х${multiplier} в слотах и вернул ${netWin}⭐ со ставки ${updatedUser.bet}⭐!\n⚡ Его новый баланс: ${newStars}⭐ #слоты\n\n[${(new Date()).toLocaleString("ru-RU")}]`

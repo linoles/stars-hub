@@ -1692,6 +1692,10 @@ body {
   background-color: #1a1a1af2;
 }
 
+.bg-casino-darkGray\/50 {
+  background-color: #1a1a1a80;
+}
+
 .bg-casino-gold {
   --tw-bg-opacity: 1;
   background-color: rgb(255 215 0 / var(--tw-bg-opacity, 1));
@@ -1699,6 +1703,14 @@ body {
 
 .bg-casino-gold\/20 {
   background-color: #ffd70033;
+}
+
+.bg-casino-gold\/50 {
+  background-color: #ffd70080;
+}
+
+.bg-casino-gold\/80 {
+  background-color: #ffd700cc;
 }
 
 .bg-casino-gray {
@@ -2273,6 +2285,10 @@ body {
 .text-casino-lightGray {
   --tw-text-opacity: 1;
   color: rgb(102 102 102 / var(--tw-text-opacity, 1));
+}
+
+.text-casino-lightGray\/50 {
+  color: #66666680;
 }
 
 .text-casino-red {
