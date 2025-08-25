@@ -23,7 +23,7 @@ const procAdmTopUp = async (curUser: any) => {
     
     const receiverResponse = await fetch("/api/get-user-by-tag", {
       method: "POST",
-      body: JSON.stringify({ tgTag: username }),
+      body: JSON.stringify({ tgTag: username.toLowerCase() }),
     });
 
     if (!receiverResponse.ok) {
