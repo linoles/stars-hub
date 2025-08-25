@@ -42,7 +42,7 @@ export default function MainItems({ curUser }: { curUser: any }) {
         </div>
         <div className="text-center mx-8">
           <div className="flex flex-row justify-center items-center">
-            <div className={"text-2xl font-bold text-casino-gold mr-2 " + inter.className}>10000</div>
+            <div className={"text-2xl font-bold text-casino-gold mr-2 " + inter.className}>{curUser.stars}</div>
             <img src="/SCoin_yellow.png" alt="S" className="inline-block" style={{ width: "20px", height: "20px" }} />
           </div>
           <div className={"text-casino-lightGray text-sm " + inter.className}>SCoins</div>
