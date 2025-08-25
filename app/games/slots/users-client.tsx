@@ -134,7 +134,6 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
   let multiplier = 0;
   let netWin = 0;
 
-  // Определяем выигрыш
   if (finalSlots[0] === finalSlots[1] && finalSlots[1] === finalSlots[2]) {
     switch (finalSlots[0]) {
       case "/7_1.png":
@@ -210,19 +209,16 @@ export default function ClientComponent({ initialUsers }: { initialUsers: User[]
     }
   }
 
-  // Рассчитываем чистый выигрыш
   netWin = Math.floor(retBet);
-  const newStars = curUser.stars - curUser.bet + netWin;
+  const newStars = curUser.stars + netWin;
 
   setRetBetEl(multiplier);
 
-  // Создаем обновленного пользователя
   const updatedUser = {
     ...curUser,
     stars: newStars
   };
 
-  // Обновляем состояние
   setCurUser(updatedUser);
   setUsers(prevUsers => 
     prevUsers.map(user => 
